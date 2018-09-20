@@ -1,6 +1,0 @@
-dependencies {
-    compile project(':spider-bank-service')
-    compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
-    compile 'com.treefinance.saas:saas-knife:1.1.0'
-}
-apply from: rootProject.file('printLib.gradle')
