@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.datatrees.spider.share.main;
+package com.datatrees.spider.operator.web;
 
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
@@ -33,10 +33,10 @@ import org.springframework.http.converter.HttpMessageConverter;
  */
 @SpringBootApplication
 @ImportResource("classpath:spring.xml")
-public class Application {
+public class SpiderOperatorApplication {
 
     public static void main(String[] args) {
-        ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
+        ConfigurableApplicationContext context = SpringApplication.run(SpiderOperatorApplication.class, args);
         //String[] names = context.getBeanDefinitionNames();
         //Arrays.stream(names).forEach(System.out::println);
     }
