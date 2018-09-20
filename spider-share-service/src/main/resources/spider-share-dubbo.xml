@@ -9,9 +9,8 @@
 
     <dubbo:provider timeout="30000" retries="3"/>
 
-    <dubbo:registry address="${dubbo.zookeeper.address}" file="${user.home}/.dubbo/spider-share.cache"/>
+    <dubbo:registry address="${dubbo.zookeeper.address}" file="${user.home}/.dubbo/spider-share-${server.ip}.cache"/>
 
-    <dubbo:protocol name="dubbo" port="20195"/>
 
     <dubbo:service interface="com.datatrees.spider.share.api.SpiderTaskApi" ref="spiderTaskApiImpl"/>
 

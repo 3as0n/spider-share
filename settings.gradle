@@ -1,4 +1,4 @@
-rootProject.name = 'spider'
+rootProject.name = 'spider-share'
 include 'crawler-core'
 
 include 'spider-share-domain'
