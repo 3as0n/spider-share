@@ -1,4 +1,0 @@
-version=""
-dependencies {
-    compile project(':spider-operator-service')
-}

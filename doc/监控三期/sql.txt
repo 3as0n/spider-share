@@ -1,5 +1,0 @@
-select m.search_config,REPLACE(m.search_config,'com.datatrees.rawdatacentral.plugin.operator','com.datatrees.spider.operator.plugin') from website_operator m;
-
-update website_operator set plugin_class = REPLACE(plugin_class,'com.datatrees.rawdatacentral.plugin.operator','com.datatrees.spider.operator.plugin');
-update website_operator set search_config = REPLACE(search_config,'com.datatrees.rawdatacentral.plugin.operator','com.datatrees.spider.operator.plugin');
-update website_operator set search_config = REPLACE(search_config,'rawdatacentral-plugin-operator.jar','spider-operator-plugin.jar')

@@ -1,16 +1,6 @@
 rootProject.name = 'spider'
 include 'crawler-core'
 
-
-include 'spider-operator-domain'
-include 'spider-operator-dao'
-include 'spider-operator-service'
-include 'spider-operator-web'
-include 'spider-operator-plugin'
-include 'spider-generator'
-include 'spider-operator-api'
-
-
 include 'spider-share-domain'
 include 'spider-share-service'
 include 'spider-share-common'
