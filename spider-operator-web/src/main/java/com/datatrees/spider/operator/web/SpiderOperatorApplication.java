@@ -32,7 +32,7 @@ import org.springframework.http.converter.HttpMessageConverter;
  * Created by zhouxinghai on 2017/7/3
  */
 @SpringBootApplication
-@ImportResource("classpath:spring.xml")
+@ImportResource("classpath:spider-operator-web.xml")
 public class SpiderOperatorApplication {
 
     public static void main(String[] args) {
