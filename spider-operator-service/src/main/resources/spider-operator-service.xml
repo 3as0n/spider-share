@@ -3,6 +3,7 @@
        xmlns:dubbo="http://code.alibabatech.com/schema/dubbo" xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
+    <import resource="classpath*:spider-share-service.xml" />
     <import resource="spider-operator-mybatis.xml" />
     <import resource="spider-operator-mq.xml" />
     <context:component-scan base-package="com.datatrees.spider.operator.service" />
