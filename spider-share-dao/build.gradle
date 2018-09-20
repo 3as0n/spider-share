@@ -9,3 +9,4 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-jdbc:${springBootVersion}"
     compile "org.springframework.boot:spring-boot-autoconfigure:${springBootVersion}"
 }
+apply from: rootProject.file('upload.gradle')

@@ -2,3 +2,4 @@ dependencies {
     compile project(':spider-share-service')
     compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
 }
+apply from: rootProject.file('upload.gradle')
