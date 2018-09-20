@@ -1,7 +1,0 @@
-task printLib() {
-    configurations.compile.each {
-        if(it.name.contains("curator")){
-            println it.name
-        }
-    }
-}

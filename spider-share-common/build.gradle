@@ -1,4 +1,3 @@
-apply from: rootProject.file('upload.gradle')
 dependencies {
     compile project(':spider-share-domain')
     compile "org.apache.commons:commons-lang3:${commonsLang3Version}"

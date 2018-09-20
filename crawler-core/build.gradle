@@ -42,6 +42,4 @@ dependencies {
     testCompile "javax.mail:mail:${mailVersion}"
 }
 
-apply from: rootProject.file('printLib.gradle')
-apply from: rootProject.file('upload.gradle')
 

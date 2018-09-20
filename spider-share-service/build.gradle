@@ -58,4 +58,3 @@ dependencies {
     compile("net.sourceforge.htmlunit:htmlunit:${htmlunitVersion}")
     compile("ant:ant:${antVersion}")
 }
-apply from: rootProject.file('upload.gradle')
