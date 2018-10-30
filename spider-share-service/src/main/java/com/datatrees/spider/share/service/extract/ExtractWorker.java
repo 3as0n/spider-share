@@ -101,6 +101,16 @@ public class ExtractWorker {
 
                 PageExtractObject pageExtractObject = (PageExtractObject) response.getOutPut();
 
+                boolean notEmpty = pageExtractObject != null && pageExtractObject.isNotEmpty();
+                if (notEmpty) {
+                    try {
+                        result.setResultType(StringUtils.join(pageExtractObject.keySet(), ","));
+                        result.setPageExtractId(ResponseUtil.getPageExtractor(response).getId());
+                    } catch (Exception e) {
+                        logger.error(e.getMessage(), e);
+                    }
+                }
+
                 SubmitMessage submitMessage = new SubmitMessage(extractMessage, result);
                 submitMessage.setPageExtractObject(pageExtractObject);
 
@@ -110,14 +120,7 @@ public class ExtractWorker {
                 }
 
                 // do sub extract processing
-                if (pageExtractObject != null && pageExtractObject.isNotEmpty()) {
-                    try {
-                        result.setResultType(StringUtils.join(pageExtractObject.keySet(), ","));
-                        result.setPageExtractId(ResponseUtil.getPageExtractor(response).getId());
-                    } catch (Exception e) {
-                        logger.error(e.getMessage(), e);
-                    }
-
+                if (notEmpty) {
                     this.doSubExtract(pageExtractObject.getSubExtractObject(), extractMessage);
                 }
             } finally {
