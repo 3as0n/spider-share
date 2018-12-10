@@ -1,6 +1,6 @@
 allprojects {
     group = 'com.datatrees.spider'
-    version = '4.0.1-SNAPSHOT'
+    version = '4.0.2-SNAPSHOT'
 }
 
 ext {
