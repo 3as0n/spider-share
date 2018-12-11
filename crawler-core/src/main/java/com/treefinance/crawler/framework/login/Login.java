@@ -42,6 +42,7 @@ public enum Login {
                 logger.info("Cookie checking is pass ");
                 return Status.SUCCEED;
             } else if (loginType == LoginType.SERVER) {
+                logger.info("Cookie checking is not pass with server's login, switch to client login!");
                 isSuccess = LoginHandler.CLIENT_LOGIN.login(context);
                 if (isSuccess) {
                     logger.info("Cookie checking is pass ");

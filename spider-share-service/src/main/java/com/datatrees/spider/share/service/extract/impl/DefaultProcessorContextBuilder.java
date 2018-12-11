@@ -16,12 +16,6 @@
 
 package com.datatrees.spider.share.service.extract.impl;
 
-import javax.annotation.Resource;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.alibaba.fastjson.JSON;
 import com.datatrees.common.conf.PropertiesConfiguration;
 import com.datatrees.spider.share.domain.ResultType;
@@ -33,6 +27,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author <A HREF="">Cheng Wang</A>
@@ -50,6 +51,7 @@ public class DefaultProcessorContextBuilder {
     private              WebsiteConfigService websiteConfigService;
 
     public DefaultProcessorContextBuilder() {
+        // FIXME: 2018/11/29 强制过滤，有风险，功夫贷162是卡牛
         String extractorUseDefaultWebsiteIds = PropertiesConfiguration.getInstance().get("extractor.use.default.websiteIds", "162");
         if (StringUtils.isNotEmpty(extractorUseDefaultWebsiteIds)) {
             this.extractorUseDefaultWebsiteIds = Arrays.stream(extractorUseDefaultWebsiteIds.split(",")).map(String::trim).filter(s -> !s.isEmpty())

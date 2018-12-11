@@ -16,23 +16,27 @@
 
 package com.datatrees.spider.share.service.mq.impl;
 
-import javax.annotation.Resource;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.rocketmq.common.message.MessageExt;
-import com.treefinance.crawler.framework.context.Website;
 import com.datatrees.spider.share.common.share.service.RedisService;
 import com.datatrees.spider.share.common.utils.RedisUtils;
 import com.datatrees.spider.share.common.utils.TaskUtils;
-import com.datatrees.spider.share.domain.*;
+import com.datatrees.spider.share.domain.AttributeKey;
+import com.datatrees.spider.share.domain.CollectorMessage;
+import com.datatrees.spider.share.domain.LoginMessage;
+import com.datatrees.spider.share.domain.RedisKeyPrefixEnum;
+import com.datatrees.spider.share.domain.StepEnum;
 import com.datatrees.spider.share.service.MonitorService;
 import com.datatrees.spider.share.service.WebsiteHolderService;
 import com.datatrees.spider.share.service.collector.actor.Collector;
 import com.datatrees.spider.share.service.mq.CommonMqService;
 import com.treefinance.crawler.exception.UnsupportedWebsiteException;
+import com.treefinance.crawler.framework.context.Website;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
 
 import static com.datatrees.spider.share.service.collector.listener.handler.CollectorMessageUtils.buildCollectorMessage;
 
@@ -58,7 +62,7 @@ public class CommonMqServiceImpl implements CommonMqService {
         LoginMessage loginInfo = JSON.parseObject(msg, LoginMessage.class);
         Long taskId = loginInfo.getTaskId();
         TaskUtils.addStep(taskId, StepEnum.REC_INIT_MSG);
-        Boolean initStatus = TaskUtils.isDev() ||
+        boolean initStatus = TaskUtils.isDev() ||
                 RedisUtils.setnx(RedisKeyPrefixEnum.TASK_RUN_COUNT.getRedisKey(taskId), "0", RedisKeyPrefixEnum.TASK_RUN_COUNT.toSeconds());
         //第一次收到启动消息
         if (initStatus) {
