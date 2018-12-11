@@ -39,6 +39,7 @@ public class CollectorMessageUtils {
                 //collectorMessage.setAccountNo(loginInfo.getAccountNo());
                 collectorMessage.setGroupCode(loginInfo.getGroupCode());
                 collectorMessage.setGroupName(loginInfo.getGroupName());
+                collectorMessage.setProperty(loginInfo.getExtra());
                 if (setCookieFormatSwitch && StringUtils.isNotBlank(loginInfo.getSetCookie())) {
                     if (StringUtils.isBlank(loginInfo.getCookie())) {
                         collectorMessage.setCookie(loginInfo.getSetCookie());

@@ -17,6 +17,8 @@
 package com.datatrees.spider.share.domain;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 登陆成功消息体
@@ -59,6 +61,8 @@ public class LoginMessage implements Serializable {
 
     /** 分组名称 */
     private String groupName;
+
+    private Map<String, Object> extra = new HashMap<String, Object>();
 
     public String getWebsiteName() {
         return websiteName;
@@ -128,6 +132,14 @@ public class LoginMessage implements Serializable {
 
     public void setGroupName(String groupName) {
         this.groupName = groupName;
+    }
+
+    public Map<String, Object> getExtra() {
+        return extra;
+    }
+
+    public void setExtra(Map<String, Object> extra) {
+        this.extra = extra;
     }
 
     @Override
