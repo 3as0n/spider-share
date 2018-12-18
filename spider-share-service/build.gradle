@@ -30,8 +30,9 @@ dependencies {
     compile "ant:ant:${antVersion}"
 
     compile 'com.datatrees.common:notify-common-facade:3.5.6'
-    compile 'com.treefinance.saas:grap-server-facade:1.0.0-SNAPSHOT'
     compile 'com.treefinance.saas:merchant-center-facade:1.0.3-SNAPSHOT'
+    compile 'com.treefinance.saas:taskcenter-facade:1.0.0-SNAPSHOT'
+
 
     compile 'com.datatrees.common:common-actor:2.1.2'
 
