@@ -24,6 +24,10 @@ public class ProcessStatus implements Serializable {
 
     public static final String REQUIRE_SECOND_PASSWORD = "REQUIRE_SECOND_PASSWORD";
 
+    public static final String REQUIRE_SMS             = "REQUIRE_SMS";
+
+    public static final String REQUIRE_PIC             = "REQUIRE_PIC";
+
     public static final String SUCCESS                 = "SUCCESS";
 
     public static final String FAIL                    = "FAIL";
