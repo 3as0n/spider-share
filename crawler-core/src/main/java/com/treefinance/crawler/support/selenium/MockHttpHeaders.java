@@ -22,7 +22,7 @@ package com.treefinance.crawler.support.selenium;
  */
 public final class MockHttpHeaders {
 
-    public static final String USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:29.0) Gecko/20100101 Firefox/29.0";
+    public static final String USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:64.0) Gecko/20100101 Firefox/64.0";
 
     private MockHttpHeaders() {
     }

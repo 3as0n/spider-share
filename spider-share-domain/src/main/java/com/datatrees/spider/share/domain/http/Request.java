@@ -16,6 +16,10 @@
 
 package com.datatrees.spider.share.domain.http;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.annotation.JSONField;
+import com.datatrees.spider.share.domain.RequestType;
+
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -24,16 +28,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.annotation.JSONField;
-import com.datatrees.spider.share.domain.http.HttpHeadKey;
-import com.datatrees.spider.share.domain.RequestType;
-import com.datatrees.spider.share.domain.http.NameValue;
-
 /**
  * 请求
  */
 public class Request implements Serializable {
+//    public static final String USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36 (KHTML, " + "like Gecko) Chrome/71.0.3578.98 Safari/537.36";
+    public static final String USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:64.0) Gecko/20100101 Firefox/64.0";
 
     /**
      * 请求ID随机,不保证重复,重复概率低
@@ -47,8 +47,11 @@ public class Request implements Serializable {
     @JSONField(ordinal = 2)
     private String              websiteName;
 
+    /**
+     * 是否重定向了
+     */
     @JSONField(ordinal = 2)
-    private boolean             isRedirect     = false;//是否重定向了
+    private boolean isRedirect = false;
 
     @JSONField(ordinal = 3)
     private String              proxy;
@@ -102,7 +105,7 @@ public class Request implements Serializable {
     private Boolean             proxyEnable;
 
     @JSONField(ordinal = 15)
-    private Map<String, String> extralCookie           = new HashMap<>();
+    private Map<String, String> extraCookie = new HashMap<>();
 
     @JSONField(ordinal = 16)
     private String              host;
@@ -126,19 +129,19 @@ public class Request implements Serializable {
     private Boolean             autoRedirect           = true;
 
     public Request() {
-        addHead(HttpHeadKey.USER_AGENT, "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:56.0) Gecko/20100101 Firefox/56.0");
+        addHead(HttpHeadKey.USER_AGENT, USER_AGENT);
     }
 
-    public Map<String, String> getExtralCookie() {
-        return extralCookie;
+    public Map<String, String> getExtraCookie() {
+        return extraCookie;
     }
 
-    public void setExtralCookie(Map<String, String> extralCookie) {
-        this.extralCookie = extralCookie;
+    public void setExtraCookie(Map<String, String> extraCookie) {
+        this.extraCookie = extraCookie;
     }
 
     public void addExtraCookie(String name, String value) {
-        getExtralCookie().put(name, value);
+        getExtraCookie().put(name, value);
     }
 
     public Boolean getProxyEnable() {
@@ -218,7 +221,9 @@ public class Request implements Serializable {
     }
 
     public void setHeaders(List<NameValue> headers) {
-        this.headers = headers;
+        if (headers != null) {
+            this.headers = headers;
+        }
     }
 
     public long getRequestTimestamp() {
@@ -317,37 +322,56 @@ public class Request implements Serializable {
         isRedirect = redirect;
     }
 
-    public synchronized void addHead(String name, String value) {
-        if (null == name || name.trim().length() == 0 || null == value) {
+    public void addHead(String name, String value) {
+        if (name == null || value == null) {
             return;
         }
-        if (name.equals("Set-Cookie")) {
-            headers.add(new NameValue(name, value));
-        } else {
-            NameValue head = null;
-            for (NameValue nameValue : headers) {
-                if (nameValue.getName().equals(name)) {
-                    head = nameValue;
-                    break;
+        String headerName = name.trim();
+        if (headerName.isEmpty()) {
+            return;
+        }
+        synchronized (this) {
+            if (headerName.equals(HttpHeadKey.SET_COOKIE)) {
+                headers.add(new NameValue(name, value));
+            } else {
+                NameValue head = headers.stream().filter(nameValue -> nameValue.getName().equals(headerName)).findFirst().orElse(null);
+                if (null != head) {
+                    head.setValue(value);
+                } else {
+                    headers.add(new NameValue(name, value));
                 }
             }
-            if (null != head) {
-                head.setValue(value);
-            } else {
+        }
+    }
+
+    public void addHeadIfAbsent(String name, String value) {
+        if (name == null || value == null) {
+            return;
+        }
+        String headerName = name.trim();
+        if (headerName.isEmpty()) {
+            return;
+        }
+
+        synchronized (this) {
+            NameValue head = headers.stream().filter(nameValue -> nameValue.getName().equals(headerName)).findFirst().orElse(null);
+            if (null == head) {
                 headers.add(new NameValue(name, value));
             }
         }
     }
 
     public boolean containHeader(String name) {
-        if (null != headers && !headers.isEmpty()) {
-            for (NameValue header : headers) {
-                if (header.getName().endsWith(name)) {
-                    return true;
-                }
-            }
+        if (name != null && null != headers && !headers.isEmpty()) {
+            return headers.stream().anyMatch(nameValue -> nameValue.getName().equals(name));
         }
         return false;
+    }
+
+    public synchronized void removeHeader(String name) {
+        if (headers != null && !headers.isEmpty()) {
+            headers.removeIf(nameValue -> nameValue.getName().equals(name));
+        }
     }
 
     public String getHost() {

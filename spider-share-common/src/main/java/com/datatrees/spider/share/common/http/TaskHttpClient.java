@@ -16,26 +16,22 @@
 
 package com.datatrees.spider.share.common.http;
 
-import java.io.IOException;
-import java.net.SocketTimeoutException;
-import java.net.URI;
-import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import com.alibaba.fastjson.JSON;
+import com.datatrees.spider.share.common.utils.BackRedisUtils;
+import com.datatrees.spider.share.common.utils.CheckUtils;
+import com.datatrees.spider.share.common.utils.CollectionUtils;
+import com.datatrees.spider.share.common.utils.DateUtils;
+import com.datatrees.spider.share.common.utils.RegexpUtils;
 import com.datatrees.spider.share.common.utils.TaskUtils;
-import com.datatrees.spider.share.common.utils.*;
-import com.datatrees.spider.share.domain.http.HttpHeadKey;
+import com.datatrees.spider.share.common.utils.TemplateUtils;
+import com.datatrees.spider.share.domain.ErrorCode;
 import com.datatrees.spider.share.domain.RedisKeyPrefixEnum;
 import com.datatrees.spider.share.domain.RequestType;
 import com.datatrees.spider.share.domain.http.Cookie;
+import com.datatrees.spider.share.domain.http.HttpHeadKey;
 import com.datatrees.spider.share.domain.http.NameValue;
 import com.datatrees.spider.share.domain.http.Request;
 import com.datatrees.spider.share.domain.http.Response;
-import com.datatrees.spider.share.domain.ErrorCode;
 import com.treefinance.proxy.domain.Proxy;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -68,13 +64,29 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.net.SocketTimeoutException;
+import java.net.URI;
+import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class TaskHttpClient {
 
     private static final Logger                     logger     = LoggerFactory.getLogger(TaskHttpClient.class);
+    private static final int MAX_FAILURES = 3;
 
-    private static final String                     USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:29.0) Gecko/20100101 Firefox/29.0";
-
-    private static       SSLConnectionSocketFactory sslsf      = null;//海南电信,重定向要忽略证书
+    /**
+     * 海南电信,重定向要忽略证书
+     */
+    private static SSLConnectionSocketFactory sslsf = null;
 
     static {
         try {
@@ -94,16 +106,12 @@ public class TaskHttpClient {
 
     private ContentType             requestContentType;
 
-    private ContentType             responseContentType;
-
-    private boolean                 isRedirect      = false;//是否重定向了
-
     private CredentialsProvider     credsProvider;
 
     /**
      * 自定义的cookie
      */
-    private List<BasicClientCookie> extralCookie    = new ArrayList<>();
+    private List<BasicClientCookie> extraCookies = new ArrayList<>();
 
     private AtomicInteger           connectFailures = new AtomicInteger(0);
 
@@ -122,8 +130,7 @@ public class TaskHttpClient {
         request.setWebsiteName(websiteName);
         request.setType(requestType);
         request.setRedirect(isRedirect);
-        TaskHttpClient client = new TaskHttpClient(request);
-        return client;
+        return new TaskHttpClient(request);
     }
 
     public Request getRequest() {
@@ -140,7 +147,7 @@ public class TaskHttpClient {
     }
 
     public TaskHttpClient removeHeader(String name) {
-        request.getHeaders().remove(name);
+        request.removeHeader(name);
         return this;
     }
 
@@ -245,7 +252,7 @@ public class TaskHttpClient {
     }
 
     public TaskHttpClient setResponseContentType(ContentType contentType) {
-        this.responseContentType = contentType;
+        ContentType responseContentType = contentType;
         if (null != contentType) {
             response.setCharset(contentType.getCharset());
             response.setContentType(contentType.toString());
@@ -286,7 +293,12 @@ public class TaskHttpClient {
         return this;
     }
 
+    @Deprecated
     public TaskHttpClient addExtralCookie(String domain, String name, String value) {
+        return addExtraCookie(name, value, domain);
+    }
+
+    public TaskHttpClient addExtraCookie(String name, String value, String domain) {
         BasicClientCookie cookie = new BasicClientCookie(name, value);
         cookie.setDomain(domain);
         cookie.setPath("/");
@@ -296,9 +308,9 @@ public class TaskHttpClient {
         cookie.setAttribute(ClientCookie.PATH_ATTR, "/");
         cookie.setAttribute(ClientCookie.DOMAIN_ATTR, domain);
         SimpleDateFormat sdf = new SimpleDateFormat("EEE d MMM yyyy HH:mm:ss 'GMT'", Locale.US);
-        sdf.setTimeZone(TimeZone.getTimeZone("GMT")); // 设置时区为GMT
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
         cookie.setAttribute(ClientCookie.EXPIRES_ATTR, sdf.format(cookie.getExpiryDate()));
-        extralCookie.add(cookie);
+        extraCookies.add(cookie);
         request.addExtraCookie(cookie.getName(), cookie.getValue());
         return this;
     }
@@ -323,7 +335,7 @@ public class TaskHttpClient {
             }
             request.setFullUrl(url);
 
-            HttpRequestBase client = null;
+            HttpRequestBase client;
             URI uri = URIUtils.create(url);
             if (RequestType.GET == request.getType()) {
                 client = new HttpGet(uri);
@@ -334,10 +346,8 @@ public class TaskHttpClient {
                 }
                 client = httpPost;
             }
-            if (StringUtils.isNoneBlank(request.getContentType())) {
-                if (!request.containHeader(HttpHeadKey.CONTENT_TYPE)) {
-                    request.addHead(HttpHeadKey.CONTENT_TYPE, request.getContentType());
-                }
+            if (StringUtils.isNotBlank(request.getContentType())) {
+                request.addHeadIfAbsent(HttpHeadKey.CONTENT_TYPE, request.getContentType());
             }
             if (CollectionUtils.isNotEmpty(request.getHeaders())) {
                 for (NameValue nameValue : request.getHeaders()) {
@@ -351,11 +361,10 @@ public class TaskHttpClient {
             request.setProtocol(url.startsWith("https") ? "https" : "http");
 
             List<Cookie> cookies = TaskUtils.getCookies(taskId, host);
-            //            logger.info("Cookies >>> {}", JSON.toJSONString(cookies));
             BasicCookieStore cookieStore = TaskUtils.buildBasicCookieStore(cookies);
             request.setRequestCookies(TaskUtils.getCookieMap(cookies));
-            if (!extralCookie.isEmpty()) {
-                for (BasicClientCookie cookie : extralCookie) {
+            if (!extraCookies.isEmpty()) {
+                for (BasicClientCookie cookie : extraCookies) {
                     cookieStore.addCookie(cookie);
                 }
             }
@@ -372,9 +381,6 @@ public class TaskHttpClient {
                 }
             }
 
-            //            logger.info("禁止重定向前 request={}",JSON.toJSONString(request));
-            //            logger.info("pre request taskId={},websiteName={},proxy={},url={}", taskId, request.getWebsiteName(), request.getProxy(), url);
-            //禁止重定向
             RequestConfig config = RequestConfig.custom().setRedirectsEnabled(false).setConnectTimeout(request.getConnectTimeout())
                     .setSocketTimeout(request.getSocketTimeout()).setCookieSpec(CookieSpecs.DEFAULT).build();
             // 默认socket设置。注意：正常HTTP建立连接过程中，socket超时会采用{@link RequestConfig#connectTimeout}。
@@ -383,14 +389,13 @@ public class TaskHttpClient {
             // SO_TIMEOUT:单位毫秒，默认设置5秒。
             SocketConfig socketConfig = SocketConfig.custom().setSoTimeout(5000).build();
             HttpClientBuilder httpClientBuilder = HttpClients.custom().setDefaultRequestConfig(config).setProxy(proxy)
-                    .setDefaultCookieStore(cookieStore).setSSLSocketFactory(sslsf).setDefaultSocketConfig(socketConfig).setUserAgent(USER_AGENT);
+                .setDefaultCookieStore(cookieStore).setSSLSocketFactory(sslsf).setDefaultSocketConfig(socketConfig).setUserAgent(Request.USER_AGENT);
             if (null != credsProvider) {
                 httpClientBuilder.setDefaultCredentialsProvider(credsProvider);
             }
             httpclient = httpClientBuilder.build();
             httpResponse = httpclient.execute(client);
             statusCode = httpResponse.getStatusLine().getStatusCode();
-            //            logger.info("status: {}", statusCode);
             response.setStatusCode(statusCode);
             cookies = TaskUtils.getCookies(taskId, host, cookieStore, httpResponse);
             TaskUtils.saveCookie(taskId, cookies);
@@ -440,7 +445,7 @@ public class TaskHttpClient {
                 ProxyUtils.releaseProxy(taskId);
             }
 
-            if (connectFailures.incrementAndGet() < 3) {
+            if (connectFailures.incrementAndGet() < MAX_FAILURES) {
                 logger.warn("connect host failure ,will retry ,taskId={},websiteName={},proxy={},url={}", taskId, request.getWebsiteName(),
                         request.getProxy(), url);
                 return invoke();
