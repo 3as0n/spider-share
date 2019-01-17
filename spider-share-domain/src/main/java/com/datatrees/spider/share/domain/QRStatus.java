@@ -43,4 +43,12 @@ public class QRStatus {
 
     public static final String VALIDATE_SECOND_PASSWORD_FAIL = "VALIDATE_SECOND_PASSWORD_FAIL";//校验qq邮箱独立密码失败
 
+    public static final String REQUIRE_SMS                   = "REQUIRE_SMS";//请求短信验证码
+
+    public static final String VALIDATE_SMS_FAIL             = "VALIDATE_SMS_FAIL";//校验短信验证码失败
+
+    public static final String REQUIRE_PIC                   = "REQUIRE_PIC";//请求图片验证码
+
+    public static final String VALIDATE_PIC_FAIL             = "VALIDATE_PIC_FAIL";//校验图片验证码失败
+
 }
