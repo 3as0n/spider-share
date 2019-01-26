@@ -25,7 +25,7 @@
                      version="1.0.0" check="false"/>
     <dubbo:reference interface="com.treefinance.saas.taskcenter.facade.service.TaskFacade" id="taskFacade"
                      version="1.0.0"/>
-    <dubbo:reference interface="com.treefinance.saas.taskcenter.facade.service.TaskPointFacade" id="taskPointFacade"/>
+    <dubbo:reference interface="com.treefinance.saas.taskcenter.facade.service.TaskPointFacade" id="taskPointFacade" version="1.0.0"/>
 
 
 </beans>
