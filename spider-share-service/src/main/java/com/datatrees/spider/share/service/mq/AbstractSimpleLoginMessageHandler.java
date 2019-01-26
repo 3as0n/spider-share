@@ -17,9 +17,9 @@ import com.alibaba.rocketmq.common.message.MessageExt;
 import com.datatrees.spider.share.domain.CollectorMessage;
 import com.datatrees.spider.share.domain.LoginMessage;
 import com.datatrees.spider.share.service.MonitorService;
-import com.datatrees.spider.share.service.collector.actor.Collector;
 import com.datatrees.spider.share.service.collector.CollectorMessageUtils;
-import com.treefinance.saas.taskcenter.facade.service.TaskPointFacade;
+import com.datatrees.spider.share.service.collector.actor.Collector;
+import com.treefintech.spider.share.integration.dubbo.TaskPointManager;
 
 /**
  * @author Jerry
@@ -29,8 +29,9 @@ public abstract class AbstractSimpleLoginMessageHandler extends AbstractLoginMes
 
     protected final Collector collector;
 
-    public AbstractSimpleLoginMessageHandler(Collector collector, MonitorService monitorService, TaskPointFacade taskPointFacade) {
-        super(monitorService, taskPointFacade);
+    public AbstractSimpleLoginMessageHandler(Collector collector, MonitorService monitorService,
+        TaskPointManager taskPointManager) {
+        super(monitorService, taskPointManager);
         this.collector = collector;
     }
 

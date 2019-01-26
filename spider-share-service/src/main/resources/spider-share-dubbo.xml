@@ -11,22 +11,11 @@
 
     <dubbo:registry address="${dubbo.zookeeper.address}" file="${user.home}/.dubbo/spider-share-c.cache"/>
 
+    <import resource="classpath*:spring/spider-share-dubbo-reference.xml"/>
+
     <dubbo:provider timeout="30000" retries="2"/>
+
     <dubbo:service interface="com.datatrees.spider.share.api.SpiderTaskApi" ref="spiderTaskApiImpl"/>
-
-    <dubbo:consumer check="false"/>
-    <!--代理-->
-    <dubbo:reference interface="com.treefinance.proxy.api.ProxyProvider" id="proxyProvider" check="false"/>
-    <dubbo:reference interface="com.datatrees.notify.sms.newservice.SmsNewService" id="smsNewService" check="false"/>
-    <!--获取appId服务-->
-    <!--<dubbo:reference interface="com.treefinance.saas.grapserver.facade.service.TaskFacade" id="taskFacade" check="false"/>-->
-    <!--获取商户列表-->
-    <dubbo:reference interface="com.treefinance.saas.merchant.center.facade.service.MerchantBaseInfoFacade" id="merchantBaseInfoFacade"
-                     version="1.0.0" check="false"/>
-    <dubbo:reference interface="com.treefinance.saas.taskcenter.facade.service.TaskFacade" id="taskFacade"
-                     version="1.0.0"/>
-    <dubbo:reference interface="com.treefinance.saas.taskcenter.facade.service.TaskPointFacade" id="taskPointFacade" version="1.0.0"/>
-
 
 </beans>
 

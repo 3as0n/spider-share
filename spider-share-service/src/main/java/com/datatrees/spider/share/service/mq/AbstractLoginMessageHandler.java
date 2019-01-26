@@ -17,21 +17,21 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.rocketmq.common.message.MessageExt;
 import com.datatrees.spider.share.domain.LoginMessage;
 import com.datatrees.spider.share.service.MonitorService;
-import com.treefinance.saas.taskcenter.facade.request.TaskPointRequest;
-import com.treefinance.saas.taskcenter.facade.service.TaskPointFacade;
-import com.treefinance.toolkit.util.net.NetUtils;
+import com.treefintech.spider.share.integration.dubbo.TaskPointManager;
 
 /**
  * @author Jerry
  * @date 2019-01-26 15:20
  */
 public abstract class AbstractLoginMessageHandler extends AbstractSpiderBootMessageHandler {
-    protected final MonitorService monitorService;
-    protected final TaskPointFacade taskPointFacade;
 
-    public AbstractLoginMessageHandler(MonitorService monitorService, TaskPointFacade taskPointFacade) {
+    private static final String SPIDER_STARTING_POINT_CODE = "900201";
+    protected final MonitorService monitorService;
+    protected final TaskPointManager taskPointManager;
+
+    public AbstractLoginMessageHandler(MonitorService monitorService, TaskPointManager taskPointManager) {
         this.monitorService = monitorService;
-        this.taskPointFacade = taskPointFacade;
+        this.taskPointManager = taskPointManager;
     }
 
     @Override
@@ -46,12 +46,8 @@ public abstract class AbstractLoginMessageHandler extends AbstractSpiderBootMess
     protected void sendStartingEvent(LoginMessage loginInfo) {
         Long taskId = loginInfo.getTaskId();
         monitorService.sendTaskLog(taskId, loginInfo.getWebsiteName(), "爬虫-->启动-->成功");
-        TaskPointRequest taskPointRequest = new TaskPointRequest();
-        taskPointRequest.setTaskId(taskId);
-        taskPointRequest.setType((byte)1);
-        taskPointRequest.setCode("900201");
-        taskPointRequest.setIp(NetUtils.getLocalHost());
-        taskPointFacade.addTaskPoint(taskPointRequest);
+
+        taskPointManager.addTaskPoint(taskId, SPIDER_STARTING_POINT_CODE);
     }
 
 }

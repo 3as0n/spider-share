@@ -3,18 +3,14 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-
-    <import resource="spider-share-diamond.xml"/>
-    <import resource="spider-share-datasource-mysql.xml"/>
-    <import resource="spider-share-mybatis.xml"/>
-    <import resource="spider-share-redis.xml"/>
-    <context:component-scan base-package="com.datatrees.spider.share.service"/>
-    <import resource="spider-share-dubbo.xml"/>
-    <import resource="spider-share-mq.xml"/>
-    <import resource="spider-share-extractor.xml"/>
-
     <bean class="com.datatrees.spider.share.common.utils.BeanFactoryUtils"/>
 
+    <import resource="spider-share-diamond.xml"/>
+    <import resource="classpath*:spring/spider-share-dao.xml"/>
+    <import resource="classpath*:spring/spider-share-integration.xml"/>
+    <import resource="spider-share-dubbo.xml"/>
+    <context:component-scan base-package="com.datatrees.spider.share.service"/>
+    <import resource="spider-share-extractor.xml"/>
 
     <bean id="messageFactory" class="com.datatrees.spider.share.service.message.MessageFactory">
         <property name="defaultTopic" value="${core.mq.default.topic}"/>
@@ -28,9 +24,6 @@
         <constructor-arg index="0" value="${core.zookeeper.address}"/>
         <constructor-arg index="1" value="${core.zookeeper.sessionTimeOut}"/>
     </bean>
-
-
-
 
 </beans>
 

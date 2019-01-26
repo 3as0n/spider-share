@@ -1,0 +1,22 @@
+dependencies {
+
+    compile(group: "com.github.diamond", name: "super-diamond-client", version: "${superDiamondClientVersion}", changing: true) {
+        exclude(module: 'guava')
+    }
+    compile "com.alibaba.rocketmq:rocketmq-client:${rocketmqClientVersion}"
+    compile "org.springframework.data:spring-data-redis:${springDataRedisVersion}"
+    compile "redis.clients:jedis:${jedisVersion}"
+    compile "org.redisson:redisson:${redissonVersion}"
+    compile "com.aliyun.oss:aliyun-sdk-oss:${aliyunSdkOssVersion}"
+    compile("com.alibaba:dubbo:${dubboVersion}") {
+        exclude(module: "netty")
+    }
+    compile "com.101tec:zkclient:${zkclientVersion}"
+    compile "org.javassist:javassist:${javassistVersion}"
+
+    compile 'com.datatrees.common:notify-common-facade:3.5.6'
+    compile 'com.treefinance.saas:merchant-center-facade:1.0.3-SNAPSHOT'
+    compile 'com.treefinance.saas:taskcenter-facade:2.1.0-SNAPSHOT'
+    compile "com.treefinance.proxy:proxy-api:${proxyApiVersion}"
+    
+}

@@ -7,5 +7,5 @@ include 'spider-share-common'
 include 'spider-share-dao'
 include 'spider-share-api'
 include 'spider-share-web'
-
+include 'spider-share-integration'
 
