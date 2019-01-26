@@ -7,15 +7,14 @@
 
     <dubbo:monitor protocol="registry"/>
 
-    <dubbo:provider timeout="30000" retries="3"/>
-
     <dubbo:protocol name="dubbo" port="${dubbo.protocol.port:20880}" />
 
     <dubbo:registry address="${dubbo.zookeeper.address}" file="${user.home}/.dubbo/spider-share-c.cache"/>
 
-
+    <dubbo:provider timeout="30000" retries="2"/>
     <dubbo:service interface="com.datatrees.spider.share.api.SpiderTaskApi" ref="spiderTaskApiImpl"/>
 
+    <dubbo:consumer check="false"/>
     <!--代理-->
     <dubbo:reference interface="com.treefinance.proxy.api.ProxyProvider" id="proxyProvider" check="false"/>
     <dubbo:reference interface="com.datatrees.notify.sms.newservice.SmsNewService" id="smsNewService" check="false"/>
@@ -26,6 +25,7 @@
                      version="1.0.0" check="false"/>
     <dubbo:reference interface="com.treefinance.saas.taskcenter.facade.service.TaskFacade" id="taskFacade"
                      version="1.0.0"/>
+    <dubbo:reference interface="com.treefinance.saas.taskcenter.facade.service.TaskPointFacade" id="taskPointFacade" version="1.0.0"/>
 
 
 </beans>

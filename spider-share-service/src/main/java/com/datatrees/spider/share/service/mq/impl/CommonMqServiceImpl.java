@@ -31,6 +31,9 @@ import com.datatrees.spider.share.service.WebsiteHolderService;
 import com.datatrees.spider.share.service.collector.actor.Collector;
 import com.datatrees.spider.share.service.mq.CommonMqService;
 import com.treefinance.crawler.exception.UnsupportedWebsiteException;
+import com.treefinance.saas.taskcenter.facade.request.TaskPointRequest;
+import com.treefinance.saas.taskcenter.facade.service.TaskPointFacade;
+import com.treefinance.toolkit.util.net.NetUtils;
 import com.treefinance.crawler.framework.context.Website;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +59,9 @@ public class CommonMqServiceImpl implements CommonMqService {
 
     @Resource
     private              WebsiteHolderService websiteHolderService;
+
+    @Resource
+    private TaskPointFacade taskPointFacade;
 
     @Override
     public boolean consumeMessage(MessageExt messageExt, String msg) {
@@ -86,6 +92,12 @@ public class CommonMqServiceImpl implements CommonMqService {
             monitorService.initTask(taskId, websiteName, loginInfo.getAccountNo());
             TaskUtils.addStep(taskId, StepEnum.INIT_SUCCESS);
             monitorService.sendTaskLog(taskId, websiteName, "爬虫-->启动-->成功");
+            TaskPointRequest taskPointRequest = new TaskPointRequest();
+            taskPointRequest.setTaskId(taskId);
+            taskPointRequest.setType((byte)1);
+            taskPointRequest.setCode("900201");
+            taskPointRequest.setIp(NetUtils.getLocalHost());
+            taskPointFacade.addTaskPoint(taskPointRequest);
             CollectorMessage message = buildCollectorMessage(loginInfo);
             message.setMsgId(messageExt.getMsgId());
             message.setBornTimestamp(messageExt.getBornTimestamp());
