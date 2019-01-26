@@ -16,11 +16,6 @@
 
 package com.datatrees.spider.share.service.mq;
 
-import javax.annotation.Resource;
-import java.nio.charset.Charset;
-import java.util.List;
-import java.util.Map;
-
 import com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
 import com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
 import com.alibaba.rocketmq.client.consumer.listener.MessageListenerConcurrently;
@@ -31,6 +26,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+
+import java.nio.charset.Charset;
+import java.util.List;
+import java.util.Map;
 
 /**
  * mq消息处理
@@ -75,7 +76,7 @@ public class MessageListener implements MessageListenerConcurrently {
             return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
         }
         try {
-            Boolean result = handler.consumeMessage(messageExt, body);
+            boolean result = handler.consumeMessage(messageExt, body);
             if (!result) {
                 if (reconsumeTimes < maxRetry) {
                     logger.warn("{}-->失败,稍后重试,msg={},msgId={},retry={},key={}", bizType, body, msgId, reconsumeTimes, messageExt.getKeys());

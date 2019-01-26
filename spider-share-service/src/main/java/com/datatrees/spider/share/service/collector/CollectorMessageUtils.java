@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.datatrees.spider.share.service.collector.listener.handler;
+package com.datatrees.spider.share.service.collector;
 
 import com.datatrees.common.conf.PropertiesConfiguration;
 import com.datatrees.spider.share.domain.CollectorMessage;
@@ -23,9 +23,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CollectorMessageUtils {
+public final class CollectorMessageUtils {
 
-    private static final Logger logger = LoggerFactory.getLogger(CollectorMessageUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CollectorMessageUtils.class);
+
+    public CollectorMessageUtils() {
+    }
 
     public static CollectorMessage buildCollectorMessage(LoginMessage loginInfo) {
         boolean setCookieFormatSwitch = PropertiesConfiguration.getInstance().getBoolean("set.cookie.format.switch", false);
@@ -51,7 +54,7 @@ public class CollectorMessageUtils {
                 }
             }
         } catch (Exception e) {
-            logger.error("Message convert error.." + e.getMessage(), e);
+            LOGGER.error("Message convert error.." + e.getMessage(), e);
         }
         return collectorMessage;
     }

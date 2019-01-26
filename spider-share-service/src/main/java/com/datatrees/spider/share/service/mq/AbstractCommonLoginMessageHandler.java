@@ -11,58 +11,41 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.datatrees.spider.share.service.mq.impl;
+package com.datatrees.spider.share.service.mq;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.rocketmq.common.message.MessageExt;
 import com.datatrees.spider.share.common.share.service.RedisService;
 import com.datatrees.spider.share.common.utils.RedisUtils;
 import com.datatrees.spider.share.common.utils.TaskUtils;
 import com.datatrees.spider.share.domain.AttributeKey;
-import com.datatrees.spider.share.domain.CollectorMessage;
 import com.datatrees.spider.share.domain.LoginMessage;
 import com.datatrees.spider.share.domain.RedisKeyPrefixEnum;
 import com.datatrees.spider.share.domain.StepEnum;
 import com.datatrees.spider.share.service.MonitorService;
 import com.datatrees.spider.share.service.WebsiteHolderService;
 import com.datatrees.spider.share.service.collector.actor.Collector;
-import com.datatrees.spider.share.service.mq.CommonMqService;
 import com.treefinance.crawler.exception.UnsupportedWebsiteException;
 import com.treefinance.crawler.framework.context.Website;
-import com.treefinance.saas.taskcenter.facade.request.TaskPointRequest;
 import com.treefinance.saas.taskcenter.facade.service.TaskPointFacade;
-import com.treefinance.toolkit.util.net.NetUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
+/**
+ * @author Jerry
+ * @date 2019-01-26 15:24
+ */
+public abstract class AbstractCommonLoginMessageHandler extends AbstractSimpleLoginMessageHandler {
 
-import static com.datatrees.spider.share.service.collector.CollectorMessageUtils.buildCollectorMessage;
+    private final WebsiteHolderService websiteHolderService;
+    private final RedisService redisService;
 
-@Service
-public class CommonMqServiceImpl implements CommonMqService {
-
-    private static final Logger logger = LoggerFactory.getLogger(CommonMqServiceImpl.class);
-
-    @Resource
-    private Collector collector;
-
-    @Resource
-    private RedisService redisService;
-
-    @Resource
-    private MonitorService monitorService;
-
-    @Resource
-    private WebsiteHolderService websiteHolderService;
-
-    @Resource
-    private TaskPointFacade taskPointFacade;
+    public AbstractCommonLoginMessageHandler(Collector collector, MonitorService monitorService, TaskPointFacade taskPointFacade, WebsiteHolderService websiteHolderService,
+        RedisService redisService) {
+        super(collector, monitorService, taskPointFacade);
+        this.websiteHolderService = websiteHolderService;
+        this.redisService = redisService;
+    }
 
     @Override
-    public boolean consumeMessage(MessageExt messageExt, String msg) {
-        LoginMessage loginInfo = JSON.parseObject(msg, LoginMessage.class);
+    protected boolean handle(LoginMessage loginInfo, MessageExt messageExt) {
         Long taskId = loginInfo.getTaskId();
         TaskUtils.addStep(taskId, StepEnum.REC_INIT_MSG);
         boolean initStatus = TaskUtils.isDev() || RedisUtils.setnx(RedisKeyPrefixEnum.TASK_RUN_COUNT.getRedisKey(taskId), "0", RedisKeyPrefixEnum.TASK_RUN_COUNT.toSeconds());
@@ -87,21 +70,11 @@ public class CommonMqServiceImpl implements CommonMqService {
             // 初始化监控信息
             monitorService.initTask(taskId, websiteName, loginInfo.getAccountNo());
             TaskUtils.addStep(taskId, StepEnum.INIT_SUCCESS);
-            monitorService.sendTaskLog(taskId, websiteName, "爬虫-->启动-->成功");
-            TaskPointRequest taskPointRequest = new TaskPointRequest();
-            taskPointRequest.setTaskId(taskId);
-            taskPointRequest.setType((byte)1);
-            taskPointRequest.setCode("900201");
-            taskPointRequest.setIp(NetUtils.getLocalHost());
-            taskPointFacade.addTaskPoint(taskPointRequest);
-            CollectorMessage message = buildCollectorMessage(loginInfo);
-            message.setMsgId(messageExt.getMsgId());
-            message.setBornTimestamp(messageExt.getBornTimestamp());
-            // 启动爬虫
-            collector.processMessage(message);
-            return true;
+
+            return super.handle(loginInfo, messageExt);
         }
         logger.warn("重复消息,不处理,taskId={},websiteName={}", taskId, loginInfo.getWebsiteName());
         return true;
     }
+
 }
