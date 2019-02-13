@@ -11,7 +11,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.treefintech.spider.share.integration.dubbo;
+package com.treefintech.spider.share.integration.manager.dubbo;
 
 import com.treefinance.saas.taskcenter.facade.request.TaskPointRequest;
 import com.treefinance.saas.taskcenter.facade.service.TaskPointFacade;

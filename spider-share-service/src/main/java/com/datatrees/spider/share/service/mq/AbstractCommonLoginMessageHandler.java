@@ -26,7 +26,7 @@ import com.datatrees.spider.share.service.WebsiteHolderService;
 import com.datatrees.spider.share.service.collector.actor.Collector;
 import com.treefinance.crawler.exception.UnsupportedWebsiteException;
 import com.treefinance.crawler.framework.context.Website;
-import com.treefintech.spider.share.integration.dubbo.TaskPointManager;
+import com.treefintech.spider.share.integration.manager.TaskPointManager;
 
 /**
  * @author Jerry

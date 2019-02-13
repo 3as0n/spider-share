@@ -19,7 +19,7 @@ import com.datatrees.spider.share.domain.LoginMessage;
 import com.datatrees.spider.share.service.MonitorService;
 import com.datatrees.spider.share.service.collector.CollectorMessageUtils;
 import com.datatrees.spider.share.service.collector.actor.Collector;
-import com.treefintech.spider.share.integration.dubbo.TaskPointManager;
+import com.treefintech.spider.share.integration.manager.TaskPointManager;
 
 /**
  * @author Jerry

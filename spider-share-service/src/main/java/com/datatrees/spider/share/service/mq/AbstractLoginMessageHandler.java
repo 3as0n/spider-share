@@ -17,7 +17,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.rocketmq.common.message.MessageExt;
 import com.datatrees.spider.share.domain.LoginMessage;
 import com.datatrees.spider.share.service.MonitorService;
-import com.treefintech.spider.share.integration.dubbo.TaskPointManager;
+import com.treefintech.spider.share.integration.manager.TaskPointManager;
 
 /**
  * @author Jerry
