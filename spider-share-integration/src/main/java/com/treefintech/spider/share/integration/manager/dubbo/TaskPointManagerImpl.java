@@ -16,6 +16,7 @@ package com.treefintech.spider.share.integration.manager.dubbo;
 import com.treefinance.saas.taskcenter.facade.request.TaskPointRequest;
 import com.treefinance.saas.taskcenter.facade.service.TaskPointFacade;
 import com.treefinance.toolkit.util.net.NetUtils;
+import com.treefintech.spider.share.integration.manager.TaskPointManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
