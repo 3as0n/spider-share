@@ -5,7 +5,7 @@
 
     <bean class="com.datatrees.spider.share.common.utils.BeanFactoryUtils"/>
 
-    <import resource="spider-share-diamond.xml"/>
+    <import resource="classpath*:spring/spider-share-context.xml"/>
     <import resource="classpath*:spring/spider-share-dao.xml"/>
     <import resource="classpath*:spring/spider-share-integration.xml"/>
     <import resource="spider-share-dubbo.xml"/>

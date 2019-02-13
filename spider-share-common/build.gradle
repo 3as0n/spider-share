@@ -15,7 +15,13 @@ dependencies {
     compile "com.google.guava:guava:${guavaVersion}"
     compile 'com.google.zxing:core:3.3.3'
     compile "org.springframework.boot:spring-boot:${springBootVersion}"
-    
+    compile(group: "com.github.diamond", name: "super-diamond-client", version: "${superDiamondClientVersion}", changing: true) {
+        exclude(module: 'guava')
+    }
+    compile "com.alibaba.rocketmq:rocketmq-client:${rocketmqClientVersion}"
+    compile "org.springframework.data:spring-data-redis:${springDataRedisVersion}"
+    compile "redis.clients:jedis:${jedisVersion}"
+    compile "org.redisson:redisson:${redissonVersion}"
 }
 
 
