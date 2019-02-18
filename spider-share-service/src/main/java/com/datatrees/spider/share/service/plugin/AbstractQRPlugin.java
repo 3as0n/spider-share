@@ -15,12 +15,16 @@ package com.datatrees.spider.share.service.plugin;
 
 import com.datatrees.spider.share.domain.CommonPluginParam;
 import com.datatrees.spider.share.domain.http.HttpResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Jerry
  * @date 2019-02-14 15:38
  */
 public abstract class AbstractQRPlugin implements QRPlugin, CommonPlugin {
+
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
     public HttpResult<Object> init(CommonPluginParam param) {
