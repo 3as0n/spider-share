@@ -146,6 +146,13 @@ public class Response implements Serializable {
         return responseCookies;
     }
 
+    public String getResponseCookie(String name) {
+        if(responseCookies != null){
+            return responseCookies.get(name);
+        }
+        return null;
+    }
+
     public void setResponseCookies(Map<String, String> responseCookies) {
         this.responseCookies = responseCookies;
     }
