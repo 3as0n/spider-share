@@ -142,6 +142,20 @@ public class Response implements Serializable {
         return null;
     }
 
+    public List<String> getHeaderValues(String name) {
+        if (headers != null && !headers.isEmpty()) {
+            return headers.stream().filter(header -> header.getName().equalsIgnoreCase(name)).map(NameValue::getValue).collect(Collectors.toList());
+        }
+        return Collections.emptyList();
+    }
+
+    public String getFirstHeaderValue(String name) {
+        if (headers != null && !headers.isEmpty()) {
+            return headers.stream().filter(header -> header.getName().equalsIgnoreCase(name)).findFirst().map(NameValue::getValue).orElse(null);
+        }
+        return null;
+    }
+
     public Map<String, String> getResponseCookies() {
         return responseCookies;
     }
