@@ -13,7 +13,7 @@ buildscript {
         maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
     }
     dependencies {
-        classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.5.9.RELEASE'
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
     }
 }
 
@@ -40,7 +40,6 @@ subprojects {
         compile.extendsFrom provided
         deployerJars
 
-//        all*.exclude group: "org.springframework", module: "spring"
         all*.exclude group: "log4j", module: "log4j"
         all*.exclude group: "org.slf4j", module: "slf4j-log4j12"
         all*.exclude group: "com.datatrees.rawdata", module: "AbstractPlugin"
@@ -66,7 +65,8 @@ subprojects {
     }
 
     repositories {
-        maven { url "http://192.168.5.252:8081/nexus/content/groups/public/" }
+        mavenLocal()
+        maven { url NEXUS_REPO_URL }
         maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
     }
 
@@ -83,11 +83,11 @@ subprojects {
         repositories {
             mavenDeployer {
                 configuration = configurations.deployerJars
-                snapshotRepository(url: "http://192.168.5.252:8081/nexus/content/repositories/snapshots/") {
-                    authentication(userName: "admin", password: "admin123")
+                snapshotRepository(url: NEXUS_REPO_SNAPSHOT_URL) {
+                    authentication(userName: NEXUS_USERNAME, password: NEXUS_PASSWORD)
                 }
-                repository(url: "http://192.168.5.252:8081/nexus/content/repositories/releases/") {
-                    authentication(userName: "admin", password: "admin123")
+                repository(url: NEXUS_REPO_RELEASE_URL) {
+                    authentication(userName: NEXUS_USERNAME, password: NEXUS_PASSWORD)
                 }
             }
 

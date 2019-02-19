@@ -3,24 +3,24 @@ dependencies {
     compile project(':spider-share-integration')
 
     compile "org.apache.commons:commons-lang3:${commonsLang3Version}"
-    compile 'org.apache.commons:commons-exec:1.3'
+    compile "org.apache.commons:commons-exec:${commonsExecVersion}"
     compile "commons-io:commons-io:${commonsIoVersion}"
     compile "commons-codec:commons-codec:${commonsCodecVersion}"
     compile "com.alibaba:fastjson:${fastjsonVersion}"
     compile "org.apache.httpcomponents:httpclient:${httpclientVersion}"
-    compile 'cn.wanghaomiao:JsoupXpath:0.3.2'
-    compile 'com.caucho:hessian:4.0.38'
+    compile "cn.wanghaomiao:JsoupXpath:${jsoupXpathVersion}"
+    compile "com.caucho:hessian:${hessianVersion}"
     compile "com.jayway.jsonpath:json-path:${jsonPathVersion}"
     compile "net.sourceforge.htmlunit:htmlunit:${htmlunitVersion}"
     compile "com.google.guava:guava:${guavaVersion}"
-    compile 'com.google.zxing:core:3.3.3'
+    compile "com.google.zxing:core:${googleZxingVersion}"
     compile "org.springframework.boot:spring-boot:${springBootVersion}"
     compile(group: "com.github.diamond", name: "super-diamond-client", version: "${superDiamondClientVersion}", changing: true) {
         exclude(module: 'guava')
+        exclude(module: 'logback-access')
     }
     compile "com.alibaba.rocketmq:rocketmq-client:${rocketmqClientVersion}"
-    compile "org.springframework.data:spring-data-redis:${springDataRedisVersion}"
-    compile "redis.clients:jedis:${jedisVersion}"
+    compile "org.springframework.boot:spring-boot-starter-data-redis:${springBootVersion}"
     compile "org.redisson:redisson:${redissonVersion}"
 }
 

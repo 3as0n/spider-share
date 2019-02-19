@@ -19,10 +19,6 @@ dependencies {
     compile "net.mabboud.fontverter:FontVerter:${fontverter}"
     compile "net.sourceforge.jexcelapi:jxl:${jxl}"
     compile("com.sun.mail:javax.mail:${javaxMailVersion}")
-    compile("com.datatrees.crawler.plugin:plugin-utils:${pluginUtilsVersion}") {
-        exclude module: 'guava'
-    }
-
     compile("net.sourceforge.htmlunit:htmlunit:${htmlunitVersion}")
     compile("ant:ant:${antVersion}")
 }
