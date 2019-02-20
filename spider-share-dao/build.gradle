@@ -1,8 +1,6 @@
 dependencies {
     compile project(':spider-share-domain')
-    compile "org.mybatis.spring.boot:mybatis-spring-boot-starter:${mybatisSpringBootStarterVersion}"
-
-    compile "com.alibaba:druid:${druidVersion}"
-    compile "mysql:mysql-connector-java:${mysqlConnectorJavaVersion}"
-
+    compile("org.mybatis.spring.boot:mybatis-spring-boot-starter:${mybatisSpringBootStarterVersion}")
+    compile("com.alibaba:druid:${druidVersion}")
+    compile("mysql:mysql-connector-java")
 }

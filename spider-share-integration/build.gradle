@@ -7,18 +7,18 @@ dependencies {
         exclude(module: "spring-web")
         exclude(module: "netty")
     }
-    compile "org.springframework:spring-context:${springVersion}"
-    compile "org.springframework:spring-beans:${springVersion}"
-    compile "org.springframework:spring-web:${springVersion}"
+    compile("org.springframework:spring-context")
+    compile("org.springframework:spring-beans")
+    compile("org.springframework:spring-web")
     compile("com.101tec:zkclient:${zkclientVersion}") {
         exclude(module: "zookeeper")
     }
-    compile "org.apache.zookeeper:zookeeper:${zookeeperVersion}"
-    compile "org.javassist:javassist:${javassistVersion}"
+    compile("org.apache.zookeeper:zookeeper:${zookeeperVersion}")
+    compile("org.javassist:javassist")
 
-    compile "com.datatrees.common:notify-common-facade:${notifySvcVersion}"
-    compile "com.treefinance.saas:merchant-center-facade:${merchantCenterVersion}"
-    compile "com.treefinance.saas:taskcenter-facade:${taskCenterVersion}"
-    compile "com.treefinance.proxy:proxy-api:${proxyApiVersion}"
+    compile("com.datatrees.common:notify-common-facade:${notifySvcVersion}")
+    compile("com.treefinance.saas:merchant-center-facade:${merchantCenterVersion}")
+    compile("com.treefinance.saas:taskcenter-facade:${taskCenterVersion}")
+    compile("com.treefinance.proxy:proxy-api:${proxyApiVersion}")
     
 }

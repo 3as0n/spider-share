@@ -5,22 +5,22 @@ dependencies {
     compile "org.apache.commons:commons-lang3:${commonsLang3Version}"
     compile "org.apache.commons:commons-exec:${commonsExecVersion}"
     compile "commons-io:commons-io:${commonsIoVersion}"
-    compile "commons-codec:commons-codec:${commonsCodecVersion}"
+    compile("commons-codec:commons-codec")
     compile "com.alibaba:fastjson:${fastjsonVersion}"
-    compile "org.apache.httpcomponents:httpclient:${httpclientVersion}"
+    compile("org.apache.httpcomponents:httpclient")
     compile "cn.wanghaomiao:JsoupXpath:${jsoupXpathVersion}"
     compile "com.caucho:hessian:${hessianVersion}"
-    compile "com.jayway.jsonpath:json-path:${jsonPathVersion}"
-    compile "net.sourceforge.htmlunit:htmlunit:${htmlunitVersion}"
+    compile("com.jayway.jsonpath:json-path")
+    compile("net.sourceforge.htmlunit:htmlunit")
     compile "com.google.guava:guava:${guavaVersion}"
     compile "com.google.zxing:core:${googleZxingVersion}"
-    compile "org.springframework.boot:spring-boot:${springBootVersion}"
+    compile("org.springframework.boot:spring-boot")
     compile(group: "com.github.diamond", name: "super-diamond-client", version: "${superDiamondClientVersion}", changing: true) {
         exclude(module: 'guava')
         exclude(module: 'logback-access')
     }
     compile "com.alibaba.rocketmq:rocketmq-client:${rocketmqClientVersion}"
-    compile "org.springframework.boot:spring-boot-starter-data-redis:${springBootVersion}"
+    compile("org.springframework.boot:spring-boot-starter-data-redis")
     compile "org.redisson:redisson:${redissonVersion}"
 }
 

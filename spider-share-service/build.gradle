@@ -4,9 +4,9 @@ dependencies {
     compile project(':spider-share-dao')
     compile project(':spider-share-common')
 
-    compile "org.codehaus.groovy:groovy-all:${groovyAllVersion}"
-    compile "org.springframework.boot:spring-boot-starter-aop:${springBootVersion}"
-    compile "org.springframework:spring-oxm:${springVersion}"
+    compile("org.springframework.boot:spring-boot-starter-aop")
+    compile("org.springframework:spring-oxm")
+    compile("org.codehaus.groovy:groovy-all")
 
     compile 'com.datatrees.common:common-actor:2.1.2'
     compile(group: "com.datatrees.common", name: "common-message", version: "${commonMessageVersion}", changing: true) {
@@ -18,7 +18,7 @@ dependencies {
     compile "org.apache.pdfbox:pdfbox:${pdfbox}"
     compile "net.mabboud.fontverter:FontVerter:${fontverter}"
     compile "net.sourceforge.jexcelapi:jxl:${jxl}"
-    compile("com.sun.mail:javax.mail:${javaxMailVersion}")
-    compile("net.sourceforge.htmlunit:htmlunit:${htmlunitVersion}")
+    compile("com.sun.mail:javax.mail")
+    compile("net.sourceforge.htmlunit:htmlunit")
     compile("ant:ant:${antVersion}")
 }

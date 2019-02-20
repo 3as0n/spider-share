@@ -1,9 +1,9 @@
 dependencies {
     compile project(':spider-share-common')
-    compile "com.treefinance.toolkit:toolkit:${toolkit}"
-    compile "com.google.guava:guava:${guavaVersion}"
-    compile 'commons-httpclient:commons-httpclient:3.1'
-    compile 'com.ibm.icu:icu4j:59.1'
+    compile("com.treefinance.toolkit:toolkit:${toolkit}")
+    compile("com.google.guava:guava:${guavaVersion}")
+    compile('commons-httpclient:commons-httpclient:3.1')
+    compile('com.ibm.icu:icu4j:59.1')
     compile(group: "com.datatrees.common", name: "common-conf", version: "${commonConfVersion}", changing: true) {
         exclude module: 'guava'
     }
@@ -16,20 +16,18 @@ dependencies {
     compile("it.unimi.dsi:dsiutils:${dsiutils}"){
         exclude module: 'guava'
     }
-    compile "org.slf4j:log4j-over-slf4j:${slf4jVersion}"
-    compile "org.slf4j:jcl-over-slf4j:${slf4jVersion}"
-    compile "net.sourceforge.htmlcleaner:htmlcleaner:${htmlcleaner}"
-    compile "org.jdom:jdom2:${jdom2Version}"
-    compile "jaxen:jaxen:${jaxen}"
-    compile "com.jayway.jsonpath:json-path:${jsonPathVersion}"
-    compile "org.jsoup:jsoup:${jsoup}"
-    compile "org.apache.commons:commons-exec:${commonsExecVersion}"
-    compile "joda-time:joda-time:${jodaTime}"
-    compile "org.apache.james:apache-mime4j:${apacheMime4j}"
-    compile ("org.seleniumhq.selenium:selenium-java:${seleniumVersion}"){
-        exclude(module: "guava")
-    }
-    testCompile "javax.mail:mail:${mailVersion}"
+    compile("org.slf4j:log4j-over-slf4j")
+    compile("org.slf4j:jcl-over-slf4j")
+    compile("net.sourceforge.htmlcleaner:htmlcleaner:${htmlcleaner}")
+    compile("org.jdom:jdom2")
+    compile("jaxen:jaxen")
+    compile("com.jayway.jsonpath:json-path")
+    compile("org.jsoup:jsoup:${jsoup}")
+    compile("org.apache.commons:commons-exec:${commonsExecVersion}")
+    compile("joda-time:joda-time")
+    compile("org.apache.james:apache-mime4j:${apacheMime4j}")
+    compile("org.seleniumhq.selenium:selenium-java")
+    testCompile("javax.mail:mail:${mailVersion}")
 }
 
 
