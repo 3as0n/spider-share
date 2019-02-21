@@ -1,41 +1,41 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.service.impl;
 
-import javax.annotation.Resource;
-import java.io.File;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-
 import com.datatrees.common.conf.PropertiesConfiguration;
 import com.datatrees.spider.share.api.ConfigApi;
-import com.datatrees.spider.share.service.plugin.CommonPlugin;
-import com.datatrees.spider.share.domain.CommonPluginParam;
-import com.datatrees.spider.share.service.ClassLoaderService;
-import com.datatrees.spider.share.service.PluginService;
 import com.datatrees.spider.share.common.utils.CheckUtils;
 import com.datatrees.spider.share.common.utils.ClassLoaderUtils;
 import com.datatrees.spider.share.common.utils.TemplateUtils;
-import com.google.common.cache.*;
+import com.datatrees.spider.share.domain.CommonPluginParam;
+import com.datatrees.spider.share.service.ClassLoaderService;
+import com.datatrees.spider.share.service.PluginService;
+import com.datatrees.spider.share.service.plugin.CommonPlugin;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+
+import java.io.File;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by zhouxinghai on 2017/7/14.
@@ -43,25 +43,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class ClassLoaderServiceImpl implements ClassLoaderService, InitializingBean {
 
-    private static final Logger                            logger = LoggerFactory.getLogger("plugin_log");
+    private static final Logger logger = LoggerFactory.getLogger("plugin_log");
 
-    private static       LoadingCache<String, ClassLoader> classLoacerCache;
+    private static LoadingCache<String, ClassLoader> classLoaderCache;
 
-    private static       LoadingCache<String, Class>       classCache;
-
-    @Resource
-    private              PluginService                     pluginService;
+    private static LoadingCache<String, Class> classCache;
 
     @Resource
-    private              ConfigApi                         configApi;
+    private PluginService pluginService;
 
-    public static LoadingCache<String, ClassLoader> getClassLoacerCache() {
-        return classLoacerCache;
-    }
-
-    public static LoadingCache<String, Class> getClassCache() {
-        return classCache;
-    }
+    @Resource
+    private ConfigApi configApi;
 
     @Override
     public Class loadPlugin(String pluginName, String className, Long taskId) {
@@ -73,8 +65,7 @@ public class ClassLoaderServiceImpl implements ClassLoaderService, InitializingB
                 logger.error("not found plugin version for:{} ", pluginName);
                 return null;
             }
-            Class mainClass = getClassFromCache(pluginName, version, className, taskId);
-            return mainClass;
+            return getClassFromCache(pluginName, version, className, taskId);
         } catch (Throwable e) {
             logger.error("loadPlugin error pluginName={},className={}", pluginName, className, e);
             throw new RuntimeException(TemplateUtils.format("loadPlugin error pluginName={},className={}", pluginName, className));
@@ -88,11 +79,10 @@ public class ClassLoaderServiceImpl implements ClassLoaderService, InitializingB
             if (!CommonPlugin.class.isAssignableFrom(loginClass)) {
                 throw new RuntimeException("mainLoginClass not impl " + CommonPlugin.class.getName());
             }
-            return (CommonPlugin) loginClass.newInstance();
+            return (CommonPlugin)loginClass.newInstance();
         } catch (Throwable e) {
             logger.error("get common plugin internal error pluginName={},className={},taskId={}", pluginName, className, taskId, e);
-            throw new RuntimeException(
-                    TemplateUtils.format("get common plugin internal error pluginName={},className={},taskId={}", pluginName, className, taskId), e);
+            throw new RuntimeException(TemplateUtils.format("get common plugin internal error pluginName={},className={},taskId={}", pluginName, className, taskId), e);
         }
     }
 
@@ -120,8 +110,8 @@ public class ClassLoaderServiceImpl implements ClassLoaderService, InitializingB
 
     private ClassLoader getClassLoaderFromCache(String pluginName, String version) throws ExecutionException {
         String key = buildCacheKeyForClassLoader(pluginName, version);
-        logger.info("get classload from cache key:{},,cacheSize:{}", key, classLoacerCache.size());
-        return classLoacerCache.get(key);
+        logger.info("get classloader from cache key:{},,cacheSize:{}", key, classLoaderCache.size());
+        return classLoaderCache.get(key);
     }
 
     private String buildCacheKeyForClassLoader(String pluginName, String version) {
@@ -146,49 +136,42 @@ public class ClassLoaderServiceImpl implements ClassLoaderService, InitializingB
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        //默认1小时更新缓存
-        int classloader_upgrade_interval = PropertiesConfiguration.getInstance().getInt("plugin.classloader.upgrade.interval", 3600);
-        int classloader_upgrade_max = PropertiesConfiguration.getInstance().getInt("plugin.classloader.upgrade.max", 30);
-        logger.info("cache config classloader_upgrade_interval={},classloader_upgrade_max={}", classloader_upgrade_interval, classloader_upgrade_max);
-        classLoacerCache = CacheBuilder.newBuilder().expireAfterWrite(classloader_upgrade_interval, TimeUnit.SECONDS)
-                .maximumSize(classloader_upgrade_max).removalListener(new RemovalListener<Object, Object>() {
-                    @Override
-                    public void onRemoval(RemovalNotification<Object, Object> notification) {
-                        Object key = notification.getKey();
-                        logger.info("cache remove key:{}", key.toString());
-                    }
-                }).build(new CacheLoader<String, ClassLoader>() {
-                    @Override
-                    public ClassLoader load(String key) throws Exception {
-                        String[] split = key.split(":");
-                        String pluginName = split[0];
-                        String version = split[1];
-                        File pluginFile = pluginService.getPluginFile(pluginName, version);
-                        return ClassLoaderUtils.createClassLoader(pluginFile);
-                    }
-                });
+        // 默认1小时更新缓存
+        int classloaderUpgradeInterval = PropertiesConfiguration.getInstance().getInt("plugin.classloader.upgrade.interval", 3600);
+        int classloaderUpgradeMax = PropertiesConfiguration.getInstance().getInt("plugin.classloader.upgrade.max", 30);
+        logger.info("cache config classloader_upgrade_interval={},classloader_upgrade_max={}", classloaderUpgradeInterval, classloaderUpgradeMax);
+        classLoaderCache =
+            CacheBuilder.newBuilder().expireAfterWrite(classloaderUpgradeInterval, TimeUnit.SECONDS).maximumSize(classloaderUpgradeMax).removalListener(notification -> {
+                Object key = notification.getKey();
+                logger.info("cache remove key:{}", key.toString());
+            }).build(new CacheLoader<String, ClassLoader>() {
+                @Override
+                public ClassLoader load(String key) throws Exception {
+                    String[] split = key.split(":");
+                    String pluginName = split[0];
+                    String version = split[1];
+                    File pluginFile = pluginService.getPluginFile(pluginName, version);
+                    return ClassLoaderUtils.createClassLoader(pluginFile);
+                }
+            });
 
-        //默认1小时更新缓存
-        int class_upgrade_interval = PropertiesConfiguration.getInstance().getInt("plugin.class.upgrade.interval", 3600);
-        int class_upgrade_max = PropertiesConfiguration.getInstance().getInt("plugin.class.upgrade.max", 200);
-        logger.info("cache config class_upgrade_interval={},class_upgrade_max={}", class_upgrade_interval, class_upgrade_max);
-        classCache = CacheBuilder.newBuilder().expireAfterWrite(class_upgrade_interval, TimeUnit.SECONDS).maximumSize(class_upgrade_max)
-                .removalListener(new RemovalListener<Object, Object>() {
-                    @Override
-                    public void onRemoval(RemovalNotification<Object, Object> notification) {
-                        Object key = notification.getKey();
-                        logger.info("cache remove key:{}", key.toString());
-                    }
-                }).build(new CacheLoader<String, Class>() {
-                    @Override
-                    public Class load(String key) throws Exception {
-                        String[] split = key.split(":");
-                        String pluginName = split[0];
-                        String version = split[1];
-                        String className = split[2];
-                        ClassLoader classLoader = getClassLoaderFromCache(pluginName, version);
-                        return classLoader.loadClass(className);
-                    }
-                });
+        // 默认1小时更新缓存
+        int classUpgradeInterval = PropertiesConfiguration.getInstance().getInt("plugin.class.upgrade.interval", 3600);
+        int classUpgradeMax = PropertiesConfiguration.getInstance().getInt("plugin.class.upgrade.max", 200);
+        logger.info("cache config class_upgrade_interval={},class_upgrade_max={}", classUpgradeInterval, classUpgradeMax);
+        classCache = CacheBuilder.newBuilder().expireAfterWrite(classUpgradeInterval, TimeUnit.SECONDS).maximumSize(classUpgradeMax).removalListener(notification -> {
+            Object key = notification.getKey();
+            logger.info("cache remove key:{}", key.toString());
+        }).build(new CacheLoader<String, Class>() {
+            @Override
+            public Class load(String key) throws Exception {
+                String[] split = key.split(":");
+                String pluginName = split[0];
+                String version = split[1];
+                String className = split[2];
+                ClassLoader classLoader = getClassLoaderFromCache(pluginName, version);
+                return classLoader.loadClass(className);
+            }
+        });
     }
 }
