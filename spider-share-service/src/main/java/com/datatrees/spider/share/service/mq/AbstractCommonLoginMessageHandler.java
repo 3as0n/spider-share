@@ -26,7 +26,7 @@ import com.datatrees.spider.share.service.WebsiteHolderService;
 import com.datatrees.spider.share.service.collector.actor.Collector;
 import com.treefinance.crawler.exception.UnsupportedWebsiteException;
 import com.treefinance.crawler.framework.context.Website;
-import com.treefinance.saas.taskcenter.facade.service.TaskPointFacade;
+import com.treefintech.spider.share.integration.manager.TaskPointManager;
 
 /**
  * @author Jerry
@@ -37,9 +37,9 @@ public abstract class AbstractCommonLoginMessageHandler extends AbstractSimpleLo
     private final WebsiteHolderService websiteHolderService;
     private final RedisService redisService;
 
-    public AbstractCommonLoginMessageHandler(Collector collector, MonitorService monitorService, TaskPointFacade taskPointFacade, WebsiteHolderService websiteHolderService,
+    public AbstractCommonLoginMessageHandler(Collector collector, MonitorService monitorService, TaskPointManager taskPointManager, WebsiteHolderService websiteHolderService,
         RedisService redisService) {
-        super(collector, monitorService, taskPointFacade);
+        super(collector, monitorService, taskPointManager);
         this.websiteHolderService = websiteHolderService;
         this.redisService = redisService;
     }

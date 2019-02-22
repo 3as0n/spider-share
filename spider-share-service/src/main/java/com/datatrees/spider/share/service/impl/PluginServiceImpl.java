@@ -1,36 +1,28 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.service.impl;
 
-import javax.annotation.Resource;
-import java.io.File;
-import java.io.IOException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-
 import com.datatrees.common.conf.PropertiesConfiguration;
-import com.datatrees.spider.share.common.share.service.RedisService;
-import com.datatrees.spider.share.common.utils.TaskUtils;
 import com.datatrees.spider.share.common.utils.RedisUtils;
+import com.datatrees.spider.share.common.utils.TaskUtils;
 import com.datatrees.spider.share.common.utils.TemplateUtils;
-import com.datatrees.spider.share.domain.RedisKeyPrefixEnum;
 import com.datatrees.spider.share.domain.PluginUpgradeResult;
+import com.datatrees.spider.share.domain.RedisKeyPrefixEnum;
 import com.datatrees.spider.share.service.PluginService;
-import com.google.common.cache.*;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -39,24 +31,26 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+
 /**
  * Created by zhouxinghai on 2017/7/6.
  */
 @Service
 public class PluginServiceImpl implements PluginService, InitializingBean {
 
-    private static final Logger                       logger = LoggerFactory.getLogger("plugin_log");
+    private static final Logger logger = LoggerFactory.getLogger("plugin_log");
 
     /**
      * 文件版本号缓存
      */
-    private static       LoadingCache<String, String> fileVersionCache;
-
-    @Resource
-    private              RedisService                 redisService;
+    private static LoadingCache<String, String> fileVersionCache;
 
     @Value("${plugin.local.store.path}")
-    private              String                       pluginPath;
+    private String pluginPath;
 
     @Override
     public String savePlugin(String sassEnv, String fileName, byte[] bytes, String version) {
@@ -118,22 +112,18 @@ public class PluginServiceImpl implements PluginService, InitializingBean {
         }
         logger.info("初始化plugin目录,清理所有jar,pluginPath={}", pluginPath);
 
-        //默认5秒更新缓存
-        int file_upgrade_interval = PropertiesConfiguration.getInstance().getInt("plugin.file.upgrade.interval", 10);
-        logger.info("cache config file_upgrade_interval={}", file_upgrade_interval);
-        fileVersionCache = CacheBuilder.newBuilder().expireAfterWrite(file_upgrade_interval, TimeUnit.SECONDS)
-                .removalListener(new RemovalListener<Object, Object>() {
-                    @Override
-                    public void onRemoval(RemovalNotification<Object, Object> notification) {
-                        Object key = notification.getKey();
-                        logger.info("cache remove key:{}", key.toString());
-                    }
-                }).build(new CacheLoader<String, String>() {
-                    @Override
-                    public String load(String key) throws Exception {
-                        PluginUpgradeResult upgradeResult = getPluginFromRedisNew(key);
-                        return upgradeResult.getVersion();
-                    }
-                });
+        // 默认5秒更新缓存
+        int fileUpgradeInterval = PropertiesConfiguration.getInstance().getInt("plugin.file.upgrade.interval", 10);
+        logger.info("cache config file_upgrade_interval={}", fileUpgradeInterval);
+        fileVersionCache = CacheBuilder.newBuilder().expireAfterWrite(fileUpgradeInterval, TimeUnit.SECONDS).removalListener(notification -> {
+            Object key = notification.getKey();
+            logger.info("cache remove key:{}", key.toString());
+        }).build(new CacheLoader<String, String>() {
+            @Override
+            public String load(String key) throws Exception {
+                PluginUpgradeResult upgradeResult = getPluginFromRedisNew(key);
+                return upgradeResult.getVersion();
+            }
+        });
     }
 }

@@ -1,61 +1,24 @@
 dependencies {
+    compile project(':crawler-core')
     compile project(':spider-share-api')
     compile project(':spider-share-dao')
-    compile project(':crawler-core')
     compile project(':spider-share-common')
 
-    compile "org.codehaus.groovy:groovy-all:${groovyAllVersion}"
-    compile "org.springframework.boot:spring-boot-starter-aop:${springBootVersion}"
-    compile "org.springframework:spring-oxm:${springVersion}"
-
-    compile("com.alibaba:dubbo:${dubboVersion}") {
-        exclude(module: "netty")
-    }
-
-    compile "com.101tec:zkclient:${zkclientVersion}"
-
-    compile "com.alibaba.rocketmq:rocketmq-client:${rocketmqClientVersion}"
-
-
-    compile "com.alibaba:druid:${druidVersion}"
-    compile "mysql:mysql-connector-java:${mysqlConnectorJavaVersion}"
-
-    compile "org.springframework.data:spring-data-redis:${springDataRedisVersion}"
-    compile "redis.clients:jedis:${jedisVersion}"
-    compile(group: "com.github.diamond", name: "super-diamond-client", version: "${superDiamondClientVersion}", changing: true) {
-        exclude(module: 'guava')
-    }
-
-    compile "com.aliyun.oss:aliyun-sdk-oss:${aliyunSdkOssVersion}"
-    compile "ant:ant:${antVersion}"
-
-    compile 'com.datatrees.common:notify-common-facade:3.5.6'
-    compile 'com.treefinance.saas:merchant-center-facade:1.0.3-SNAPSHOT'
-    compile 'com.treefinance.saas:taskcenter-facade:2.1.0-SNAPSHOT'
-
+    compile("org.springframework.boot:spring-boot-starter-aop")
+    compile("org.springframework:spring-oxm")
+    compile("org.codehaus.groovy:groovy-all")
 
     compile 'com.datatrees.common:common-actor:2.1.2'
-
-    compile "com.sleepycat:je:${jeVersion}"
-
-
     compile(group: "com.datatrees.common", name: "common-message", version: "${commonMessageVersion}", changing: true) {
         exclude(module: "guava")
         exclude(module: "spring-boot-starter-amqp")
     }
-    compile("com.alibaba:dubbo:${dubboVersion}") {
-        exclude(module: 'nettty')
-    }
-    compile "org.javassist:javassist:${javassistVersion}"
-    compile "com.101tec:zkclient:${zkclientVersion}"
+    
+    compile "com.sleepycat:je:${jeVersion}"
     compile "org.apache.pdfbox:pdfbox:${pdfbox}"
     compile "net.mabboud.fontverter:FontVerter:${fontverter}"
     compile "net.sourceforge.jexcelapi:jxl:${jxl}"
-    compile("com.sun.mail:javax.mail:${javaxMailVersion}")
-    compile("com.datatrees.crawler.plugin:plugin-utils:${pluginUtilsVersion}") {
-        exclude module: 'guava'
-    }
-
-    compile("net.sourceforge.htmlunit:htmlunit:${htmlunitVersion}")
+    compile("com.sun.mail:javax.mail")
+    compile("net.sourceforge.htmlunit:htmlunit")
     compile("ant:ant:${antVersion}")
 }

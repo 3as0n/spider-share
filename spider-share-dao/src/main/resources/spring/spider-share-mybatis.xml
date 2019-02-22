@@ -13,7 +13,7 @@
             </list>
         </property>
         <!--<property name="typeAliasesPackage" value="com.datatrees.spider.domain.model.example"/>-->
-        <property name="configLocation" value="classpath:spider-share-mybatis-config.xml"/>
+        <property name="configLocation" value="classpath:spring/spider-share-mybatis-config.xml"/>
     </bean>
 
     <bean id="shareSqlsessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">

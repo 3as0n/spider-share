@@ -16,16 +16,17 @@
 
 package com.datatrees.spider.share.domain.http;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.annotation.JSONField;
+
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.annotation.JSONField;
+import java.util.stream.Collectors;
 
 public class Response implements Serializable {
 
@@ -127,8 +128,43 @@ public class Response implements Serializable {
         this.headers = headers;
     }
 
+    public List<NameValue> getHeaders(String name) {
+        if (headers != null && !headers.isEmpty()) {
+            return headers.stream().filter(header -> header.getName().equalsIgnoreCase(name)).collect(Collectors.toList());
+        }
+        return Collections.emptyList();
+    }
+
+    public NameValue getFirstHeader(String name) {
+        if (headers != null && !headers.isEmpty()) {
+            return headers.stream().filter(header -> header.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
+        }
+        return null;
+    }
+
+    public List<String> getHeaderValues(String name) {
+        if (headers != null && !headers.isEmpty()) {
+            return headers.stream().filter(header -> header.getName().equalsIgnoreCase(name)).map(NameValue::getValue).collect(Collectors.toList());
+        }
+        return Collections.emptyList();
+    }
+
+    public String getFirstHeaderValue(String name) {
+        if (headers != null && !headers.isEmpty()) {
+            return headers.stream().filter(header -> header.getName().equalsIgnoreCase(name)).findFirst().map(NameValue::getValue).orElse(null);
+        }
+        return null;
+    }
+
     public Map<String, String> getResponseCookies() {
         return responseCookies;
+    }
+
+    public String getResponseCookie(String name) {
+        if(responseCookies != null){
+            return responseCookies.get(name);
+        }
+        return null;
     }
 
     public void setResponseCookies(Map<String, String> responseCookies) {
@@ -185,15 +221,16 @@ public class Response implements Serializable {
     }
 
     @JSONField(serialize = false)
-    public JSONObject getPageContentForJSON() {
+    public JSON getPageContentForJSON() {
         String json = getPageContent().trim();
-        if ((json.startsWith("{") && json.endsWith("}")) || (json.startsWith("[") && json.endsWith("]"))) {
+        if (json.startsWith("{") && json.endsWith("}")) {
             return JSON.parseObject(json);
+        } else if (json.startsWith("[") && json.endsWith("]")) {
+            return JSON.parseArray(json);
         }
         //有的结尾带";"
-        if (null != json && json.contains("(") && json.trim().contains(")")) {
+        if (json.contains("(") && json.contains(")")) {
             json = json.substring(json.indexOf("(") + 1, json.lastIndexOf(")"));
-            return JSON.parseObject(json);
         }
         return JSON.parseObject(json);
     }
@@ -202,4 +239,5 @@ public class Response implements Serializable {
     public String toString() {
         return JSON.toJSONString(this);
     }
+
 }

@@ -1,0 +1,24 @@
+dependencies {
+    compile project(':spider-share-domain')
+    compile "com.aliyun.oss:aliyun-sdk-oss:${aliyunSdkOssVersion}"
+    compile("com.alibaba:dubbo:${dubboVersion}") {
+        exclude(module: "spring-context")
+        exclude(module: "spring-beans")
+        exclude(module: "spring-web")
+        exclude(module: "netty")
+    }
+    compile("org.springframework:spring-context")
+    compile("org.springframework:spring-beans")
+    compile("org.springframework:spring-web")
+    compile("com.101tec:zkclient:${zkclientVersion}") {
+        exclude(module: "zookeeper")
+    }
+    compile("org.apache.zookeeper:zookeeper:${zookeeperVersion}")
+    compile("org.javassist:javassist")
+
+    compile("com.datatrees.common:notify-common-facade:${notifySvcVersion}")
+    compile("com.treefinance.saas:merchant-center-facade:${merchantCenterVersion}")
+    compile("com.treefinance.saas:taskcenter-facade:${taskCenterVersion}")
+    compile("com.treefinance.proxy:proxy-api:${proxyApiVersion}")
+    
+}
