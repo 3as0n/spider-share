@@ -33,6 +33,7 @@ public enum GroupEnum {
     MAIL_163_H5("MAIL_163_H5", "163邮箱H5", WebsiteType.MAIL, "163.com.h5"),
     MAIL_126_H5("MAIL_126_H5", "126邮箱H5", WebsiteType.MAIL, "126.com.h5"),
     TAOBAO_COM_H5("TAOBAO_COM_H5", "淘宝H5", WebsiteType.ECOMMERCE, "taobao.com.h5"),
+    PASSWORD_TAOBAO_COM_H5("PASSWORD_TAOBAO_COM_H5", "淘宝H5密码登录", WebsiteType.ECOMMERCE, "password.taobao.com.h5"),
     MAIL_QQ("MAIL_QQ", "QQ邮箱", WebsiteType.MAIL, "qq.com"),
     MAIL_163("MAIL_163", "163邮箱", WebsiteType.MAIL, "163.com"),
     MAIL_126("MAIL_126", "126邮箱", WebsiteType.MAIL, "126.com"),
