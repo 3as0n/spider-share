@@ -16,10 +16,6 @@
 
 package com.datatrees.spider.share.common.utils;
 
-import java.net.HttpCookie;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.alibaba.fastjson.serializer.SerializerFeature;
@@ -30,6 +26,8 @@ import com.datatrees.spider.share.domain.StepEnum;
 import com.datatrees.spider.share.domain.http.Cookie;
 import com.datatrees.spider.share.domain.http.HttpHeadKey;
 import com.datatrees.spider.share.domain.http.Request;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -39,16 +37,34 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.HttpCookie;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
 /**
  * Created by zhouxinghai on 2017/7/19.
  */
-public class TaskUtils {
+public final class TaskUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskUtils.class);
+    private static final String DOMAIN_SEPARATOR = ".";
+    private static final String COOKIE_DOMAIN = "domain";
+    private static final String COOKIE_PATH = "path";
+    private static final String COOKIE_EXPIRES = "expires";
+    private static final String COOKIE_HTTPONLY = "httponly";
+
+    private TaskUtils() {}
 
     public static Cookie toCrawlerCookie(ClientCookie from) {
         String domain = from.getDomain();
-        if (domain.startsWith(".")) {
+        if (domain.startsWith(DOMAIN_SEPARATOR)) {
             domain = domain.substring(1);
         }
         Cookie to = new Cookie();
@@ -59,17 +75,17 @@ public class TaskUtils {
         to.setSecure(from.isSecure());
         to.setVersion(from.getVersion());
         to.setExpiryDate(from.getExpiryDate());
-        if (from.containsAttribute("domain")) {
-            to.getAttribs().put("domain", domain);
+        if (from.containsAttribute(COOKIE_DOMAIN)) {
+            to.putAttr(COOKIE_DOMAIN, domain);
         }
-        if (from.containsAttribute("path")) {
-            to.getAttribs().put("path", from.getAttribute("path"));
+        if (from.containsAttribute(COOKIE_PATH)) {
+            to.putAttr(COOKIE_PATH, from.getAttribute(COOKIE_PATH));
         }
-        if (from.containsAttribute("expires")) {
-            to.getAttribs().put("expires", from.getAttribute("expires"));
+        if (from.containsAttribute(COOKIE_EXPIRES)) {
+            to.putAttr(COOKIE_EXPIRES, from.getAttribute(COOKIE_EXPIRES));
         }
-        if (from.containsAttribute("httponly")) {
-            to.getAttribs().put("httponly", from.getAttribute("httponly"));
+        if (from.containsAttribute(COOKIE_HTTPONLY)) {
+            to.putAttr(COOKIE_HTTPONLY, from.getAttribute(COOKIE_HTTPONLY));
         }
         return to;
     }
@@ -86,7 +102,7 @@ public class TaskUtils {
         if (null != headers && headers.length > 0) {
             for (Header header : headers) {
                 String headerValue = header.getValue();
-                HttpCookie httpCookie=null;
+                HttpCookie httpCookie;
                 try {
                     httpCookie = HttpCookie.parse(headerValue).get(0);
                 }catch (IllegalArgumentException e){
@@ -102,7 +118,7 @@ public class TaskUtils {
                     }
                 } else {
                     String domain = StringUtils.isBlank(httpCookie.getDomain()) ? host : httpCookie.getDomain();
-                    if (StringUtils.startsWith(domain, ".")) {
+                    if (StringUtils.startsWith(domain, DOMAIN_SEPARATOR)) {
                         domain = domain.substring(1);
                     }
                     Cookie cookie = new Cookie();
@@ -112,8 +128,8 @@ public class TaskUtils {
                     cookie.setPath(httpCookie.getPath());
                     cookie.setVersion(httpCookie.getVersion());
                     cookie.setSecure(httpCookie.getSecure());
-                    cookie.getAttribs().put("domain", domain);
-                    cookie.getAttribs().put("path", httpCookie.getPath());
+                    cookie.putAttr(COOKIE_DOMAIN, domain);
+                    cookie.putAttr(COOKIE_PATH, httpCookie.getPath());
                     long maxAge = httpCookie.getMaxAge();
                     if (maxAge <= 0) {
                         maxAge = TimeUnit.MINUTES.toSeconds(30);
@@ -131,7 +147,7 @@ public class TaskUtils {
         List<Cookie> list = new ArrayList<>();
         String redisKey = RedisKeyPrefixEnum.TASK_COOKIE.getRedisKey(taskId);
         Map<String, String> map = RedisUtils.hgetAll(redisKey);
-        if (CollectionUtils.isNotEmpty(map)) {
+        if (MapUtils.isNotEmpty(map)) {
             for (Map.Entry<String, String> entry : map.entrySet()) {
                 Cookie cookie = JSON.parseObject(entry.getValue(), new TypeReference<Cookie>() {});
                 list.add(cookie);
@@ -153,9 +169,9 @@ public class TaskUtils {
                 }
                 String domain = cookie.getDomain();
                 if (domain.length() != host.length()) {
-                    domain = "." + domain;
+                    domain = DOMAIN_SEPARATOR + domain;
                     cookie.setDomain(domain);
-                    cookie.getAttribs().put("domain", domain);
+                    cookie.putAttr(COOKIE_DOMAIN, domain);
                 }
             }
         }
@@ -173,17 +189,16 @@ public class TaskUtils {
     }
 
     public static String getCookieString(Long taskId) {
-        StringBuilder sb = new StringBuilder();
         List<Cookie> list = getCookies(taskId);
-        if (CollectionUtils.isNotEmpty(list)) {
-            for (Cookie cookie : list) {
-                sb.append(";").append(cookie.getName()).append("=").append(cookie.getValue());
-            }
+
+        return getCookieString(list);
+    }
+
+    public static String getCookieString(List<Cookie> cookies) {
+        if (CollectionUtils.isNotEmpty(cookies)) {
+            return cookies.stream().map(cookie -> cookie.getName() + "=" + cookie.getValue()).collect(Collectors.joining("; "));
         }
-        if (StringUtils.isBlank(sb)) {
-            return "";
-        }
-        return sb.substring(1);
+        return StringUtils.EMPTY;
     }
 
     public static Map<String, String> getResponseCookieMap(Request request, List<Cookie> cookies) {
@@ -211,12 +226,12 @@ public class TaskUtils {
     }
 
     public static void saveCookie(long taskId, Set<com.gargoylesoftware.htmlunit.util.Cookie> cookies) {
-        List<Cookie> list = TaskUtils.getCookies(cookies);
+        List<Cookie> list = getCookies(cookies);
         saveCookie(taskId, list);
     }
 
     public static void saveCookie(long taskId, String host, BasicCookieStore cookieStore, CloseableHttpResponse httpResponse) {
-        List<Cookie> list = TaskUtils.getCookies(taskId, host, cookieStore, httpResponse);
+        List<Cookie> list = getCookies(taskId, host, cookieStore, httpResponse);
         saveCookie(taskId, list);
     }
 
@@ -240,9 +255,7 @@ public class TaskUtils {
         basicClientCookie.setSecure(cookie.isSecure());
         basicClientCookie.setVersion(cookie.getVersion());
         basicClientCookie.setExpiryDate(cookie.getExpiryDate());
-        for (Map.Entry<String, String> entry : cookie.getAttribs().entrySet()) {
-            basicClientCookie.setAttribute(entry.getKey(), entry.getValue());
-        }
+        cookie.foreachAttribs(basicClientCookie::setAttribute);
         return basicClientCookie;
     }
 
@@ -250,7 +263,7 @@ public class TaskUtils {
         BasicCookieStore cookieStore = new BasicCookieStore();
         if (CollectionUtils.isNotEmpty(list)) {
             for (Cookie cookie : list) {
-                cookieStore.addCookie(TaskUtils.getBasicClientCookie(cookie));
+                cookieStore.addCookie(getBasicClientCookie(cookie));
             }
         }
         return cookieStore;
@@ -364,7 +377,7 @@ public class TaskUtils {
 
     public static Cookie findCookie(String host, HttpCookie httpCookie, List<Cookie> list) {
         String domain = StringUtils.isBlank(httpCookie.getDomain()) ? host : httpCookie.getDomain();
-        if (StringUtils.startsWith(domain, ".")) {
+        if (StringUtils.startsWith(domain, DOMAIN_SEPARATOR)) {
             domain = domain.substring(1);
         }
         for (Cookie cookie : list) {
@@ -377,7 +390,7 @@ public class TaskUtils {
 
     public static void updateCookies(Long taskId, Map<String, String> newCookieMap) {
         List<Cookie> cookies;
-        if (CollectionUtils.isNotEmpty(newCookieMap) && CollectionUtils.isNotEmpty(cookies = TaskUtils.getCookies(taskId))) {
+        if (MapUtils.isNotEmpty(newCookieMap) && CollectionUtils.isNotEmpty(cookies = getCookies(taskId))) {
             for (Map.Entry<String, String> entry : newCookieMap.entrySet()) {
                 Cookie find = null;
                 for (Cookie cookie : cookies) {
@@ -395,7 +408,7 @@ public class TaskUtils {
                     find.setValue(entry.getValue());
                 }
             }
-            TaskUtils.saveCookie(taskId, cookies);
+            saveCookie(taskId, cookies);
         }
     }
 
@@ -418,15 +431,15 @@ public class TaskUtils {
     }
 
     public static boolean isDev() {
-        return StringUtils.equals(System.getProperty(AttributeKey.SAAS_ENV, "none"), "dev");
+        return "dev".equalsIgnoreCase(getSassEnv());
     }
 
     public static String getSassEnv(String postfix) {
-        return new StringBuilder(TaskUtils.getSassEnv()).append(".").append(postfix).toString();
+        return getSassEnv() + "." + postfix;
     }
 
     public static boolean stepCheck(Long taskId, StepEnum stepEnum) {
-        String stepCode = TaskUtils.getTaskShare(taskId, AttributeKey.STEP_CODE);
+        String stepCode = getTaskShare(taskId, AttributeKey.STEP_CODE);
         return StringUtils.equals(stepCode, stepEnum.getStepCode() + "");
     }
 
@@ -457,23 +470,12 @@ public class TaskUtils {
     }
 
     public static boolean isLastLoginProcessId(long taskId, Long processId) {
-        String lastProcessId = TaskUtils.getTaskShare(taskId, AttributeKey.CURRENT_LOGIN_PROCESS_ID);
+        String lastProcessId = getTaskShare(taskId, AttributeKey.CURRENT_LOGIN_PROCESS_ID);
         boolean b = StringUtils.equals(lastProcessId, processId.toString());
         if (!b) {
             logger.error("this thread is not the last login thread,taskId={},processId={},lastProcessId={}", taskId, processId, lastProcessId);
         }
         return b;
-    }
-
-    public static String getCookieString(List<Cookie> cookies) {
-        if (null != cookies && !cookies.isEmpty()) {
-            StringBuilder sb = new StringBuilder();
-            for (Cookie cookie : cookies) {
-                sb.append("; ").append(cookie.getName()).append("=").append(cookie.getValue());
-            }
-            return sb.substring(2);
-        }
-        return null;
     }
 
 }

@@ -16,15 +16,17 @@
 
 package com.datatrees.spider.share.domain.http;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.alibaba.fastjson.annotation.JSONField;
+import java.util.function.BiConsumer;
 
 /**
- * Created by zhouxinghai on 2017/7/19.
+ * @author zhouxinghai
+ * @date 2017/7/19.
  */
 public class Cookie implements Serializable {
 
@@ -114,5 +116,18 @@ public class Cookie implements Serializable {
 
     public void setAttribs(Map<String, String> attribs) {
         this.attribs = attribs;
+    }
+
+    public void putAttr(String key, String value) {
+        if (attribs == null) {
+            attribs = new HashMap<>(8);
+        }
+        attribs.put(key, value);
+    }
+
+    public void foreachAttribs(BiConsumer<String, String> consumer){
+        if(attribs != null) {
+            attribs.forEach(consumer);
+        }
     }
 }
