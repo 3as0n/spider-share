@@ -19,6 +19,9 @@ dependencies {
         exclude(module: 'guava')
         exclude(module: 'logback-access')
     }
+    compile(group: "com.datatrees.common", name: "common-conf", version: "${commonConfVersion}", changing: true) {
+        exclude module: 'guava'
+    }
     compile "com.alibaba.rocketmq:rocketmq-client:${rocketmqClientVersion}"
     compile("org.springframework.boot:spring-boot-starter-data-redis")
     compile "org.redisson:redisson:${redissonVersion}"
