@@ -21,9 +21,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import com.alibaba.fastjson.JSON;
-import com.treefinance.crawler.framework.context.Website;
 import com.datatrees.spider.share.common.http.ProxyUtils;
 import com.datatrees.spider.share.common.share.service.ProxyService;
 import com.datatrees.spider.share.common.share.service.RedisService;
@@ -31,8 +31,10 @@ import com.datatrees.spider.share.common.utils.*;
 import com.datatrees.spider.share.domain.*;
 import com.datatrees.spider.share.domain.http.Cookie;
 import com.datatrees.spider.share.domain.http.HttpResult;
+import com.datatrees.spider.share.domain.model.WebsiteInfo;
 import com.datatrees.spider.share.service.*;
 import com.datatrees.spider.share.service.plugin.QRPlugin;
+import com.treefinance.crawler.framework.context.Website;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,22 +44,25 @@ import org.springframework.stereotype.Service;
 @Service
 public class CommonPluginServiceImpl implements CommonPluginService {
 
-    private static final Logger               logger = LoggerFactory.getLogger(CommonPluginServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(CommonPluginServiceImpl.class);
 
     @Resource
-    private              ClassLoaderService   classLoaderService;
+    private ClassLoaderService   classLoaderService;
 
     @Resource
-    private              RedisService         redisService;
+    private RedisService         redisService;
 
     @Resource
-    private              WebsiteHolderService websiteHolderService;
+    private WebsiteHolderService websiteHolderService;
 
     @Resource
-    private              MonitorService       monitorService;
+    private MonitorService       monitorService;
 
     @Autowired
-    private              ProxyService         proxyService;
+    private ProxyService         proxyService;
+
+    @Resource
+    private WebsiteInfoService   websiteInfoService;
 
     @Override
     public HttpResult<Object> init(CommonPluginParam param) {
@@ -161,7 +166,30 @@ public class CommonPluginServiceImpl implements CommonPluginService {
     @Override
     public HttpResult<Object> refeshSmsCode(CommonPluginParam param) {
         try {
-            return classLoaderService.getCommonPluginService(param).refeshSmsCode(param);
+            WebsiteInfo websiteInfo = websiteInfoService.getByWebsiteName(param.getWebsiteName());
+            //刷新短信间隔时间
+            int sendSmsInterval = websiteInfo.getSmsInterval();
+            Long taskId = param.getTaskId();
+            String latestSendSmsTime = TaskUtils.getTaskShare(taskId, AttributeKey.LATEST_SEND_SMS_TIME);
+            if (StringUtils.isNoneBlank(latestSendSmsTime) && sendSmsInterval > 0) {
+                long endTime = Long.parseLong(latestSendSmsTime) + TimeUnit.SECONDS.toMillis(sendSmsInterval);
+                if (System.currentTimeMillis() < endTime) {
+                    try {
+                        logger.info("刷新短信有间隔时间限制,latestSendSmsTime={},将等待{}秒", DateUtils.formatYmdhms(Long.parseLong(latestSendSmsTime)),
+                                DateUtils.getUsedTime(System.currentTimeMillis(), endTime));
+                        TimeUnit.MILLISECONDS.sleep(endTime - System.currentTimeMillis());
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException("refeshSmsCode error", e);
+                    }
+                }
+            }
+            HttpResult<Object> result = classLoaderService.getCommonPluginService(param).refeshSmsCode(param);
+            if (result.getStatus()) {
+                TaskUtils.addTaskShare(taskId, AttributeKey.LATEST_SEND_SMS_TIME, System.currentTimeMillis() + "");
+            }
+            String log = TemplateUtils.format("{}-->发送短信验证码-->{}", param.getActionName(), result.getStatus() ? "成功" : "失败");
+            monitorService.sendTaskLog(taskId, param.getWebsiteName(), log, result);
+            return result;
         } catch (Throwable e) {
             logger.error("refeshSmsCode error,param={}", JSON.toJSONString(param), e);
             return new HttpResult<>().failure(ErrorCode.SYS_ERROR);
