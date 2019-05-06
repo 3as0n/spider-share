@@ -17,6 +17,7 @@
 package com.datatrees.spider.share.domain.http;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 
 import java.io.Serializable;
@@ -220,15 +221,33 @@ public class Response implements Serializable {
         return Base64.getEncoder().encodeToString(response);
     }
 
+    /**
+     * @deprecated use {{@link #getPageContentASJSON()} instead
+     */
     @JSONField(serialize = false)
-    public JSON getPageContentForJSON() {
+    @Deprecated
+    public JSONObject getPageContentForJSON() {
+        String json = getPageContent().trim();
+        if ((json.startsWith("{") && json.endsWith("}")) || (json.startsWith("[") && json.endsWith("]"))) {
+            return JSON.parseObject(json);
+        }
+        //有的结尾带";"
+        if (null != json && json.contains("(") && json.trim().contains(")")) {
+            json = json.substring(json.indexOf("(") + 1, json.lastIndexOf(")"));
+            return JSON.parseObject(json);
+        }
+        return JSON.parseObject(json);
+    }
+
+    @JSONField(serialize = false)
+    public JSON getPageContentASJSON() {
         String json = getPageContent().trim();
         if (json.startsWith("{") && json.endsWith("}")) {
             return JSON.parseObject(json);
         } else if (json.startsWith("[") && json.endsWith("]")) {
             return JSON.parseArray(json);
         }
-        //有的结尾带";"
+        // 有的结尾带";"
         if (json.contains("(") && json.contains(")")) {
             json = json.substring(json.indexOf("(") + 1, json.lastIndexOf(")"));
         }
