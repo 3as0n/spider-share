@@ -38,13 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.HttpCookie;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -104,7 +98,13 @@ public final class TaskUtils {
                 String headerValue = header.getValue();
                 HttpCookie httpCookie;
                 try {
-                    httpCookie = HttpCookie.parse(headerValue).get(0);
+                    /**
+                     * 调用HttpCookie.parse之前判断一下格式是否正确
+                     */
+                    httpCookie = checkFormat(headerValue);
+                    if (httpCookie == null) {
+                        httpCookie = HttpCookie.parse(headerValue).get(0);
+                    }
                 }catch (IllegalArgumentException e){
                     logger.warn("更新cookie时发生IllegalArgumentException,捕获后跳过此异常。headerValue={}",headerValue);
                     continue;
@@ -476,6 +476,20 @@ public final class TaskUtils {
             logger.error("this thread is not the last login thread,taskId={},processId={},lastProcessId={}", taskId, processId, lastProcessId);
         }
         return b;
+    }
+
+    public static HttpCookie checkFormat(String header) {
+        try {
+            StringTokenizer tokenizer = new StringTokenizer(header, ";");
+            String namevaluePair = tokenizer.nextToken();
+            int index = namevaluePair.indexOf('=');
+            if (index == -1) {
+                return new HttpCookie(namevaluePair, StringUtils.EMPTY);
+            }
+            return null;
+        } catch (NoSuchElementException ignored) {
+            throw new IllegalArgumentException("Empty cookie header string");
+        }
     }
 
 }
