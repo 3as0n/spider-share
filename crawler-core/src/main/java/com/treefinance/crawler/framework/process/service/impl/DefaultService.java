@@ -16,12 +16,6 @@
 
 package com.treefinance.crawler.framework.process.service.impl;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
 import com.datatrees.common.conf.PropertiesConfiguration;
 import com.google.common.net.HttpHeaders;
 import com.treefinance.crawler.framework.config.enums.page.RetryMode;
@@ -39,19 +33,31 @@ import com.treefinance.crawler.framework.context.function.LinkNode;
 import com.treefinance.crawler.framework.context.function.SpiderRequest;
 import com.treefinance.crawler.framework.context.function.SpiderResponse;
 import com.treefinance.crawler.framework.process.service.ServiceBase;
-import com.treefinance.crawler.framework.protocol.*;
+import com.treefinance.crawler.framework.protocol.Content;
+import com.treefinance.crawler.framework.protocol.Protocol;
+import com.treefinance.crawler.framework.protocol.ProtocolInput;
 import com.treefinance.crawler.framework.protocol.ProtocolInput.CookieScope;
+import com.treefinance.crawler.framework.protocol.ProtocolOutput;
+import com.treefinance.crawler.framework.protocol.WebClientUtil;
 import com.treefinance.crawler.framework.protocol.http.HttpResponse;
 import com.treefinance.crawler.framework.protocol.metadata.Metadata;
 import com.treefinance.crawler.framework.proxy.Proxy;
 import com.treefinance.crawler.framework.proxy.ProxyManager;
 import com.treefinance.crawler.framework.proxy.ProxyStatus;
-import com.treefinance.crawler.framework.util.CookieParser;
+import com.treefinance.crawler.framework.util.CookiesFormatter;
 import com.treefinance.toolkit.util.Assert;
 import com.treefinance.toolkit.util.RegExp;
+import org.apache.commons.httpclient.HttpState;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * default httpclient service
@@ -212,9 +218,10 @@ public class DefaultService extends ServiceBase {
                 if (response instanceof HttpResponse && BooleanUtils.isTrue(coexist)) {
                     String cookieString = StringUtils.EMPTY;
                     HttpResponse httpResponse = (HttpResponse) response;
-                    ProcessorContextUtil.setHttpState(context, httpResponse.getState());
-                    if (httpResponse.getState() != null) {
-                        cookieString = CookieParser.formatCookies(httpResponse.getState().getCookies());
+                    final HttpState state = httpResponse.getState();
+                    ProcessorContextUtil.setHttpState(context, state);
+                    if (state != null) {
+                        cookieString = CookiesFormatter.toCookiesString(state.getCookies());
                     }
                     logger.info("Reset cookies: {}", cookieString);
                     context.setCookies(cookieString);

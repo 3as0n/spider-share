@@ -16,9 +16,6 @@
 
 package com.treefinance.crawler.framework.login;
 
-import java.util.List;
-import java.util.Map;
-
 import com.datatrees.common.util.GsonUtils;
 import com.google.common.net.HttpHeaders;
 import com.treefinance.crawler.framework.config.xml.login.LoginCheckConfig;
@@ -27,7 +24,11 @@ import com.treefinance.crawler.framework.config.xml.segment.AbstractSegment;
 import com.treefinance.crawler.framework.config.xml.service.AbstractService;
 import com.treefinance.crawler.framework.context.ResponseUtil;
 import com.treefinance.crawler.framework.context.SearchProcessorContext;
-import com.treefinance.crawler.framework.context.function.*;
+import com.treefinance.crawler.framework.context.function.LinkNode;
+import com.treefinance.crawler.framework.context.function.SpiderRequest;
+import com.treefinance.crawler.framework.context.function.SpiderRequestFactory;
+import com.treefinance.crawler.framework.context.function.SpiderResponse;
+import com.treefinance.crawler.framework.context.function.SpiderResponseFactory;
 import com.treefinance.crawler.framework.context.pipeline.InvokeException;
 import com.treefinance.crawler.framework.decode.DecodeUtil;
 import com.treefinance.crawler.framework.exception.ResultEmptyException;
@@ -36,13 +37,16 @@ import com.treefinance.crawler.framework.process.ProcessorFactory;
 import com.treefinance.crawler.framework.process.segment.SegmentBase;
 import com.treefinance.crawler.framework.protocol.ProtocolOutput;
 import com.treefinance.crawler.framework.protocol.metadata.Metadata;
-import com.treefinance.crawler.framework.util.CookieFormater;
+import com.treefinance.crawler.framework.util.CookiesFormatter;
 import com.treefinance.crawler.framework.util.ServiceUtils;
 import com.treefinance.toolkit.util.RegExp;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author <A HREF="">Cheng Wang</A>
@@ -87,7 +91,7 @@ public class LoginUtil {
                 Metadata metadata = out.getContent().getMetadata();
                 String[] vals = metadata.getValues(HttpHeaders.SET_COOKIE);
 
-                return CookieFormater.INSTANCE.parserCookie(vals, retainQuote);
+                return CookiesFormatter.toCookiesString(vals, retainQuote);
             }
         } catch (Exception ex) {
             logger.error("LoginUtil doLogin throw exception, error message:[" + ex.getMessage() + "]");

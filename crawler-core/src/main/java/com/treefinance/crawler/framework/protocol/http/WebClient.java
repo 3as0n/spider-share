@@ -16,16 +16,6 @@
 
 package com.treefinance.crawler.framework.protocol.http;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
 import com.datatrees.common.conf.Configuration;
 import com.datatrees.common.util.ReflectionUtils;
 import com.google.common.net.HttpHeaders;
@@ -38,14 +28,31 @@ import com.treefinance.crawler.framework.protocol.https.EasySSLProtocolSocketFac
 import com.treefinance.crawler.framework.protocol.metadata.Metadata;
 import com.treefinance.crawler.framework.protocol.util.UrlUtils;
 import com.treefinance.crawler.framework.util.CharsetUtil;
-import com.treefinance.crawler.framework.util.CookieFormater;
-import com.treefinance.crawler.framework.util.CookieParser;
+import com.treefinance.crawler.framework.util.CookiesFormatter;
 import com.treefinance.crawler.framework.util.UrlExtractor;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.httpclient.*;
+import org.apache.commons.httpclient.Cookie;
+import org.apache.commons.httpclient.CustomHttpState;
+import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.HostConfiguration;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.HttpMethodRetryHandler;
+import org.apache.commons.httpclient.HttpState;
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.HttpVersion;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.NTCredentials;
+import org.apache.commons.httpclient.ProtocolHttpClient;
+import org.apache.commons.httpclient.ProxyHost;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
-import org.apache.commons.httpclient.methods.*;
+import org.apache.commons.httpclient.methods.CustomGetMethod;
+import org.apache.commons.httpclient.methods.DeleteMethod;
+import org.apache.commons.httpclient.methods.EntityEnclosingMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.PutMethod;
+import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.httpclient.params.HostParams;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
@@ -59,6 +66,17 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class is a protocol plugin that configures an HTTP client for Basic, Digest and NTLM
@@ -351,9 +369,10 @@ public class WebClient extends HttpBase {
                         String[] setCookies2 = headers.getValues(HttpHeaders.SET_COOKIE2);
                         setCookies = ArrayUtils.addAll(setCookies, setCookies2);
 
-                        Map<String, String> cookieMap = CookieFormater.INSTANCE.parserCookieToMap(input.getCookie(), scope.isRetainQuote());
-                        cookieMap.putAll(CookieFormater.INSTANCE.parserCookietToMap(setCookies, scope.isRetainQuote()));
-                        String cookieString = CookieFormater.INSTANCE.listToString(cookieMap);
+                        final Map<String, String> map = CookiesFormatter.parseAsMap(input.getCookie(), scope.isRetainQuote());
+                        Map<String, String> cookieMap = new HashMap<>(map);
+                        cookieMap.putAll(CookiesFormatter.parseAsMap(setCookies, scope.isRetainQuote()));
+                        String cookieString = CookiesFormatter.toCookiesString(cookieMap);
                         LOG.info("redirect input reset cookie string " + cookieString);
                         input.setCookie(cookieString);
                     } catch (Exception e) {
@@ -391,7 +410,7 @@ public class WebClient extends HttpBase {
                 if (state != null && CookieScope.SESSION != scope) {
                     Cookie[] cks = state.getCookies();
                     for (Cookie cookie : cks) {
-                        headers.add(HttpHeaders.SET_COOKIE, CookieParser.formatCookieFull(cookie));
+                        headers.add(HttpHeaders.SET_COOKIE, CookiesFormatter.toFullString(cookie));
                     }
                 }
 

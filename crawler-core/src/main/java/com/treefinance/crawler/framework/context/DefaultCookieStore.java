@@ -16,18 +16,19 @@
 
 package com.treefinance.crawler.framework.context;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-
-import com.treefinance.crawler.framework.util.CookieFormater;
+import com.treefinance.crawler.framework.util.CookiesFormatter;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Jerry
@@ -54,7 +55,7 @@ public class DefaultCookieStore implements CookieStore {
     @Override
     public String getCookiesAsString() {
         if (this.cookies == null && this.store != null) {
-            this.cookies = CookieFormater.INSTANCE.listToString(this.store);
+            this.cookies = CookiesFormatter.toCookiesString(this.store);
         }
 
         return this.cookies;
@@ -63,7 +64,7 @@ public class DefaultCookieStore implements CookieStore {
     @Override
     public Map<String, String> getCookiesAsMap() {
         if (this.store == null && StringUtils.isNotEmpty(this.cookies)) {
-            this.store = CookieFormater.INSTANCE.parserCookieToMap(this.cookies, this.retainQuote);
+            this.store = CookiesFormatter.parseAsMap(this.cookies, this.retainQuote);
         }
 
         return this.store == null ? Collections.emptyMap() : Collections.unmodifiableMap(this.store);
@@ -101,12 +102,12 @@ public class DefaultCookieStore implements CookieStore {
             this.store.putAll(cookies);
         }
 
-        this.cookies = CookieFormater.INSTANCE.listToString(this.store);
+        this.cookies = CookiesFormatter.toCookiesString(this.store);
     }
 
     @Override
     public void addCookies(@Nullable String[] cookies, boolean retainQuote) {
-        Map<String, String> map = CookieFormater.INSTANCE.parserCookietToMap(cookies, retainQuote);
+        Map<String, String> map = CookiesFormatter.parseAsMap(cookies, retainQuote);
 
         addCookies(map);
     }
