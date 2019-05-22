@@ -71,7 +71,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Resource;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -90,11 +89,7 @@ public class Collector {
 
     private static final int START_MSG_LENGTH_LIMIT = PropertiesConfiguration.getInstance().getInt("default.startMsgJson.length.threshold", 20000);
 
-    private static final String duplicateRemovedResultKeys = PropertiesConfiguration.getInstance().get("duplicate.removed.result.keys", "bankbill");
-
-    private static final String mqStatusTags = PropertiesConfiguration.getInstance().get("core.mq.status.tags", "bankbill,ecommerce,operator");
-
-    private static final String mqMessageSendTagPattern = PropertiesConfiguration.getInstance().get("core.mq.message.sendTag.pattern", "opinionDetect|webDetect|businessLicense");
+    private static final String MQ_MESSAGE_SEND_TAG_PATTERN = PropertiesConfiguration.getInstance().get("core.mq.message.sendTag.pattern", "opinionDetect|webDetect|businessLicense");
 
     @Resource
     private WebsiteConfigService websiteConfigService;
@@ -385,7 +380,6 @@ public class Collector {
         resultMessage.setTaskId(task.getTaskId());
         resultMessage.setWebsiteName(taskMessage.getWebsiteName());
         resultMessage.setWebsiteType(taskMessage.getWebsiteType().getType());
-        Set<String> notEmptyTag = new HashSet<String>();
         if (submitkeyResult != null) {
             resultMessage.setStatus("SUCCESS");
         } else {
@@ -397,7 +391,7 @@ public class Collector {
         ProcessorResult<String, Object> result = taskMessage.getContext().getProcessorResult();
         // the same rule as redis key ,init all the possible key
         for (String tag : resultTagSet) {
-            if (submitkeyResult != null || PatternUtils.match(mqMessageSendTagPattern, tag)) {
+            if (submitkeyResult != null || PatternUtils.match(MQ_MESSAGE_SEND_TAG_PATTERN, tag)) {
                 needSendToMQ = true;
             }
             String keys = PropertiesConfiguration.getInstance().get("core.mq.tag." + tag + ".keys");
@@ -422,7 +416,6 @@ public class Collector {
                 List<Message> mqMessages = messageFactory.getMessage(result, "" + taskMessage.getTask().getId());
                 for (Message mqMessage : mqMessages) {
                     try {
-                        notEmptyTag.add(mqMessage.getTags());
                         SendResult sendResult = defaultMQProducer.send(mqMessage);
                         logger.info("send message: {}, result: {}", mqMessage, sendResult);
                     } catch (Exception e) {
@@ -434,37 +427,6 @@ public class Collector {
                 logger.warn("{} no need to submit result: {}", taskMessage, submitkeyResult);
             }
             task.setResultMessage(GsonUtils.toJson(result));
-        }
-
-        this.sendTaskStatus(taskMessage, resultMessage, resultTagSet, notEmptyTag);
-    }
-
-    private void sendTaskStatus(TaskMessage taskMessage, ResultMessage resultMessage, Set<String> resultTagSet, Set<String> notEmptyTag) {
-        if (taskMessage.getMessageSend() && taskMessage.getStatusSend()) {
-            Task task = taskMessage.getTask();
-            for (String key : resultTagSet) {
-                if (mqStatusTags.contains(key)) {
-                    ResultMessage keyResult = new ResultMessage();
-                    keyResult.putAll(resultMessage);
-                    if (duplicateRemovedResultKeys.contains(key)) {
-                        keyResult.setResultEmpty(!task.isDuplicateRemoved() && !notEmptyTag.contains(key));
-                    } else {
-                        keyResult.setResultEmpty(!notEmptyTag.contains(key));
-                    }
-                    try {
-                        Message mqMessage = messageFactory.getMessage("rawData_result_status", key, GsonUtils.toJson(keyResult), "" + taskMessage.getTask().getId());
-                        SendResult sendResult = defaultMQProducer.send(mqMessage);
-                        logger.info("send result message: {}, result: {}", mqMessage, sendResult);
-                    } catch (Exception e) {
-                        logger.error(e.getMessage(), e);
-                        task.setErrorCode(ErrorCode.RESULT_SEND_ERROR);
-                    }
-                } else {
-                    logger.warn("{} no need to send status key: {}, resultMessage: {}", taskMessage, key, resultMessage);
-                }
-            }
-        } else {
-            logger.warn("{} no need to send status: {}, resultMessage: {}", taskMessage, resultTagSet, resultMessage);
         }
     }
 
