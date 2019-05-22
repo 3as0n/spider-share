@@ -156,8 +156,9 @@ public class XmlConfigParser implements ConfigParser {
     private void setNodeValue(List<Object> elements, Method method, Class<?>[] nodeTypes, Object parent) throws Exception {
         for (Object element : elements) {
             for (Class<?> type : nodeTypes) {
-                if (this.customTypeProcess(element, type, parent, method) != null)
+                if (this.customTypeProcess(element, type, parent, method) != null) {
                     break;
+                }
             }
         }
     }

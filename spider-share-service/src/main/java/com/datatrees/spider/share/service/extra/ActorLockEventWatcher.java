@@ -47,6 +47,7 @@ public class ActorLockEventWatcher extends AbstractLockerWatcher {
     @Override
     public void await() {}
 
+    @Override
     public boolean unLock() {
         return releaseLeader();
     }

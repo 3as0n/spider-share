@@ -67,8 +67,9 @@ public class ExtractorSelectorHandler {
                 logger.trace("extractor selector >>> field: {}, value: {}, contains: {}, dis-contains: {}", selector.getField(), value, selector.getContainRegex(),
                     selector.getDisContainRegex());
 
-                if (value == null)
+                if (value == null) {
                     continue;
+                }
 
                 PageExtractor pageExtractor = selector.getPageExtractor();
                 if (match(value, selector.getDisContainRegex())) {

@@ -163,10 +163,12 @@ public class Task extends AbstractTask implements Serializable {
         this.filteredCount = filteredCount;
     }
 
+    @Override
     public int getStatus() {
         return status;
     }
 
+    @Override
     public void setStatus(int status) {
         this.status = status;
     }
@@ -175,6 +177,7 @@ public class Task extends AbstractTask implements Serializable {
         return remark;
     }
 
+    @Override
     public void setRemark(String remark) {
         this.remark = remark == null ? null : remark.trim();
     }

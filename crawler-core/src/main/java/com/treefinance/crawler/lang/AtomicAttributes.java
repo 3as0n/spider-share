@@ -38,16 +38,18 @@ public class AtomicAttributes implements Attributes {
 
     public AtomicAttributes(AtomicAttributes attributes) {
         ConcurrentMap<String, Object> map = Objects.requireNonNull(attributes).map();
-        if (map != null)
+        if (map != null) {
             _map.set(new ConcurrentHashMap<>(map));
+        }
     }
 
     @Override
     public void setAttribute(@Nonnull String name, @Nullable Object attribute) {
-        if (attribute == null)
+        if (attribute == null) {
             removeAttribute(name);
-        else
+        } else {
             ensureMap().put(name, attribute);
+        }
     }
 
     @Override
@@ -76,8 +78,9 @@ public class AtomicAttributes implements Attributes {
     @Override
     public Object removeAttribute(@Nonnull String name) {
         Map<String, Object> map = map();
-        if (map != null)
+        if (map != null) {
             return map.remove(name);
+        }
         return null;
     }
 
@@ -98,14 +101,16 @@ public class AtomicAttributes implements Attributes {
     @Override
     public void clearAttributes() {
         Map<String, Object> map = map();
-        if (map != null)
+        if (map != null) {
             map.clear();
+        }
     }
 
     @Override
     public void addAttributes(@Nullable Map<String, Object> attributes) {
-        if (attributes != null)
+        if (attributes != null) {
             ensureMap().putAll(attributes);
+        }
     }
 
     public int size() {
@@ -130,11 +135,13 @@ public class AtomicAttributes implements Attributes {
     private ConcurrentMap<String, Object> ensureMap() {
         while (true) {
             ConcurrentMap<String, Object> map = map();
-            if (map != null)
+            if (map != null) {
                 return map;
+            }
             map = new ConcurrentHashMap<>();
-            if (_map.compareAndSet(null, map))
+            if (_map.compareAndSet(null, map)) {
                 return map;
+            }
         }
     }
 

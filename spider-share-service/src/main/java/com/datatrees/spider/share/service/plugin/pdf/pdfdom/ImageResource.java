@@ -33,16 +33,19 @@ public class ImageResource extends HtmlResource {
         this.image = image;
     }
 
+    @Override
     public byte[] getData() throws IOException {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         ImageIO.write(image, "PNG", buffer);
         return buffer.toByteArray();
     }
 
+    @Override
     public String getFileEnding() {
         return "png";
     }
 
+    @Override
     public String getMimeType() {
         return "image/png";
     }

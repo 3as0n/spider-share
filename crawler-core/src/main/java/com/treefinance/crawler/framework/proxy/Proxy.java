@@ -38,7 +38,7 @@ public class Proxy {
     public Proxy(String host, int port) {
         this.host = host;
         this.port = port;
-        timestamp = 0l;
+        timestamp = 0L;
     }
 
     public Proxy(String host, int port, long timestamp) {
@@ -110,20 +110,26 @@ public class Proxy {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         Proxy other = (Proxy)obj;
         if (host == null) {
-            if (other.host != null)
+            if (other.host != null) {
                 return false;
-        } else if (!host.equals(other.host))
+            }
+        } else if (!host.equals(other.host)) {
             return false;
-        if (port != other.port)
+        }
+        if (port != other.port) {
             return false;
+        }
         return true;
     }
 }

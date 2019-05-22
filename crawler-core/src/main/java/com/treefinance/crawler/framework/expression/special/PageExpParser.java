@@ -37,8 +37,9 @@ public class PageExpParser {
 
     public static String eval(String text, int page) {
         LOGGER.debug("Eval page expression. input: {}, page: {}", text, page);
-        if (StringUtils.isEmpty(text))
+        if (StringUtils.isEmpty(text)) {
             return text;
+        }
 
         Matcher matcher = PATTERN.matcher(text);
         if (matcher.find()) {

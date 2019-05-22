@@ -81,6 +81,7 @@ public class LinkExtractor extends DefaultCallback {
      * 
      * @param parser the bullet parser
      */
+    @Override
     public void configure(final BulletParser parser) {
         parser.parseText(true);
         parser.parseTags(true);
@@ -96,6 +97,7 @@ public class LinkExtractor extends DefaultCallback {
     /**
      * callback when document started.
      */
+    @Override
     public void startDocument() {
         urls.clear();
         base = null;
@@ -114,6 +116,7 @@ public class LinkExtractor extends DefaultCallback {
      * @param flowBroken broken flow
      * @return true or false
      */
+    @Override
     public boolean characters(final char[] characters, final int offset, final int length, final boolean flowBroken) {
         if (inTitle) {
             title.append(characters, offset, length);
@@ -133,6 +136,7 @@ public class LinkExtractor extends DefaultCallback {
      * @param element element
      * @return true or false
      */
+    @Override
     public boolean endElement(final Element element) {
         inTitle = false;
         if (nextURL != null) {
@@ -154,10 +158,12 @@ public class LinkExtractor extends DefaultCallback {
      * @param attrMap attributes
      * @return true or false
      */
+    @Override
     public boolean startElement(final Element element, final Map<Attribute, MutableString> attrMap) {
         inTitle = element == Element.TITLE && firstTitle;
-        if (inTitle)
+        if (inTitle) {
             firstTitle = false;
+        }
 
         Object s;
 

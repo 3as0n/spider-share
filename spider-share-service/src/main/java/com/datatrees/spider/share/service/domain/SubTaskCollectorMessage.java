@@ -53,6 +53,7 @@ public class SubTaskCollectorMessage extends CollectorMessage implements SubTask
         addProperties(subSeed);
     }
 
+    @Override
     public String getTemplateId() {
         return subSeed.getTemplateId();
     }

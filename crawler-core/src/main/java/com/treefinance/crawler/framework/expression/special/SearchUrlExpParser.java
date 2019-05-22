@@ -38,8 +38,9 @@ public final class SearchUrlExpParser {
 
     public static String eval(String url, int page, boolean notOverloadMax, String keywords, Map<String, Object> placeholderMapping) {
         LOGGER.debug("Eval page expression. input: {}", url);
-        if (StringUtils.isEmpty(url))
+        if (StringUtils.isEmpty(url)) {
             return url;
+        }
 
         String newUrl;
         Matcher matcher = PATTERN.matcher(url);

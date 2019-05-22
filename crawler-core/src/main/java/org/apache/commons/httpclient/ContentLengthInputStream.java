@@ -92,6 +92,7 @@ public class ContentLengthInputStream extends InputStream {
      * 
      * @exception IOException If an IO problem occurs.
      */
+    @Override
     public void close() throws IOException {
         if (!closed) {
             // try {
@@ -113,6 +114,7 @@ public class ContentLengthInputStream extends InputStream {
      * @exception IOException If an IO problem occurs
      * @see InputStream#read()
      */
+    @Override
     public int read() throws IOException {
         if (closed) {
             throw new IOException("Attempted read from closed stream.");
@@ -135,6 +137,7 @@ public class ContentLengthInputStream extends InputStream {
      * @return The number of bytes read, or -1 if the end of content has been reached.
      * @exception IOException Should an error occur on the wrapped stream.
      */
+    @Override
     public int read(byte[] b, int off, int len) throws IOException {
         if (closed) {
             throw new IOException("Attempted read from closed stream.");
@@ -160,6 +163,7 @@ public class ContentLengthInputStream extends InputStream {
      * @exception IOException If an IO problem occurs
      * @see InputStream#read(byte[])
      */
+    @Override
     public int read(byte[] b) throws IOException {
         return read(b, 0, b.length);
     }
@@ -172,6 +176,7 @@ public class ContentLengthInputStream extends InputStream {
      * @exception IOException If an error occurs while skipping bytes.
      * @see InputStream#skip(long)
      */
+    @Override
     public long skip(long n) throws IOException {
         // make sure we don't skip more bytes than are
         // still available
@@ -186,6 +191,7 @@ public class ContentLengthInputStream extends InputStream {
         return length;
     }
 
+    @Override
     public int available() throws IOException {
         if (this.closed) {
             return 0;

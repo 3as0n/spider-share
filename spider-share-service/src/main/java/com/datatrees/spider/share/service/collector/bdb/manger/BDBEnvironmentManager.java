@@ -51,6 +51,7 @@ public class BDBEnvironmentManager implements EnvironmentManager {
         return (wapper.getPlusDBCount().get() >= max_db_count || !wapper.getEnv().isValid());
     }
 
+    @Override
     public BDBEnvironmentWapper takeEnv() throws Exception {
         BDBEnvironmentWapper bdbEnvironmentWapper = null;
         if (newGenerationContainer.isEmpty()) {
@@ -73,6 +74,7 @@ public class BDBEnvironmentManager implements EnvironmentManager {
         newGenerationContainer.remove();
     }
 
+    @Override
     public void checkWapperDestory(BDBEnvironmentWapper wapper) {
         if (isEnvDestoryed(wapper)) {
             File envHome = wapper.getEnvHome();

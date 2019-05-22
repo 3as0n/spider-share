@@ -28,8 +28,9 @@ import java.util.List;
 public class JsonPathUtil {
 
     private static Object read(String json, String jsonPath) {
-        if (json == null)
+        if (json == null) {
             return null;
+        }
 
         return JsonPath.read(json, jsonPath);
     }

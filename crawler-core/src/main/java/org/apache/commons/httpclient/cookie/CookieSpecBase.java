@@ -102,6 +102,7 @@ public class CookieSpecBase implements CookieSpec {
      * @return an array of <tt>Cookie</tt>s parsed from the Set-Cookie value
      * @exception MalformedCookieException if an exception occurs during parsing
      */
+    @Override
     public Cookie[] parse(String host, int port, String path, boolean secure, final String header) throws MalformedCookieException {
 
         LOG.trace("enter CookieSpecBase.parse(" + "String, port, path, boolean, Header)");
@@ -213,6 +214,7 @@ public class CookieSpecBase implements CookieSpec {
      * </tt> header
      * @exception MalformedCookieException if an exception occurs during parsing
      */
+    @Override
     public Cookie[] parse(String host, int port, String path, boolean secure, final Header header) throws MalformedCookieException {
 
         LOG.trace("enter CookieSpecBase.parse(" + "String, port, path, boolean, String)");
@@ -229,6 +231,7 @@ public class CookieSpecBase implements CookieSpec {
      * @param cookie {@link Cookie} to be updated
      * @exception MalformedCookieException if an exception occurs during parsing
      */
+    @Override
     public void parseAttribute(final NameValuePair attribute, final Cookie cookie) throws MalformedCookieException {
 
         if (attribute == null) {
@@ -299,10 +302,12 @@ public class CookieSpecBase implements CookieSpec {
         }
     }
 
+    @Override
     public Collection getValidDateFormats() {
         return this.datepatterns;
     }
 
+    @Override
     public void setValidDateFormats(final Collection datepatterns) {
         this.datepatterns = datepatterns;
     }
@@ -317,6 +322,7 @@ public class CookieSpecBase implements CookieSpec {
      * @param cookie The cookie to validate.
      * @exception MalformedCookieException if an exception occurs during validation
      */
+    @Override
     public void validate(String host, int port, String path, boolean secure, final Cookie cookie) throws MalformedCookieException {
 
         LOG.trace("enter CookieSpecBase.validate(" + "String, port, path, boolean, Cookie)");
@@ -388,6 +394,7 @@ public class CookieSpecBase implements CookieSpec {
      * @param cookie {@link Cookie} to be matched
      * @return true if the cookie matches the criterium
      */
+    @Override
     public boolean match(String host, int port, String path, boolean secure, final Cookie cookie) {
 
         LOG.trace("enter CookieSpecBase.match(" + "String, int, String, boolean, Cookie");
@@ -439,6 +446,7 @@ public class CookieSpecBase implements CookieSpec {
      * @param domain The cookie domain attribute.
      * @return true if the specified host matches the given domain.
      */
+    @Override
     public boolean domainMatch(final String host, String domain) {
         if (host.equals(domain)) {
             return true;
@@ -456,6 +464,7 @@ public class CookieSpecBase implements CookieSpec {
      * @param topmostPath The cookie path attribute.
      * @return true if the paths match
      */
+    @Override
     public boolean pathMatch(final String path, final String topmostPath) {
         boolean match = path.startsWith(topmostPath);
         // if there is a match and these values are not exactly the same we have
@@ -479,6 +488,7 @@ public class CookieSpecBase implements CookieSpec {
      * @param cookies an array of <tt>Cookie</tt>s to be matched
      * @return an array of <tt>Cookie</tt>s matching the criterium
      */
+    @Override
     public Cookie[] match(String host, int port, String path, boolean secure, final Cookie cookies[]) {
 
         LOG.trace("enter CookieSpecBase.match(" + "String, int, String, boolean, Cookie[])");
@@ -501,6 +511,7 @@ public class CookieSpecBase implements CookieSpec {
      * @param cookie a {@link Cookie} to be formatted as string
      * @return a string suitable for sending in a <tt>"Cookie"</tt> header.
      */
+    @Override
     public String formatCookie(Cookie cookie) {
         LOG.trace("enter CookieSpecBase.formatCookie(Cookie)");
         if (cookie == null) {
@@ -524,6 +535,7 @@ public class CookieSpecBase implements CookieSpec {
      * @return a string suitable for sending in a Cookie header.
      * @exception IllegalArgumentException if an input parameter is illegal
      */
+    @Override
     public String formatCookies(Cookie[] cookies) throws IllegalArgumentException {
         LOG.trace("enter CookieSpecBase.formatCookies(Cookie[])");
         if (cookies == null) {
@@ -550,6 +562,7 @@ public class CookieSpecBase implements CookieSpec {
      *                Cookie"</tt> header
      * @return a <tt>"Cookie"</tt> {@link Header}.
      */
+    @Override
     public Header formatCookieHeader(Cookie[] cookies) {
         LOG.trace("enter CookieSpecBase.formatCookieHeader(Cookie[])");
         return new Header("Cookie", formatCookies(cookies));
@@ -561,6 +574,7 @@ public class CookieSpecBase implements CookieSpec {
      * @param cookie <tt>Cookie</tt>s to be formatted as a <tt>Cookie</tt> header
      * @return a Cookie header.
      */
+    @Override
     public Header formatCookieHeader(Cookie cookie) {
         LOG.trace("enter CookieSpecBase.formatCookieHeader(Cookie)");
         return new Header("Cookie", formatCookie(cookie));

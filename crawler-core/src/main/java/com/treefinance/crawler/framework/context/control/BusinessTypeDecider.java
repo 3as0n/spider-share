@@ -44,11 +44,13 @@ public final class BusinessTypeDecider {
     private static Queue<IBusinessTypeFilter> ensureQueue() {
         while (true) {
             Queue<IBusinessTypeFilter> collection = queue();
-            if (collection != null)
+            if (collection != null) {
                 return collection;
+            }
             collection = new ConcurrentLinkedQueue<>();
-            if (REF.compareAndSet(null, collection))
+            if (REF.compareAndSet(null, collection)) {
                 return collection;
+            }
         }
     }
 

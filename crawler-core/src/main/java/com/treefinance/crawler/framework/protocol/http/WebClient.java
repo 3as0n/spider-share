@@ -123,17 +123,21 @@ public class WebClient extends HttpBase {
      */
     private static AuthScope getAuthScope(String host, int port, String realm, String scheme) {
 
-        if (host.length() == 0)
+        if (host.length() == 0) {
             host = null;
+        }
 
-        if (port < 0)
+        if (port < 0) {
             port = -1;
+        }
 
-        if (realm.length() == 0)
+        if (realm.length() == 0) {
             realm = null;
+        }
 
-        if (scheme.length() == 0)
+        if (scheme.length() == 0) {
             scheme = null;
+        }
 
         return new AuthScope(host, port, realm, scheme);
     }
@@ -170,6 +174,7 @@ public class WebClient extends HttpBase {
      * 
      * @param conf Configuration
      */
+    @Override
     public void setConf(Configuration conf) {
         super.setConf(conf);
         this.maxThreadsTotal = conf.getInt(HTTPConstants.MAX_TOTAL_CONNECTIONS, maxThreadsTotal);
@@ -224,8 +229,9 @@ public class WebClient extends HttpBase {
             }
             content = out.toByteArray();
         } catch (Exception e) {
-            if (code == 200)
+            if (code == 200) {
                 throw new IOException(e.toString());
+            }
             // for codes other than 200 OK, we are fine with empty content
         } finally {
             IOUtils.closeQuietly(in);

@@ -284,25 +284,33 @@ public class LinkNode {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         LinkNode other = (LinkNode)obj;
-        if (depth != other.depth)
+        if (depth != other.depth) {
             return false;
+        }
         if (referer == null) {
-            if (other.referer != null)
+            if (other.referer != null) {
                 return false;
-        } else if (!referer.equals(other.referer))
+            }
+        } else if (!referer.equals(other.referer)) {
             return false;
+        }
         if (url == null) {
-            if (other.url != null)
+            if (other.url != null) {
                 return false;
-        } else if (!url.equals(other.url))
+            }
+        } else if (!url.equals(other.url)) {
             return false;
+        }
         return true;
     }
 

@@ -85,8 +85,9 @@ public class OperationEntity implements Serializable {
     }
 
     public <T extends AbstractOperation> void skip(T operation) {
-        if (operation != null)
+        if (operation != null) {
             getUndoOperations().add(operation);
+        }
     }
 
     @Override

@@ -101,6 +101,7 @@ public class SearchProcessorContext extends AbstractProcessorContext {
     /**
      *
      */
+    @Override
     public void init() {
         // init search template map
         List<SearchTemplateConfig> searchTemplateConfigs = getSearchConfig().getSearchTemplateConfigList();
@@ -280,8 +281,9 @@ public class SearchProcessorContext extends AbstractProcessorContext {
             com.treefinance.crawler.framework.proxy.Proxy proxy = getProxy();
 
             if (proxy == null) {
-                if (strict)
+                if (strict) {
                     throw new NoProxyException("Not found available proxy in remote server! >>> " + url);
+                }
 
                 logger.warn("Not found available proxy in remote server! >>> " + url);
             }

@@ -56,14 +56,15 @@ public class QuotedPrintableInputStream extends InputStream {
             throw new IOException("QuotedPrintableInputStream has been closed");
         }
         fillBuffer();
-        if (byteq.count() == 0)
+        if (byteq.count() == 0) {
             return -1;
-        else {
+        } else {
             byte val = byteq.dequeue();
-            if (val >= 0)
+            if (val >= 0) {
                 return val;
-            else
+            } else {
                 return val & 0xFF;
+            }
         }
     }
 
@@ -78,8 +79,9 @@ public class QuotedPrintableInputStream extends InputStream {
         // Debug.verify(pushbackq.count() == 0,
         // "PopulatePushbackQueue called when pushback queue was not empty!");
 
-        if (pushbackq.count() != 0)
+        if (pushbackq.count() != 0) {
             return;
+        }
 
         while (true) {
             int i = stream.read();
@@ -115,8 +117,9 @@ public class QuotedPrintableInputStream extends InputStream {
         while (byteq.count() == 0) {
             if (pushbackq.count() == 0) {
                 populatePushbackQueue();
-                if (pushbackq.count() == 0)
+                if (pushbackq.count() == 0) {
                     return;
+                }
             }
 
             byte b = pushbackq.dequeue();

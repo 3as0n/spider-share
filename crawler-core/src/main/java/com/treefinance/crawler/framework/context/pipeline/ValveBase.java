@@ -38,6 +38,7 @@ public abstract class ValveBase implements Valve {
     /**
      * Return the next Valve in this pipeline, or <code>null</code> if this is the last Valve in the pipeline.
      */
+    @Override
     public Valve getNext() {
         return next;
     }
@@ -47,6 +48,7 @@ public abstract class ValveBase implements Valve {
      * 
      * @param valve The new next valve
      */
+    @Override
     public void setNext(Valve valve) {
         this.next = valve;
     }

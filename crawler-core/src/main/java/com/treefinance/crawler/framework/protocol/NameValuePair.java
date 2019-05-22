@@ -99,15 +99,19 @@ public class NameValuePair {
      * 
      * @return A string representation.
      */
+    @Override
     public String toString() {
         return ("name=" + name + ", " + "value=" + value);
     }
 
+    @Override
     public boolean equals(final Object object) {
-        if (object == null)
+        if (object == null) {
             return false;
-        if (this == object)
+        }
+        if (this == object) {
             return true;
+        }
         if (object instanceof NameValuePair) {
             NameValuePair that = (NameValuePair)object;
             return LangUtils.equals(this.name, that.name) && LangUtils.equals(this.value, that.value);
@@ -116,6 +120,7 @@ public class NameValuePair {
         }
     }
 
+    @Override
     public int hashCode() {
         int hash = LangUtils.HASH_SEED;
         hash = LangUtils.hashCode(hash, this.name);

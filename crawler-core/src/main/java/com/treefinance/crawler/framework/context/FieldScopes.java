@@ -104,8 +104,9 @@ public final class FieldScopes {
         } else {
             map = new HashMap<>();
             for (Map<String, Object> fieldScope : fieldScopes) {
-                if (fieldScope == null)
+                if (fieldScope == null) {
                     continue;
+                }
 
                 fieldScope.forEach((key, val) -> {
                     if (val != null) {

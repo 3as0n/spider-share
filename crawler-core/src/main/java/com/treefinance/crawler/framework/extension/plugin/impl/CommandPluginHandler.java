@@ -65,8 +65,9 @@ public class CommandPluginHandler extends PluginHandler {
         } catch (Exception e) {
             throw new PluginInvokeException("Error executing command line", e);
         } finally {
-            if (executor != null)
+            if (executor != null) {
                 executor.destroy();
+            }
         }
     }
 }

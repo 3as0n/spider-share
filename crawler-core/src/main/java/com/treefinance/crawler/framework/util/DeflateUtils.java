@@ -60,8 +60,9 @@ public class DeflateUtils {
         while (true) {
             try {
                 int size = inStream.read(buf);
-                if (size <= 0)
+                if (size <= 0) {
                     break;
+                }
                 if ((written + size) > sizeLimit) {
                     outStream.write(buf, 0, sizeLimit - written);
                     break;
@@ -95,8 +96,9 @@ public class DeflateUtils {
         byte[] buf = new byte[BUF_SIZE];
         while (true) {
             int size = inStream.read(buf);
-            if (size <= 0)
+            if (size <= 0) {
                 break;
+            }
             outStream.write(buf, 0, size);
         }
         outStream.close();

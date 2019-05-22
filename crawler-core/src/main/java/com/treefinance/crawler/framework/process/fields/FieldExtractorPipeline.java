@@ -30,8 +30,9 @@ public class FieldExtractorPipeline extends ProcessPipeline {
     public FieldExtractorPipeline(List<FieldExtractor> fieldExtractors, AbstractProcessorContext context) {
         if (CollectionUtils.isNotEmpty(fieldExtractors)) {
             for (FieldExtractor fieldExtractor : fieldExtractors) {
-                if (fieldExtractor == null)
+                if (fieldExtractor == null) {
                     continue;
+                }
 
                 if (BusinessTypeDecider.support(fieldExtractor.getBusinessType(), context)) {
                     FieldExtractorImpl fieldExtractorImpl = new FieldExtractorImpl(fieldExtractor);

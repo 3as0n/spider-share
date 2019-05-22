@@ -45,6 +45,7 @@ public class HttpResponse implements Response {
         super();
     }
 
+    @Override
     public URL getUrl() {
         return url;
     }
@@ -54,6 +55,7 @@ public class HttpResponse implements Response {
         return this;
     }
 
+    @Override
     public int getCode() {
         return code;
     }
@@ -63,14 +65,17 @@ public class HttpResponse implements Response {
         return this;
     }
 
+    @Override
     public String getHeader(String name) {
         return headers.get(name);
     }
 
+    @Override
     public Metadata getHeaders() {
         return headers;
     }
 
+    @Override
     public byte[] getContent() {
         return content;
     }

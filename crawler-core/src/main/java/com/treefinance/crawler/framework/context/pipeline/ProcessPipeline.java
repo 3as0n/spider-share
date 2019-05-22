@@ -45,8 +45,9 @@ public abstract class ProcessPipeline {
     }
 
     public void addValve(Valve valve) {
-        if (valve != null)
+        if (valve != null) {
             this.pipeline.addValve(valve);
+        }
     }
 
     public void invoke(@Nonnull SpiderRequest request, @Nonnull SpiderResponse response) throws InvokeException, ResultEmptyException {

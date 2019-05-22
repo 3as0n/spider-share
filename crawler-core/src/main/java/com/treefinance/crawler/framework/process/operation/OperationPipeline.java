@@ -43,8 +43,9 @@ public class OperationPipeline extends ProcessPipeline {
         List<AbstractOperation> operations = fieldExtractor.getOperationList();
         if (CollectionUtils.isNotEmpty(operations)) {
             for (AbstractOperation operation : operations) {
-                if (operation == null)
+                if (operation == null) {
                     continue;
+                }
                 addValve(ProcessorFactory.getOperation(operation, fieldExtractor));
             }
         }

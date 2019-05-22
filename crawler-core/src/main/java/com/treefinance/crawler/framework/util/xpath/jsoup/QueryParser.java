@@ -94,8 +94,9 @@ public class QueryParser {
             }
         }
 
-        if (evals.size() == 1)
+        if (evals.size() == 1) {
             return evals.get(0);
+        }
 
         return new CombiningEvaluator.And(evals);
     }
@@ -124,15 +125,15 @@ public class QueryParser {
 
         // for most combinators: change the current eval into an AND of the current eval and the new
         // eval
-        if (combinator == '>')
+        if (combinator == '>') {
             currentEval = new CombiningEvaluator.And(newEval, new StructuralEvaluator.ImmediateParent(currentEval));
-        else if (combinator == ' ')
+        } else if (combinator == ' ') {
             currentEval = new CombiningEvaluator.And(newEval, new StructuralEvaluator.Parent(currentEval));
-        else if (combinator == '+')
+        } else if (combinator == '+') {
             currentEval = new CombiningEvaluator.And(newEval, new StructuralEvaluator.ImmediatePreviousSibling(currentEval));
-        else if (combinator == '~')
+        } else if (combinator == '~') {
             currentEval = new CombiningEvaluator.And(newEval, new StructuralEvaluator.PreviousSibling(currentEval));
-        else if (combinator == ',') { // group or.
+        } else if (combinator == ',') { // group or.
             CombiningEvaluator.Or or;
             if (currentEval instanceof CombiningEvaluator.Or) {
                 or = (CombiningEvaluator.Or)currentEval;
@@ -143,87 +144,92 @@ public class QueryParser {
                 or.add(newEval);
             }
             currentEval = or;
-        } else
+        } else {
             throw new Selector.SelectorParseException("Unknown combinator: " + combinator);
+        }
 
-        if (replaceRightMost)
+        if (replaceRightMost) {
             ((CombiningEvaluator.Or)rootEval).replaceRightMostEvaluator(currentEval);
-        else
+        } else {
             rootEval = currentEval;
+        }
         evals.add(rootEval);
     }
 
     private String consumeSubQuery() {
         StringBuilder sq = new StringBuilder();
         while (!tq.isEmpty()) {
-            if (tq.matches("("))
+            if (tq.matches("(")) {
                 sq.append("(").append(tq.chompBalanced('(', ')')).append(")");
-            else if (tq.matches("["))
+            } else if (tq.matches("[")) {
                 sq.append("[").append(tq.chompBalanced('[', ']')).append("]");
-            else if (tq.matchesAny(combinators))
+            } else if (tq.matchesAny(combinators)) {
                 break;
-            else
+            } else {
                 sq.append(tq.consume());
+            }
         }
         return sq.toString();
     }
 
     private void findElements() {
-        if (tq.matchChomp("#"))
+        if (tq.matchChomp("#")) {
             byId();
-        else if (tq.matchChomp("."))
+        } else if (tq.matchChomp(".")) {
             byClass();
-        else if (tq.matchesWord())
+        } else if (tq.matchesWord()) {
             byTag();
-        else if (tq.matches("["))
+        } else if (tq.matches("[")) {
             byAttribute();
-        else if (tq.matchChomp("*"))
+        } else if (tq.matchChomp("*")) {
             allElements();
-        else if (tq.matchChomp(":lt("))
+        } else if (tq.matchChomp(":lt(")) {
             indexLessThan();
-        else if (tq.matchChomp(":gt("))
+        } else if (tq.matchChomp(":gt(")) {
             indexGreaterThan();
-        else if (tq.matchChomp(":eq("))
+        } else if (tq.matchChomp(":eq(")) {
             indexEquals();
-        else if (tq.matches(":has("))
+        } else if (tq.matches(":has(")) {
             has();
-        else if (tq.matches(":contains("))
+        } else if (tq.matches(":contains(")) {
             contains(false);
-        else if (tq.matches(":containsOwn("))
+        } else if (tq.matches(":containsOwn(")) {
             contains(true);
-        else if (tq.matches(":matches("))
+        } else if (tq.matches(":matches(")) {
             matches(false);
-        else if (tq.matches(":matchesOwn("))
+        } else if (tq.matches(":matchesOwn(")) {
             matches(true);
-        else if (tq.matches(":not("))
+        } else if (tq.matches(":not(")) {
             not();
-        else if (tq.matchChomp(":nth-child("))
+        } else if (tq.matchChomp(":nth-child(")) {
             cssNthChild(false, false);
-        else if (tq.matchChomp(":nth-last-child("))
+        } else if (tq.matchChomp(":nth-last-child(")) {
             cssNthChild(true, false);
-        else if (tq.matchChomp(":nth-of-type("))
+        } else if (tq.matchChomp(":nth-of-type(")) {
             cssNthChild(false, true);
-        else if (tq.matchChomp(":nth-last-of-type("))
+        } else if (tq.matchChomp(":nth-last-of-type(")) {
             cssNthChild(true, true);
-        else if (tq.matchChomp(":first-child"))
+        } else if (tq.matchChomp(":first-child")) {
             evals.add(new Evaluator.IsFirstChild());
-        else if (tq.matchChomp(":last-child"))
+        } else if (tq.matchChomp(":last-child")) {
             evals.add(new Evaluator.IsLastChild());
-        else if (tq.matchChomp(":first-of-type"))
+        } else if (tq.matchChomp(":first-of-type")) {
             evals.add(new Evaluator.IsFirstOfType());
-        else if (tq.matchChomp(":last-of-type"))
+        } else if (tq.matchChomp(":last-of-type")) {
             evals.add(new Evaluator.IsLastOfType());
-        else if (tq.matchChomp(":only-child"))
+        } else if (tq.matchChomp(":only-child")) {
             evals.add(new Evaluator.IsOnlyChild());
-        else if (tq.matchChomp(":only-of-type"))
+        } else if (tq.matchChomp(":only-of-type")) {
             evals.add(new Evaluator.IsOnlyOfType());
-        else if (tq.matchChomp(":empty"))
+        } else if (tq.matchChomp(":empty")) {
             evals.add(new Evaluator.IsEmpty());
-        else if (tq.matchChomp(":root"))
+        } else if (tq.matchChomp(":root")) {
             evals.add(new Evaluator.IsRoot());
-        else
+        } else
             // unhandled
+        {
             throw new Selector.SelectorParseException("Could not parse query '%s': unexpected token at '%s'", query, tq.remainder());
+        }
 
     }
 
@@ -244,8 +250,9 @@ public class QueryParser {
         Validate.notEmpty(tagName);
 
         // namespaces: if element name is "abc:def", selector must be "abc|def", so flip:
-        if (tagName.contains("|"))
+        if (tagName.contains("|")) {
             tagName = tagName.replace("|", ":");
+        }
 
         evals.add(new Evaluator.Tag(tagName.trim().toLowerCase()));
     }
@@ -258,30 +265,27 @@ public class QueryParser {
         cq.consumeWhitespace();
 
         if (cq.isEmpty()) {
-            if (key.startsWith("^"))
+            if (key.startsWith("^")) {
                 evals.add(new Evaluator.AttributeStarting(key.substring(1)));
-            else
+            } else {
                 evals.add(new Evaluator.Attribute(key));
+            }
         } else {
-            if (cq.matchChomp("="))
+            if (cq.matchChomp("=")) {
                 evals.add(new Evaluator.AttributeWithValue(key, cq.remainder()));
-
-            else if (cq.matchChomp("!="))
+            } else if (cq.matchChomp("!=")) {
                 evals.add(new Evaluator.AttributeWithValueNot(key, cq.remainder()));
-
-            else if (cq.matchChomp("^="))
+            } else if (cq.matchChomp("^=")) {
                 evals.add(new Evaluator.AttributeWithValueStarting(key, cq.remainder()));
-
-            else if (cq.matchChomp("$="))
+            } else if (cq.matchChomp("$=")) {
                 evals.add(new Evaluator.AttributeWithValueEnding(key, cq.remainder()));
-
-            else if (cq.matchChomp("*="))
+            } else if (cq.matchChomp("*=")) {
                 evals.add(new Evaluator.AttributeWithValueContaining(key, cq.remainder()));
-
-            else if (cq.matchChomp("~="))
+            } else if (cq.matchChomp("~=")) {
                 evals.add(new Evaluator.AttributeWithValueMatching(key, Pattern.compile(cq.remainder())));
-            else
+            } else {
                 throw new Selector.SelectorParseException("Could not parse attribute query '%s': unexpected token at '%s'", query, cq.remainder());
+            }
         }
     }
 
@@ -322,16 +326,18 @@ public class QueryParser {
         } else {
             throw new Selector.SelectorParseException("Could not parse nth-index '%s': unexpected format", argS);
         }
-        if (ofType)
-            if (backwards)
+        if (ofType) {
+            if (backwards) {
                 evals.add(new Evaluator.IsNthLastOfType(a, b));
-            else
+            } else {
                 evals.add(new Evaluator.IsNthOfType(a, b));
-        else {
-            if (backwards)
+            }
+        } else {
+            if (backwards) {
                 evals.add(new Evaluator.IsNthLastChild(a, b));
-            else
+            } else {
                 evals.add(new Evaluator.IsNthChild(a, b));
+            }
         }
     }
 
@@ -354,10 +360,11 @@ public class QueryParser {
         tq.consume(own ? ":containsOwn" : ":contains");
         String searchText = TokenQueue.unescape(tq.chompBalanced('(', ')'));
         Validate.notEmpty(searchText, ":contains(text) query must not be empty");
-        if (own)
+        if (own) {
             evals.add(new Evaluator.ContainsOwnText(searchText));
-        else
+        } else {
             evals.add(new Evaluator.ContainsText(searchText));
+        }
     }
 
     // :matches(regex), matchesOwn(regex)
@@ -366,10 +373,11 @@ public class QueryParser {
         String regex = tq.chompBalanced('(', ')'); // don't unescape, as regex bits will be escaped
         Validate.notEmpty(regex, ":matches(regex) query must not be empty");
 
-        if (own)
+        if (own) {
             evals.add(new Evaluator.MatchesOwn(Pattern.compile(regex)));
-        else
+        } else {
             evals.add(new Evaluator.Matches(Pattern.compile(regex)));
+        }
     }
 
     // :not(selector)
@@ -419,8 +427,9 @@ abstract class CombiningEvaluator extends Evaluator {
         public boolean matches(Element root, Element node) {
             for (int i = 0; i < evaluators.size(); i++) {
                 Evaluator s = evaluators.get(i);
-                if (!s.matches(root, node))
+                if (!s.matches(root, node)) {
                     return false;
+                }
             }
             return true;
         }
@@ -440,11 +449,13 @@ abstract class CombiningEvaluator extends Evaluator {
          */
         Or(Collection<Evaluator> evaluators) {
             super();
-            if (evaluators.size() > 1)
+            if (evaluators.size() > 1) {
                 this.evaluators.add(new And(evaluators));
-            else
+            } else
                 // 0 or 1
+            {
                 this.evaluators.addAll(evaluators);
+            }
         }
 
         Or() {
@@ -459,8 +470,9 @@ abstract class CombiningEvaluator extends Evaluator {
         public boolean matches(Element root, Element node) {
             for (int i = 0; i < evaluators.size(); i++) {
                 Evaluator s = evaluators.get(i);
-                if (s.matches(root, node))
+                if (s.matches(root, node)) {
                     return true;
+                }
             }
             return false;
         }
@@ -478,6 +490,7 @@ abstract class StructuralEvaluator extends Evaluator {
 
     static class Root extends Evaluator {
 
+        @Override
         public boolean matches(Element root, Element element) {
             return root == element;
         }
@@ -489,14 +502,17 @@ abstract class StructuralEvaluator extends Evaluator {
             this.evaluator = evaluator;
         }
 
+        @Override
         public boolean matches(Element root, Element element) {
             for (Element e : element.getAllElements()) {
-                if (e != element && evaluator.matches(root, e))
+                if (e != element && evaluator.matches(root, e)) {
                     return true;
+                }
             }
             return false;
         }
 
+        @Override
         public String toString() {
             return String.format(":has(%s)", evaluator);
         }
@@ -508,10 +524,12 @@ abstract class StructuralEvaluator extends Evaluator {
             this.evaluator = evaluator;
         }
 
+        @Override
         public boolean matches(Element root, Element node) {
             return !evaluator.matches(root, node);
         }
 
+        @Override
         public String toString() {
             return String.format(":not%s", evaluator);
         }
@@ -523,19 +541,23 @@ abstract class StructuralEvaluator extends Evaluator {
             this.evaluator = evaluator;
         }
 
+        @Override
         public boolean matches(Element root, Element element) {
-            if (root == element)
+            if (root == element) {
                 return false;
+            }
 
             Element parent = element.parent();
             while (parent != root) {
-                if (evaluator.matches(root, parent))
+                if (evaluator.matches(root, parent)) {
                     return true;
+                }
                 parent = parent.parent();
             }
             return false;
         }
 
+        @Override
         public String toString() {
             return String.format(":parent%s", evaluator);
         }
@@ -547,14 +569,17 @@ abstract class StructuralEvaluator extends Evaluator {
             this.evaluator = evaluator;
         }
 
+        @Override
         public boolean matches(Element root, Element element) {
-            if (root == element)
+            if (root == element) {
                 return false;
+            }
 
             Element parent = element.parent();
             return parent != null && evaluator.matches(root, parent);
         }
 
+        @Override
         public String toString() {
             return String.format(":ImmediateParent%s", evaluator);
         }
@@ -566,21 +591,25 @@ abstract class StructuralEvaluator extends Evaluator {
             this.evaluator = evaluator;
         }
 
+        @Override
         public boolean matches(Element root, Element element) {
-            if (root == element)
+            if (root == element) {
                 return false;
+            }
 
             Element prev = element.previousElementSibling();
 
             while (prev != null) {
-                if (evaluator.matches(root, prev))
+                if (evaluator.matches(root, prev)) {
                     return true;
+                }
 
                 prev = prev.previousElementSibling();
             }
             return false;
         }
 
+        @Override
         public String toString() {
             return String.format(":prev*%s", evaluator);
         }
@@ -592,14 +621,17 @@ abstract class StructuralEvaluator extends Evaluator {
             this.evaluator = evaluator;
         }
 
+        @Override
         public boolean matches(Element root, Element element) {
-            if (root == element)
+            if (root == element) {
                 return false;
+            }
 
             Element prev = element.previousElementSibling();
             return prev != null && evaluator.matches(root, prev);
         }
 
+        @Override
         public String toString() {
             return String.format(":prev%s", evaluator);
         }

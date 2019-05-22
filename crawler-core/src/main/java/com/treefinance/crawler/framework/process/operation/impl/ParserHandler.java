@@ -169,12 +169,14 @@ class ParserHandler {
         List<Map<String, Object>> fieldScopes = new ArrayList<>();
         for (ParserPattern parserPattern : mappings) {
             String regex = parserPattern.getRegex();
-            if (StringUtils.isEmpty(regex))
+            if (StringUtils.isEmpty(regex)) {
                 continue;
+            }
 
             List<IndexMapping> indexMappings = parserPattern.getIndexMappings();
-            if (CollectionUtils.isEmpty(indexMappings))
+            if (CollectionUtils.isEmpty(indexMappings)) {
                 continue;
+            }
 
             Matcher m = RegExp.getMatcher(regex, content);
             int i = 0;
@@ -188,8 +190,9 @@ class ParserHandler {
                 }
 
                 for (IndexMapping indexMapping : indexMappings) {
-                    if (StringUtils.isEmpty(indexMapping.getPlaceholder()))
+                    if (StringUtils.isEmpty(indexMapping.getPlaceholder())) {
                         continue;
+                    }
 
                     try {
                         indexFieldMap.put(indexMapping.getPlaceholder(), m.group(indexMapping.getGroupIndex()));

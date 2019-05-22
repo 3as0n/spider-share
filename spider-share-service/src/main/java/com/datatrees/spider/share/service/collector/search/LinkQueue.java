@@ -94,8 +94,9 @@ public class LinkQueue {
             int newLinkNum = 0;
             long preId = bdbOperator.getCurrentId();
             for (LinkNode linkNode : links) {
-                if (linkNode == null)
+                if (linkNode == null) {
                     continue;
+                }
                 try {
                     newLinkNum += addLink(linkNode);
                 } catch (Exception ex) {

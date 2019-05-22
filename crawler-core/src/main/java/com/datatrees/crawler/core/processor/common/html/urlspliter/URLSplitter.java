@@ -52,8 +52,9 @@ public class URLSplitter {
                         }
                         tmpOriginalURL = new StringBuffer(tmpOriginalURL.substring(firstUrl.length()));
                         // To avoid special situation,termination outer loop
-                        if (urlList.contains(tmpOriginalURL))
+                        if (urlList.contains(tmpOriginalURL)) {
                             break loop;
+                        }
 
                         // reset round value
                         round = 2;

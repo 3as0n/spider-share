@@ -99,6 +99,7 @@ public class CustomInflaterInputStream extends InflaterInputStream {
      * @return the byte read, or -1 if end of compressed input is reached
      * @exception IOException if an I/O error has occurred
      */
+    @Override
     public int read() throws IOException {
         ensureOpen();
         return read(singleByteBuf, 0, 1) == -1 ? -1 : singleByteBuf[0] & 0xff;
@@ -119,6 +120,7 @@ public class CustomInflaterInputStream extends InflaterInputStream {
      * @exception ZipException if a ZIP format error has occurred
      * @exception IOException if an I/O error has occurred
      */
+    @Override
     public int read(byte[] b, int off, int len) throws IOException {
         ensureOpen();
         if (b == null) {
@@ -157,6 +159,7 @@ public class CustomInflaterInputStream extends InflaterInputStream {
      * @return 1 before EOF and 0 after EOF.
      * @exception IOException if an I/O error occurs.
      */
+    @Override
     public int available() throws IOException {
         ensureOpen();
         if (reachEOF) {
@@ -174,6 +177,7 @@ public class CustomInflaterInputStream extends InflaterInputStream {
      * @exception IOException if an I/O error has occurred
      * @exception IllegalArgumentException if n < 0
      */
+    @Override
     public long skip(long n) throws IOException {
         if (n < 0) {
             throw new IllegalArgumentException("negative skip length");
@@ -201,10 +205,12 @@ public class CustomInflaterInputStream extends InflaterInputStream {
      *
      * @exception IOException if an I/O error has occurred
      */
+    @Override
     public void close() throws IOException {
         if (!closed) {
-            if (usesDefaultInflater)
+            if (usesDefaultInflater) {
                 inf.end();
+            }
             in.close();
             closed = true;
         }
@@ -219,6 +225,7 @@ public class CustomInflaterInputStream extends InflaterInputStream {
      * @see InputStream#mark(int)
      * @see InputStream#reset()
      */
+    @Override
     public boolean markSupported() {
         return false;
     }
@@ -231,6 +238,7 @@ public class CustomInflaterInputStream extends InflaterInputStream {
      * @param readlimit the maximum limit of bytes that can be read before the mark position becomes invalid.
      * @see InputStream#reset()
      */
+    @Override
     public synchronized void mark(int readlimit) {}
 
     /**
@@ -244,6 +252,7 @@ public class CustomInflaterInputStream extends InflaterInputStream {
      * @see InputStream#mark(int)
      * @see IOException
      */
+    @Override
     public synchronized void reset() throws IOException {
         throw new IOException("mark/reset not supported");
     }
@@ -253,6 +262,7 @@ public class CustomInflaterInputStream extends InflaterInputStream {
      *
      * @exception IOException if an I/O error has occurred
      */
+    @Override
     protected void fill() throws IOException {
         ensureOpen();
         len = in.read(buf, 0, buf.length);

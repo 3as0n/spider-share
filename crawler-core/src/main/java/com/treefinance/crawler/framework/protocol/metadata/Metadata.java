@@ -149,6 +149,7 @@ public class Metadata implements CreativeCommons, DublinCore, HttpHeaders, Feed 
         metadata.clear();
     }
 
+    @Override
     public boolean equals(Object o) {
 
         if (o == null) {
@@ -182,6 +183,7 @@ public class Metadata implements CreativeCommons, DublinCore, HttpHeaders, Feed 
         return true;
     }
 
+    @Override
     public String toString() {
         StringBuffer buf = new StringBuffer();
         String[] names = names();

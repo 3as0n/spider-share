@@ -98,11 +98,13 @@ public abstract class HttpBase implements Protocol {
     public HttpBase() {}
 
     // Inherited Javadoc
+    @Override
     public Configuration getConf() {
         return this.conf;
     }
 
     // Inherited Javadoc
+    @Override
     public void setConf(Configuration conf) {
         this.conf = conf;
 
@@ -126,10 +128,12 @@ public abstract class HttpBase implements Protocol {
         logConf();
     }
 
+    @Override
     public ProtocolOutput getProtocolOutput(String url) {
         return getProtocolOutput(url, 0);
     }
 
+    @Override
     public ProtocolOutput getProtocolOutput(ProtocolInput input) {
         Response response = null;
         try {
@@ -156,10 +160,12 @@ public abstract class HttpBase implements Protocol {
             } else if (code >= 300 && code < 400) { // handle redirect
                 String location = response.getHeader(HttpHeaders.LOCATION);
                 // some broken servers, such as MS IIS, use lowercase header name...
-                if (location == null)
+                if (location == null) {
                     location = response.getHeader("location");
-                if (location == null)
+                }
+                if (location == null) {
                     location = "";
+                }
                 u = new URL(u, location);
                 c.setUrl(u.toString());
                 int protocolStatusCode;
@@ -204,6 +210,7 @@ public abstract class HttpBase implements Protocol {
         }
     }
 
+    @Override
     public ProtocolOutput getProtocolOutput(String url, long lastModified) {
         return getProtocolOutput(new ProtocolInput().setUrl(url).setLastModify(lastModified));
     }
@@ -274,8 +281,9 @@ public abstract class HttpBase implements Protocol {
 
         byte[] content = DeflateUtils.inflateBestEffort(compressed, getMaxContent());
 
-        if (content == null)
+        if (content == null) {
             throw new IOException("inflateBestEffort returned null");
+        }
 
         logger.trace("fetched " + compressed.length + " bytes of compressed content (expanded to " + content.length + " bytes) from " + url);
 

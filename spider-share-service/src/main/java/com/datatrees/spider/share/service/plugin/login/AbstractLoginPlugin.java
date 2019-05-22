@@ -77,17 +77,21 @@ public abstract class AbstractLoginPlugin extends AbstractRawdataPlugin implemen
         this.qRCodeVerification = qRCodeVerification;
     }
 
+    @Override
     public Map<String, Object> preLogin(Map<String, String> preLoginParams) {
-        if (logger.isDebugEnabled())
+        if (logger.isDebugEnabled()) {
             logger.debug("run default preLogin!");
+        }
         Map<String, Object> paramsMap = new HashMap<String, Object>();
         paramsMap.putAll(preLoginParams);
         return paramsMap;
     }
 
+    @Override
     public Map<String, Object> postLogin(Map<String, Object> postLoginParams) {
-        if (logger.isDebugEnabled())
+        if (logger.isDebugEnabled()) {
             logger.debug("run default postLogin!");
+        }
         return postLoginParams;
     }
 
@@ -210,6 +214,7 @@ public abstract class AbstractLoginPlugin extends AbstractRawdataPlugin implemen
         throw new LoginFailException(taskId, errorCode);
     }
 
+    @Override
     protected boolean isTimeOut(long startTime, String websiteName) throws LoginTimeOutException {
         long now = System.currentTimeMillis();
         int maxInterval = PropertiesConfiguration.getInstance().getInt(websiteName + ".login.max.waittime", 2 * 60 * 1000);

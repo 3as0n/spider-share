@@ -84,6 +84,7 @@ public class ProtocolHttpMethodDirector extends HttpMethodDirector {
      * @exception IOException
      * @exception HttpException
      */
+    @Override
     public void executeMethod(final HttpMethod method) throws IOException, HttpException {
         if (method == null) {
             throw new IllegalArgumentException("Method may not be null");
@@ -185,6 +186,7 @@ public class ProtocolHttpMethodDirector extends HttpMethodDirector {
     /**
      * @return
      */
+    @Override
     public HostConfiguration getHostConfiguration() {
         return hostConfiguration;
     }
@@ -192,6 +194,7 @@ public class ProtocolHttpMethodDirector extends HttpMethodDirector {
     /**
      * @return
      */
+    @Override
     public HttpState getState() {
         return state;
     }
@@ -199,6 +202,7 @@ public class ProtocolHttpMethodDirector extends HttpMethodDirector {
     /**
      * @return
      */
+    @Override
     public HttpConnectionManager getConnectionManager() {
         return connectionManager;
     }
@@ -206,6 +210,7 @@ public class ProtocolHttpMethodDirector extends HttpMethodDirector {
     /**
      * @return
      */
+    @Override
     public HttpParams getParams() {
         return this.params;
     }

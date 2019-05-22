@@ -37,8 +37,9 @@ public class PathDrawer {
     }
 
     public ImageResource drawPath(List<PathSegment> path) throws IOException {
-        if (path.size() == 0)
+        if (path.size() == 0) {
             return new ImageResource("PathImage", new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB));
+        }
         Rectangle2D.Double bounds = getPathBounds(path);
         if (bounds.getHeight() <= 0 || bounds.getWidth() <= 0) {
             bounds.width = bounds.height = 1;

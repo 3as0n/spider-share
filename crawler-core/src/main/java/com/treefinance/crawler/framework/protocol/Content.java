@@ -57,14 +57,18 @@ public class Content {
     }
 
     public Content(String url, String base, byte[] content, String contentType, Metadata metadata) {
-        if (url == null)
+        if (url == null) {
             throw new IllegalArgumentException("null url");
-        if (base == null)
+        }
+        if (base == null) {
             throw new IllegalArgumentException("null base");
-        if (content == null)
+        }
+        if (content == null) {
             throw new IllegalArgumentException("null content");
-        if (metadata == null)
+        }
+        if (metadata == null) {
             throw new IllegalArgumentException("null metadata");
+        }
 
         this.url = url;
         this.base = base;
@@ -217,6 +221,7 @@ public class Content {
         this.responseCode = responseCode;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof Content)) {
             return false;
@@ -226,6 +231,7 @@ public class Content {
             && this.metadata.equals(that.metadata);
     }
 
+    @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
 

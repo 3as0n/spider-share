@@ -94,6 +94,7 @@ public class CustomGzipStream extends InflaterInputStream {
      *            <code>len</code> is greater than <code>buf.length - off</code>
      * @exception IOException if an I/O error has occurred or the compressed input data is corrupt
      */
+    @Override
     public int read(byte[] buf, int off, int len) throws IOException {
         ensureOpen();
         if (eos) {
@@ -118,6 +119,7 @@ public class CustomGzipStream extends InflaterInputStream {
      *
      * @exception IOException if an I/O error has occurred
      */
+    @Override
     public void close() throws IOException {
         if (!closed) {
             super.close();
@@ -202,8 +204,9 @@ public class CustomGzipStream extends InflaterInputStream {
         // Uses left-to-right evaluation order
         if ((readUInt(in) != crc.getValue()) ||
         // rfc1952; ISIZE is the input size modulo 2^32
-            (readUInt(in) != (inf.getBytesWritten() & 0xffffffffL)))
+            (readUInt(in) != (inf.getBytesWritten() & 0xffffffffL))) {
             return true;
+        }
         // throw new IOException("Corrupt GZIP trailer");
 
         // If there are more bytes available in "in" or
@@ -219,8 +222,9 @@ public class CustomGzipStream extends InflaterInputStream {
             }
 
             inf.reset();
-            if (n > m)
+            if (n > m) {
                 inf.setInput(buf, len - n + m, n - m);
+            }
             return false;
         }
 

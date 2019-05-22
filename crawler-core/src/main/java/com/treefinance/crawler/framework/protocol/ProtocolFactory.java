@@ -71,15 +71,18 @@ public class ProtocolFactory {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o)
+            if (this == o) {
                 return true;
-            if (o == null || getClass() != o.getClass())
+            }
+            if (o == null || getClass() != o.getClass()) {
                 return false;
+            }
 
             Key key = (Key)o;
 
-            if (conf != null ? !conf.equals(key.conf) : key.conf != null)
+            if (conf != null ? !conf.equals(key.conf) : key.conf != null) {
                 return false;
+            }
             return type.equals(key.type);
         }
 

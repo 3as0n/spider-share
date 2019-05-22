@@ -169,8 +169,9 @@ public class XmlConfigBuilder implements ConfigBuilder {
             element.addContent(lastParentElement);
             lastParentElement = element;
         }
-        if (!lastParentElement.equals(parent))
+        if (!lastParentElement.equals(parent)) {
             parent.addContent(lastParentElement);
+        }
     }
 
     private void processObjectWithAttr(Element parent, Object obj) {

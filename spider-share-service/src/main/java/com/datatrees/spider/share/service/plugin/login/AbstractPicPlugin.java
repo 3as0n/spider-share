@@ -158,6 +158,7 @@ public abstract class AbstractPicPlugin extends AbstractRawdataPlugin {
      */
     public abstract String vaildPicCode(Map<String, String> parms, String pidCode);
 
+    @Override
     protected int getMaxInterval(String websiteName) {
         return PropertiesConfiguration.getInstance().getInt(websiteName + ".picCode.max.waittime", 2 * 60 * 1000);
     }

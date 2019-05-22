@@ -27,6 +27,7 @@ public enum PaymentUnit {
         return value;
     }
 
+    @Override
     public String toString() {
         switch (this) {
             case IN:

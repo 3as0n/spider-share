@@ -164,6 +164,7 @@ public abstract class AbstractQRCodePlugin extends AbstractRawdataPlugin impleme
         }
     }
 
+    @Override
     protected int getMaxInterval(String websiteName) {
         return PropertiesConfiguration.getInstance().getInt(websiteName + ".qrCode.max.waittime", 2 * 60 * 1000);
     }

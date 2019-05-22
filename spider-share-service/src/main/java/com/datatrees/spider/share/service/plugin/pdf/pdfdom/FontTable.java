@@ -44,15 +44,17 @@ public class FontTable {
             String family = findFontFamily(fontName);
             String usedName = nextUsedName(family);
             Entry newEntry = new Entry(font.getName(), usedName, font);
-            if (newEntry.isEntryValid())
+            if (newEntry.isEntryValid()) {
                 add(newEntry);
+            }
         }
     }
 
     public Entry get(PDFont find) {
         for (Entry entryOn : entries) {
-            if (entryOn.equalToPDFont(find))
+            if (entryOn.equalToPDFont(find)) {
                 return entryOn;
+            }
         }
         return null;
     }
@@ -63,24 +65,27 @@ public class FontTable {
 
     public String getUsedName(PDFont font) {
         Entry entry = get(font);
-        if (entry == null)
+        if (entry == null) {
             return null;
-        else
+        } else {
             return entry.usedName;
+        }
     }
 
     protected String nextUsedName(String fontName) {
         int i = 1;
         String usedName = fontName;
-        while (isNameUsed(usedName))
+        while (isNameUsed(usedName)) {
             usedName = fontName + i;
+        }
         return usedName;
     }
 
     protected boolean isNameUsed(String name) {
         for (Entry entryOn : entries) {
-            if (entryOn.usedName.equals(name))
+            if (entryOn.usedName.equals(name)) {
                 return true;
+            }
         }
         return false;
     }
@@ -96,7 +101,9 @@ public class FontTable {
         if (familyMatcher.find())
             // currently tacking on weight/style too since we don't generate html for it yet
             // and it's helpful for debugugging
+        {
             familyName = familyMatcher.group(1) + " " + familyMatcher.group(2);
+        }
         // browsers will barf if + in family name
         return familyName.replaceAll("[+]", " ");
     }
@@ -125,18 +132,22 @@ public class FontTable {
             this.baseFont = font;
         }
 
+        @Override
         public byte[] getData() throws IOException {
-            if (cachedFontData != null)
+            if (cachedFontData != null) {
                 return cachedFontData;
-            if (descriptor.getFontFile2() != null && baseFont instanceof PDType0Font)
+            }
+            if (descriptor.getFontFile2() != null && baseFont instanceof PDType0Font) {
                 cachedFontData = loadType0TtfDescendantFont();
-            else if (descriptor.getFontFile2() != null)
+            } else if (descriptor.getFontFile2() != null) {
                 cachedFontData = loadTrueTypeFont(descriptor.getFontFile2());
-            else if (descriptor.getFontFile() != null)
+            } else if (descriptor.getFontFile() != null) {
                 cachedFontData = loadType1Font(descriptor.getFontFile());
-            else if (descriptor.getFontFile3() != null)
+            } else if (descriptor.getFontFile3() != null)
                 // FontFile3 docs say any font type besides TTF/OTF or Type 1..
+            {
                 cachedFontData = loadOtherTypeFont(descriptor.getFontFile3());
+            }
             return cachedFontData;
         }
 
@@ -167,27 +178,35 @@ public class FontTable {
 
         @Override
         public boolean equals(Object obj) {
-            if (this == obj)
+            if (this == obj) {
                 return true;
-            if (obj == null)
+            }
+            if (obj == null) {
                 return false;
-            if (getClass() != obj.getClass())
+            }
+            if (getClass() != obj.getClass()) {
                 return false;
+            }
             Entry other = (Entry)obj;
-            if (!getOuterType().equals(other.getOuterType()))
+            if (!getOuterType().equals(other.getOuterType())) {
                 return false;
+            }
             if (fontName == null) {
-                if (other.fontName != null)
+                if (other.fontName != null) {
                     return false;
-            } else if (!fontName.equals(other.fontName))
+                }
+            } else if (!fontName.equals(other.fontName)) {
                 return false;
+            }
             return true;
         }
 
+        @Override
         public String getFileEnding() {
             return fileEnding;
         }
 
+        @Override
         public String getMimeType() {
             return mimeType;
         }
@@ -199,8 +218,9 @@ public class FontTable {
             byte[] fontData = fontFile.toByteArray();
             FVFont font = FontVerter.readFont(fontData);
             byte[] fvFontData = tryNormalizeFVFont(font);
-            if (fvFontData.length != 0)
+            if (fvFontData.length != 0) {
                 fontData = fvFontData;
+            }
             return fontData;
         }
 
@@ -210,8 +230,9 @@ public class FontTable {
             try {
                 FVFont font = PdfFontExtractor.convertType0FontToOpenType((PDType0Font)baseFont);
                 byte[] fontData = tryNormalizeFVFont(font);
-                if (fontData.length != 0)
+                if (fontData.length != 0) {
                     return fontData;
+                }
             } catch (Exception ex) {
                 log.warn("Error loading type 0 with ttf descendant font " + fontName, ex);
             }
@@ -242,8 +263,9 @@ public class FontTable {
         private byte[] tryNormalizeFVFont(FVFont font) {
             try {
                 // browser validation can fail for many TTF fonts from pdfs
-                if (!font.isValid())
+                if (!font.isValid()) {
                     font.normalize();
+                }
                 return font.getData();
             } catch (Exception ex) {
                 log.error(ex.getMessage(), ex);

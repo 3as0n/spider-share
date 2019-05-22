@@ -32,6 +32,7 @@ public class LinkNodeComparator implements Comparator<byte[]> {
         return Long.parseLong(strValue.toString());
     }
 
+    @Override
     public int compare(byte[] o1, byte[] o2) {
 
         long k1 = byte2long(o1);

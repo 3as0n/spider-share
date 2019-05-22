@@ -40,6 +40,14 @@ public final class Language {
     public final static String USER_LANGUAGE_CONFIG = PropertiesConfiguration.getInstance().get("user.language.config", "");
     public final static String USER_LANGUAGE_PATTERN_PREFIX = "pattern.";
     private static final Language INSTANCE = new Language();
+    private static final Pattern LANGUAGE_JP_PATTERN = Pattern.compile("[\\u3041-\\u30FF\\u3104-\\u312A\\uFF66-\\uFF9E]+");
+    private static final Pattern LANGUAGE_CH_PATTERN = Pattern.compile("[\\u4E00-\\u9FFF]+");
+    private static final Pattern LANGUAGE_RU_PATTERN = Pattern.compile("[\\u0400-\\u052F]+");
+    private static final Pattern LANGUAGE_KO_PATTERN = Pattern.compile("[\\uAC00-\\uD7AC]+");
+    private static final Pattern LANGUAGE_AR_PATTERN = Pattern.compile("[\\u0600-\\u06FF-\\u0750-\\u077F]+");
+    private static final Pattern LANGUAGE_DE_PATTERN = Pattern.compile("[\\u00C0-\\u00FF]+");
+    private static final Pattern LANGUAGE_TH_PATTERN = Pattern.compile("[\\u0E00-\\u0E7F]+");
+    private static final Pattern LANGUAGE_EN_PATTERN = Pattern.compile("[A-Za-z]+");
     private Map<String, Pattern> languagePatternMapping = new LinkedHashMap<String, Pattern>();
 
     private Language() {
@@ -75,14 +83,14 @@ public final class Language {
     }
 
     private void addDefaultConfig() {
-        languagePatternMapping.put(LANGUAGE_JP, Pattern.compile("[\\u3041-\\u30FF\\u3104-\\u312A\\uFF66-\\uFF9E]+"));
-        languagePatternMapping.put(LANGUAGE_CH, Pattern.compile("[\\u4E00-\\u9FFF]+"));
-        languagePatternMapping.put(LANGUAGE_RU, Pattern.compile("[\\u0400-\\u052F]+"));
-        languagePatternMapping.put(LANGUAGE_KO, Pattern.compile("[\\uAC00-\\uD7AC]+"));
-        languagePatternMapping.put(LANGUAGE_AR, Pattern.compile("[\\u0600-\\u06FF-\\u0750-\\u077F]+"));
-        languagePatternMapping.put(LANGUAGE_DE, Pattern.compile("[\\u00C0-\\u00FF]+"));
-        languagePatternMapping.put(LANGUAGE_TH, Pattern.compile("[\\u0E00-\\u0E7F]+"));
-        languagePatternMapping.put(LANGUAGE_EN, Pattern.compile("[A-Za-z]+"));
+        languagePatternMapping.put(LANGUAGE_JP, LANGUAGE_JP_PATTERN);
+        languagePatternMapping.put(LANGUAGE_CH, LANGUAGE_CH_PATTERN);
+        languagePatternMapping.put(LANGUAGE_RU, LANGUAGE_RU_PATTERN);
+        languagePatternMapping.put(LANGUAGE_KO, LANGUAGE_KO_PATTERN);
+        languagePatternMapping.put(LANGUAGE_AR, LANGUAGE_AR_PATTERN);
+        languagePatternMapping.put(LANGUAGE_DE, LANGUAGE_DE_PATTERN);
+        languagePatternMapping.put(LANGUAGE_TH, LANGUAGE_TH_PATTERN);
+        languagePatternMapping.put(LANGUAGE_EN, LANGUAGE_EN_PATTERN);
     }
 
     private void addUserConfig() {

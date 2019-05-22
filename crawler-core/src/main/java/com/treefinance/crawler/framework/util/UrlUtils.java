@@ -32,8 +32,9 @@ public final class UrlUtils {
     private UrlUtils() {}
 
     public static String urlEncode(String value, String charset, boolean strict) {
-        if (StringUtils.isEmpty(value))
+        if (StringUtils.isEmpty(value)) {
             return value;
+        }
 
         String encoding = StringUtils.trim(charset);
 

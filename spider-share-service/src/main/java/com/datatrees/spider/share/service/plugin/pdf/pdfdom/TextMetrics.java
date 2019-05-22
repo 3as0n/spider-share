@@ -85,17 +85,19 @@ public class TextMetrics {
     }
 
     public float getTop() {
-        if (ascent != 0)
+        if (ascent != 0) {
             return baseline - ascent;
-        else
+        } else {
             return baseline - getBoundingBoxAscent();
+        }
     }
 
     public float getBottom() {
-        if (descent != 0)
+        if (descent != 0) {
             return baseline - descent;
-        else
+        } else {
             return baseline - getBoundingBoxDescent();
+        }
     }
 
     public float getBaseline() {

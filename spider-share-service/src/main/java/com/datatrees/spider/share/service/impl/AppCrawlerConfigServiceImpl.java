@@ -209,12 +209,14 @@ public class AppCrawlerConfigServiceImpl implements AppCrawlerConfigService, Ini
                     logger.debug("业务标签类型，bizType: {}, bizName: {}", result.getBizType(), result.getBizName());
 
                     WebsiteType websiteType = getWebsiteType(result.getBizType());
-                    if (websiteType == null)
+                    if (websiteType == null) {
                         continue;
+                    }
 
                     List<BusinessType> businessTypes = BusinessType.getBusinessTypeList(websiteType);
-                    if (CollectionUtils.isEmpty(businessTypes))
+                    if (CollectionUtils.isEmpty(businessTypes)) {
                         continue;
+                    }
 
                     Map<String, ProjectParam> map = new HashMap<>();
                     Iterator<AppCrawlerConfig> iterator = configs.iterator();

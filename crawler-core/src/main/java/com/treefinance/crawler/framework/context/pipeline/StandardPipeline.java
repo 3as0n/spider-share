@@ -37,6 +37,7 @@ public class StandardPipeline implements Pipeline {
      */
     protected Valve last = null;
 
+    @Override
     public void addValve(Valve valve) {
         Valve old = last;
         last = valve;
@@ -48,6 +49,7 @@ public class StandardPipeline implements Pipeline {
         }
     }
 
+    @Override
     public Valve[] getValves() {
         List<Valve> valveList = new ArrayList<>();
 
@@ -60,6 +62,7 @@ public class StandardPipeline implements Pipeline {
         return valveList.toArray(new Valve[valveList.size()]);
     }
 
+    @Override
     public void removeValve(Valve valve) {
         if (first == valve) {
             first = first.getNext();
@@ -83,6 +86,7 @@ public class StandardPipeline implements Pipeline {
         }
     }
 
+    @Override
     public Valve getFirst() {
         return first;
     }

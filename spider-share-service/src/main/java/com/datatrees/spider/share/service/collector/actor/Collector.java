@@ -408,8 +408,9 @@ public class Collector {
             }
         }
         if (needSendToMQ) {
-            if (submitkeyResult != null)
+            if (submitkeyResult != null) {
                 result.putAll(submitkeyResult);
+            }
             result.putAll(taskMessage.getCollectorMessage().getSendBack());
             result.put("taskId", task.getTaskId());
             result.put("websiteName", resultMessage.getWebsiteName());

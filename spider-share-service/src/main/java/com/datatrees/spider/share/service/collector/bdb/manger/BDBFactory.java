@@ -27,6 +27,7 @@ public enum BDBFactory implements Environment {
 
     private BDBEnvironmentManager manager = BDBEnvironmentManager.getInstance();
 
+    @Override
     public synchronized BDBWapper createDB() throws Exception {
         BDBEnvironmentWapper bdbEnvironmentWapper = manager.takeEnv();
         BDBWapper wapper = bdbEnvironmentWapper.createDB();
@@ -38,6 +39,7 @@ public enum BDBFactory implements Environment {
         manager.checkWapperDestory(bdbEnvironmentWapper);
     }
 
+    @Override
     @Deprecated
     public void deleteDB(String databaseName) {}
 }

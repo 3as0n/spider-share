@@ -89,29 +89,39 @@ public class BoxStyle {
         this.strokeColor = src.strokeColor;
     }
 
+    @Override
     public String toString() {
         StringBuilder ret = new StringBuilder();
-        if (position != null && !position.equals(defaultPosition))
+        if (position != null && !position.equals(defaultPosition)) {
             appendString(ret, "position", position);
+        }
         appendLength(ret, "top", top);
         appendLength(ret, "left", left);
         appendLength(ret, "line-height", lineHeight);
-        if (fontFamily != null)
+        if (fontFamily != null) {
             appendString(ret, "font-family", fontFamily);
-        if (fontSize != 0)
+        }
+        if (fontSize != 0) {
             appendLength(ret, "font-size", fontSize);
-        if (fontWeight != null && !defaultFontWeight.equals(fontWeight))
+        }
+        if (fontWeight != null && !defaultFontWeight.equals(fontWeight)) {
             appendString(ret, "font-weight", fontWeight);
-        if (fontStyle != null && !defaultFontStyle.equals(fontStyle))
+        }
+        if (fontStyle != null && !defaultFontStyle.equals(fontStyle)) {
             appendString(ret, "font-style", fontStyle);
-        if (wordSpacing != 0)
+        }
+        if (wordSpacing != 0) {
             appendLength(ret, "word-spacing", wordSpacing);
-        if (letterSpacing != 0)
+        }
+        if (letterSpacing != 0) {
             appendLength(ret, "letter-spacing", letterSpacing);
-        if (color != null && !defaultColor.equals(color))
+        }
+        if (color != null && !defaultColor.equals(color)) {
             appendString(ret, "color", color);
-        if (strokeColor != null && !strokeColor.equals(transparentColor))
+        }
+        if (strokeColor != null && !strokeColor.equals(transparentColor)) {
             ret.append(createTextStrokeCss(strokeColor));
+        }
 
         return ret.toString();
     }
@@ -308,44 +318,60 @@ public class BoxStyle {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         BoxStyle other = (BoxStyle)obj;
         if (color == null) {
-            if (other.color != null)
+            if (other.color != null) {
                 return false;
-        } else if (!color.equals(other.color))
+            }
+        } else if (!color.equals(other.color)) {
             return false;
+        }
         if (strokeColor == null) {
-            if (other.strokeColor != null)
+            if (other.strokeColor != null) {
                 return false;
-        } else if (!strokeColor.equals(other.strokeColor))
+            }
+        } else if (!strokeColor.equals(other.strokeColor)) {
             return false;
+        }
         if (fontFamily == null) {
-            if (other.fontFamily != null)
+            if (other.fontFamily != null) {
                 return false;
-        } else if (!fontFamily.equals(other.fontFamily))
+            }
+        } else if (!fontFamily.equals(other.fontFamily)) {
             return false;
-        if (Float.floatToIntBits(fontSize) != Float.floatToIntBits(other.fontSize))
+        }
+        if (Float.floatToIntBits(fontSize) != Float.floatToIntBits(other.fontSize)) {
             return false;
+        }
         if (fontStyle == null) {
-            if (other.fontStyle != null)
+            if (other.fontStyle != null) {
                 return false;
-        } else if (!fontStyle.equals(other.fontStyle))
+            }
+        } else if (!fontStyle.equals(other.fontStyle)) {
             return false;
+        }
         if (fontWeight == null) {
-            if (other.fontWeight != null)
+            if (other.fontWeight != null) {
                 return false;
-        } else if (!fontWeight.equals(other.fontWeight))
+            }
+        } else if (!fontWeight.equals(other.fontWeight)) {
             return false;
-        if (Float.floatToIntBits(letterSpacing) != Float.floatToIntBits(other.letterSpacing))
+        }
+        if (Float.floatToIntBits(letterSpacing) != Float.floatToIntBits(other.letterSpacing)) {
             return false;
-        if (Float.floatToIntBits(wordSpacing) != Float.floatToIntBits(other.wordSpacing))
+        }
+        if (Float.floatToIntBits(wordSpacing) != Float.floatToIntBits(other.wordSpacing)) {
             return false;
+        }
         return true;
     }
 

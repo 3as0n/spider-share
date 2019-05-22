@@ -72,17 +72,20 @@ public class TempFileStorageProvider extends AbstractStorageProvider {
      *            does not exist and cannot be created (if it is not <code>null</code>).
      */
     public TempFileStorageProvider(String prefix, String suffix, File directory) {
-        if (prefix == null || prefix.length() < 3)
+        if (prefix == null || prefix.length() < 3) {
             throw new IllegalArgumentException("invalid prefix");
+        }
 
-        if (directory != null && !directory.isDirectory() && !directory.mkdirs())
+        if (directory != null && !directory.isDirectory() && !directory.mkdirs()) {
             throw new IllegalArgumentException("invalid directory");
+        }
 
         this.prefix = prefix;
         this.suffix = suffix;
         this.directory = directory;
     }
 
+    @Override
     public StorageOutputStream createStorageOutputStream() throws IOException {
         File file = File.createTempFile(prefix, suffix, directory);
         // file.deleteOnExit();
@@ -129,6 +132,7 @@ public class TempFileStorageProvider extends AbstractStorageProvider {
             this.file = file;
         }
 
+        @Override
         public void delete() {
             // deleting a file might not immediately succeed if there are still
             // streams left open (especially under Windows). so we keep track of
@@ -153,9 +157,11 @@ public class TempFileStorageProvider extends AbstractStorageProvider {
             }
         }
 
+        @Override
         public InputStream getInputStream() throws IOException {
-            if (file == null)
+            if (file == null) {
                 throw new IllegalStateException("storage has been deleted");
+            }
 
             return new BufferedInputStream(new FileInputStream(file));
         }

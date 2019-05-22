@@ -45,8 +45,9 @@ public class IPAddressUtil {
                      */
 
                     val = Long.parseLong(s[0]);
-                    if (val < 0 || val > 0xffffffffL)
+                    if (val < 0 || val > 0xffffffffL) {
                         return null;
+                    }
                     res[0] = (byte)((val >> 24) & 0xff);
                     res[1] = (byte)(((val & 0xffffff) >> 16) & 0xff);
                     res[2] = (byte)(((val & 0xffff) >> 8) & 0xff);
@@ -61,12 +62,14 @@ public class IPAddressUtil {
                      */
 
                     val = Integer.parseInt(s[0]);
-                    if (val < 0 || val > 0xff)
+                    if (val < 0 || val > 0xff) {
                         return null;
+                    }
                     res[0] = (byte)(val & 0xff);
                     val = Integer.parseInt(s[1]);
-                    if (val < 0 || val > 0xffffff)
+                    if (val < 0 || val > 0xffffff) {
                         return null;
+                    }
                     res[1] = (byte)((val >> 16) & 0xff);
                     res[2] = (byte)(((val & 0xffff) >> 8) & 0xff);
                     res[3] = (byte)(val & 0xff);
@@ -80,13 +83,15 @@ public class IPAddressUtil {
                      */
                     for (int i = 0; i < 2; i++) {
                         val = Integer.parseInt(s[i]);
-                        if (val < 0 || val > 0xff)
+                        if (val < 0 || val > 0xff) {
                             return null;
+                        }
                         res[i] = (byte)(val & 0xff);
                     }
                     val = Integer.parseInt(s[2]);
-                    if (val < 0 || val > 0xffff)
+                    if (val < 0 || val > 0xffff) {
                         return null;
+                    }
                     res[2] = (byte)((val >> 8) & 0xff);
                     res[3] = (byte)(val & 0xff);
                     break;
@@ -97,8 +102,9 @@ public class IPAddressUtil {
                      */
                     for (int i = 0; i < 4; i++) {
                         val = Integer.parseInt(s[i]);
-                        if (val < 0 || val > 0xff)
+                        if (val < 0 || val > 0xff) {
                             return null;
+                        }
                         res[i] = (byte)(val & 0xff);
                     }
                     break;
@@ -147,9 +153,11 @@ public class IPAddressUtil {
         colonp = -1;
         int i = 0, j = 0;
         /* Leading :: requires some special handling. */
-        if (srcb[i] == ':')
-            if (srcb[++i] != ':')
+        if (srcb[i] == ':') {
+            if (srcb[++i] != ':') {
                 return null;
+            }
+        }
         int curtok = i;
         saw_xdigit = false;
         val = 0;
@@ -159,23 +167,26 @@ public class IPAddressUtil {
             if (chval != -1) {
                 val <<= 4;
                 val |= chval;
-                if (val > 0xffff)
+                if (val > 0xffff) {
                     return null;
+                }
                 saw_xdigit = true;
                 continue;
             }
             if (ch == ':') {
                 curtok = i;
                 if (!saw_xdigit) {
-                    if (colonp != -1)
+                    if (colonp != -1) {
                         return null;
+                    }
                     colonp = j;
                     continue;
                 } else if (i == srcb_length) {
                     return null;
                 }
-                if (j + INT16SZ > INADDR16SZ)
+                if (j + INT16SZ > INADDR16SZ) {
                     return null;
+                }
                 dst[j++] = (byte)((val >> 8) & 0xff);
                 dst[j++] = (byte)(val & 0xff);
                 saw_xdigit = false;
@@ -206,8 +217,9 @@ public class IPAddressUtil {
             return null;
         }
         if (saw_xdigit) {
-            if (j + INT16SZ > INADDR16SZ)
+            if (j + INT16SZ > INADDR16SZ) {
                 return null;
+            }
             dst[j++] = (byte)((val >> 8) & 0xff);
             dst[j++] = (byte)(val & 0xff);
         }
@@ -215,16 +227,18 @@ public class IPAddressUtil {
         if (colonp != -1) {
             int n = j - colonp;
 
-            if (j == INADDR16SZ)
+            if (j == INADDR16SZ) {
                 return null;
+            }
             for (i = 1; i <= n; i++) {
                 dst[INADDR16SZ - i] = dst[colonp + n - i];
                 dst[colonp + n - i] = 0;
             }
             j = INADDR16SZ;
         }
-        if (j != INADDR16SZ)
+        if (j != INADDR16SZ) {
             return null;
+        }
         byte[] newdst = convertFromIPv4MappedAddress(dst);
         if (newdst != null) {
             return newdst;

@@ -191,6 +191,7 @@ public abstract class AbstractPDFDomParser extends PDFTextStripper {
         init();
     }
 
+    @Override
     public void processPage(PDPage page) throws IOException {
         pdpage = page;
         updateFontTable();
@@ -322,10 +323,12 @@ public abstract class AbstractPDFDomParser extends PDFTextStripper {
             }
             if (xc.size() == 2 && yc.size() == 2) {
                 return new float[] {Collections.min(xc), Collections.min(yc), Collections.max(xc), Collections.max(yc)};
-            } else
+            } else {
                 return null; // two different X and Y coordinates required
-        } else
+            }
+        } else {
             return null; // four segments required
+        }
     }
 
     /**
@@ -444,8 +447,9 @@ public abstract class AbstractPDFDomParser extends PDFTextStripper {
 
         // invoke named object - images
         else if (operation.equals("Do")) {
-            if (!disableImages)
+            if (!disableImages) {
                 processImageOperation(arguments);
+            }
         }
 
         super.processOperator(operator, arguments);
@@ -474,8 +478,9 @@ public abstract class AbstractPDFDomParser extends PDFTextStripper {
             lastDia = text;
         } else if (!text.getUnicode().trim().isEmpty()) {
             if (lastDia != null) {
-                if (text.contains(lastDia))
+                if (text.contains(lastDia)) {
                     text.mergeDiacritic(lastDia);
+                }
                 lastDia = null;
             }
 
@@ -507,8 +512,9 @@ public abstract class AbstractPDFDomParser extends PDFTextStripper {
                 || isReversed(getTextDirectionality(text)) != isReversed(getTextDirectionality(lastText));
             // if the style changed, we should split the boxes
             updateStyle(style, text);
-            if (!style.equals(curstyle))
+            if (!style.equals(curstyle)) {
                 split = true;
+            }
 
             if (split) // start of a new box
             {
@@ -520,10 +526,11 @@ public abstract class AbstractPDFDomParser extends PDFTextStripper {
                 curstyle = new BoxStyle(style);
             }
             textLine.append(text.getUnicode());
-            if (textMetrics == null)
+            if (textMetrics == null) {
                 textMetrics = new TextMetrics(text);
-            else
+            } else {
                 textMetrics.append(text);
+            }
             lastText = text;
         }
     }
@@ -534,10 +541,11 @@ public abstract class AbstractPDFDomParser extends PDFTextStripper {
     protected void finishBox() {
         if (textLine.length() > 0) {
             String s;
-            if (isReversed(Character.getDirectionality(textLine.charAt(0))))
+            if (isReversed(Character.getDirectionality(textLine.charAt(0)))) {
                 s = textLine.reverse().toString();
-            else
+            } else {
                 s = textLine.toString();
+            }
             curstyle.setLeft(textMetrics.getX());
             curstyle.setTop(textMetrics.getTop());
             curstyle.setLineHeight(textMetrics.getHeight());
@@ -587,26 +595,30 @@ public abstract class AbstractPDFDomParser extends PDFTextStripper {
                     break;
                 }
             }
-            if (weight != null)
+            if (weight != null) {
                 bstyle.setFontWeight(weight);
-            else
+            } else {
                 bstyle.setFontWeight(cssFontWeight[0]);
-            if (fstyle != null)
+            }
+            if (fstyle != null) {
                 bstyle.setFontStyle(fstyle);
-            else
+            } else {
                 bstyle.setFontStyle(cssFontStyle[0]);
+            }
             // font family
             // If it's a known common font don't embed in html output to save space
             String knownFontFamily = findKnownFontFamily(font);
-            if (!knownFontFamily.equals(""))
+            if (!knownFontFamily.equals("")) {
                 family = knownFontFamily;
-            else {
+            } else {
                 family = fontTable.getUsedName(text.getFont());
-                if (family == null)
+                if (family == null) {
                     family = font;
+                }
             }
-            if (family != null)
+            if (family != null) {
                 bstyle.setFontFamily(family);
+            }
         }
         updateStyleForRenderingMode();
     }
@@ -673,10 +685,11 @@ public abstract class AbstractPDFDomParser extends PDFTextStripper {
      * @return the corresponging numeric value
      */
     protected int intValue(COSBase value) {
-        if (value instanceof COSNumber)
+        if (value instanceof COSNumber) {
             return ((COSNumber)value).intValue();
-        else
+        } else {
             return 0;
+        }
     }
 
     /**
@@ -686,10 +699,11 @@ public abstract class AbstractPDFDomParser extends PDFTextStripper {
      * @return the corresponging numeric value
      */
     protected float floatValue(COSBase value) {
-        if (value instanceof COSNumber)
+        if (value instanceof COSNumber) {
             return ((COSNumber)value).floatValue();
-        else
+        } else {
             return 0;
+        }
     }
 
     /**
@@ -709,12 +723,13 @@ public abstract class AbstractPDFDomParser extends PDFTextStripper {
      * @return the corresponging string value
      */
     protected String stringValue(COSBase value) {
-        if (value instanceof COSString)
+        if (value instanceof COSString) {
             return ((COSString)value).getString();
-        else if (value instanceof COSNumber)
+        } else if (value instanceof COSNumber) {
             return String.valueOf(((COSNumber)value).floatValue());
-        else
+        } else {
             return "";
+        }
     }
 
     /**
@@ -764,8 +779,9 @@ public abstract class AbstractPDFDomParser extends PDFTextStripper {
 
     protected String getTitle() {
         String title = document.getDocumentInformation().getTitle();
-        if (title == null || title.isEmpty())
+        if (title == null || title.isEmpty()) {
             title = "PDF Document";
+        }
 
         return title;
     }
@@ -775,10 +791,11 @@ public abstract class AbstractPDFDomParser extends PDFTextStripper {
     }
 
     protected byte getTextDirectionality(String s) {
-        if (s.length() > 0)
+        if (s.length() > 0) {
             return Character.getDirectionality(s.charAt(0));
-        else
+        } else {
             return Character.DIRECTIONALITY_UNDEFINED;
+        }
     }
 
     /**
@@ -805,22 +822,25 @@ public abstract class AbstractPDFDomParser extends PDFTextStripper {
                 log.debug("Font: " + font.getName() + " TTF");
             } else if (font instanceof PDType0Font) {
                 PDCIDFont descendantFont = ((PDType0Font)font).getDescendantFont();
-                if (descendantFont instanceof PDCIDFontType2)
+                if (descendantFont instanceof PDCIDFontType2) {
                     table.addEntry(font);
-                else
+                } else {
                     log.warn(fontNotSupportedMessage, font.getName(), font.getClass().getSimpleName());
-            } else if (font instanceof PDType1CFont)
+                }
+            } else if (font instanceof PDType1CFont) {
                 table.addEntry(font);
-            else
+            } else {
                 log.warn(fontNotSupportedMessage, font.getName(), font.getClass().getSimpleName());
+            }
         }
         for (COSName name : resources.getXObjectNames()) {
             PDXObject xobject = resources.getXObject(name);
             if (xobject instanceof PDFormXObject) {
                 PDFormXObject xObjectForm = (PDFormXObject)xobject;
                 PDResources formResources = xObjectForm.getResources();
-                if (formResources != null)
+                if (formResources != null) {
                     processFontResources(formResources, table);
+                }
             }
         }
 
@@ -849,8 +869,9 @@ public abstract class AbstractPDFDomParser extends PDFTextStripper {
 
     private String findKnownFontFamily(String font) {
         for (String fontFamilyOn : cssFontFamily) {
-            if (font.toLowerCase().lastIndexOf(fontFamilyOn.toLowerCase()) >= 0)
+            if (font.toLowerCase().lastIndexOf(fontFamilyOn.toLowerCase()) >= 0) {
                 return fontFamilyOn;
+            }
         }
         return "";
     }
@@ -858,14 +879,16 @@ public abstract class AbstractPDFDomParser extends PDFTextStripper {
     private void updateStyleForRenderingMode() {
         String fillColor = colorString(getGraphicsState().getNonStrokingColor());
         String strokeColor = colorString(getGraphicsState().getStrokingColor());
-        if (isTextFillEnabled())
+        if (isTextFillEnabled()) {
             style.setColor(fillColor);
-        else
+        } else {
             style.setColor(BoxStyle.transparentColor);
-        if (isTextStrokeEnabled())
+        }
+        if (isTextStrokeEnabled()) {
             style.setStrokeColor(strokeColor);
-        else
+        } else {
             style.setStrokeColor(BoxStyle.transparentColor);
+        }
     }
 
     private boolean isTextStrokeEnabled() {

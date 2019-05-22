@@ -84,8 +84,9 @@ public class DefaultAttributes implements Attributes {
 
     @Override
     public void addAttributes(@Nullable Map<String, Object> attributes) {
-        if (attributes != null)
+        if (attributes != null) {
             map.putAll(attributes);
+        }
     }
 
     @Nonnull

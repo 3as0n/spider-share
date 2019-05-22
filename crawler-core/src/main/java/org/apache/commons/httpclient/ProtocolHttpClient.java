@@ -31,6 +31,7 @@ public class ProtocolHttpClient extends HttpClient {
         super(httpConnectionManager);
     }
 
+    @Override
     public int executeMethod(HostConfiguration hostconfig, final HttpMethod method, final HttpState state) throws IOException, HttpException {
 
         LOG.trace("enter HttpClient.executeMethod(HostConfiguration,HttpMethod,HttpState)");

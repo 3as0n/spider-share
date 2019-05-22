@@ -26,8 +26,9 @@ public class FieldExtractResultSet extends HashMap<String, FieldExtractResult> {
     public boolean isNotEmptyResult(String name) {
         FieldExtractResult obj = get(name);
 
-        if (obj == null)
+        if (obj == null) {
             return false;
+        }
 
         return obj.isNotEmpty();
     }
