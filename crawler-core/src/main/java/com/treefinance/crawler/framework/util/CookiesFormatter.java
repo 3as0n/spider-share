@@ -46,12 +46,16 @@ public final class CookiesFormatter {
 
     private CookiesFormatter() {}
 
-    public static List<HttpCookie> parseList(String header, boolean retainQuote) {
-        final String head = StringUtils.trim(header);
-        if (StringUtils.isEmpty(head)) {
-            return Collections.emptyList();
+    public static List<HttpCookie> parseList(String cookie, boolean retainQuote) {
+        final String cookieStr = StringUtils.trim(cookie);
+        if (StringUtils.isNotEmpty(cookieStr)) {
+            try {
+                return HttpCookie.parse(cookieStr, retainQuote);
+            } catch (IllegalArgumentException e) {
+                LOGGER.warn("Error parsing cookie >> {}", e.getMessage());
+            }
         }
-        return HttpCookie.parse(head, retainQuote);
+        return Collections.emptyList();
     }
 
     public static HttpCookie parse(String cookie, boolean retainQuote) {

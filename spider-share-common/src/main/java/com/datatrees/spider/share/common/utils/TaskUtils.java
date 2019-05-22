@@ -19,6 +19,7 @@ package com.datatrees.spider.share.common.utils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.datatrees.spider.share.common.shaded.java.net.HttpCookie;
 import com.datatrees.spider.share.domain.AttributeKey;
 import com.datatrees.spider.share.domain.ErrorCode;
 import com.datatrees.spider.share.domain.RedisKeyPrefixEnum;
@@ -37,8 +38,15 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.HttpCookie;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -96,15 +104,13 @@ public final class TaskUtils {
         if (null != headers && headers.length > 0) {
             for (Header header : headers) {
                 String headerValue = header.getValue();
+                if (StringUtils.isEmpty(headerValue)) {
+                    continue;
+                }
+
                 HttpCookie httpCookie;
                 try {
-                    /**
-                     * 调用HttpCookie.parse之前判断一下格式是否正确
-                     */
-                    httpCookie = checkFormat(headerValue);
-                    if (httpCookie == null) {
-                        httpCookie = HttpCookie.parse(headerValue).get(0);
-                    }
+                    httpCookie = HttpCookie.parse(headerValue).get(0);
                 }catch (IllegalArgumentException e){
                     logger.warn("更新cookie时发生IllegalArgumentException,捕获后跳过此异常。headerValue={}",headerValue);
                     continue;

@@ -11,7 +11,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.treefinance.crawler.shaded.java.net;
+package com.datatrees.spider.share.common.shaded.java.net;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -751,7 +751,7 @@ public final class HttpCookie implements Cloneable {
                 }
             } else {
                 // no "=" in name-value pair; it's an error
-                // 支付宝等网站部分cookies不规范，只有一个属性名，没有=。比如：HttpOnly
+                // 支付宝等网站部分cookies不规范，只有一个属性名，没有=
                 String name = namevaluePair.trim();
                 String value = StringUtils.EMPTY;
                 if (retainHeader) {
@@ -793,7 +793,7 @@ public final class HttpCookie implements Cloneable {
         public void assign(HttpCookie cookie, String attrName, String attrValue);
     }
 
-    static final java.util.Map<String, HttpCookie.CookieAttributeAssignor> assignors = new java.util.HashMap<>();
+    static final java.util.Map<String, CookieAttributeAssignor> assignors = new java.util.HashMap<>();
     static {
         assignors.put("comment", new HttpCookie.CookieAttributeAssignor() {
             @Override
