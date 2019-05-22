@@ -1,65 +1,59 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.protocol;
+
+import com.datatrees.common.conf.PropertiesConfiguration;
+import com.datatrees.common.util.PatternUtils;
+import com.treefinance.crawler.framework.consts.Constants;
+import com.treefinance.crawler.framework.protocol.metadata.Metadata;
+import com.treefinance.crawler.framework.protocol.util.EncodingDetector;
+import com.treefinance.crawler.framework.util.CharsetUtil;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
-import com.datatrees.common.conf.PropertiesConfiguration;
-import com.treefinance.crawler.framework.consts.Constants;
-import com.treefinance.crawler.framework.protocol.metadata.Metadata;
-import com.treefinance.crawler.framework.util.CharsetUtil;
-import com.treefinance.crawler.framework.protocol.util.EncodingDetector;
-import com.datatrees.common.util.PatternUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class Content {
 
-    private static       Logger  log             = LoggerFactory.getLogger(Content.class);
+    static final Content NULL = new Null();
+    private static final Pattern CHARSET_PATTERN = Pattern.compile(Constants.HEADER_CHARSET_PATTERN, Pattern.CASE_INSENSITIVE);
+    private static Logger log = LoggerFactory.getLogger(Content.class);
+    private String url;
 
-    private static final Pattern CHARSET_PATTERN = Pattern.compile(Constants.HEADER_CHARSET_PATTERN,
-        Pattern.CASE_INSENSITIVE);
-    static final         Content NULL            = new Null();
+    private String base;
 
-    private String   url;
+    private byte[] content;
 
-    private String   base;
+    private String contentType;
 
-    private byte[]   content;
+    private String mimeType;
 
-    private String   contentType;
-
-    private String   mimeType;
-
-    private String   charSet;
+    private String charSet;
 
     private Metadata metadata;
 
-    private int      responseCode;
+    private int responseCode;
 
     public Content() {
         metadata = new Metadata();
     }
 
     public Content(byte[] content, String contentType) {
-        this(StringUtils.EMPTY, StringUtils.EMPTY, content, contentType,new Metadata());
+        this(StringUtils.EMPTY, StringUtils.EMPTY, content, contentType, new Metadata());
     }
 
     public Content(String url, String base, byte[] content, String contentType, Metadata metadata) {
@@ -145,8 +139,7 @@ public class Content {
     }
 
     /**
-     * The base url for relative links contained in the content. Maybe be different from url if the
-     * request redirected.
+     * The base url for relative links contained in the content. Maybe be different from url if the request redirected.
      */
     public String getBaseUrl() {
         return base;
@@ -155,6 +148,10 @@ public class Content {
     /** The binary content retrieved. */
     public byte[] getContent() {
         return content;
+    }
+
+    public void setContent(byte[] content) {
+        this.content = content;
     }
 
     public String getContentAsString() {
@@ -175,10 +172,6 @@ public class Content {
         return new String(content, CharsetUtil.getCharset(charset));
     }
 
-    public void setContent(byte[] content) {
-        this.content = content;
-    }
-
     /**
      * @return the mimeType
      */
@@ -196,8 +189,7 @@ public class Content {
     /**
      * The media type of the retrieved content.
      * 
-     * @see <a href="http://www.iana.org/assignments/media-types/">
-     *      http://www.iana.org/assignments/media-types/</a>
+     * @see <a href="http://www.iana.org/assignments/media-types/"> http://www.iana.org/assignments/media-types/</a>
      */
     public String getContentType() {
         return contentType;
@@ -229,10 +221,9 @@ public class Content {
         if (!(o instanceof Content)) {
             return false;
         }
-        Content that = (Content) o;
-        return this.url.equals(that.url) && this.base.equals(that.base)
-               && Arrays.equals(this.getContent(), that.getContent()) && this.contentType.equals(that.contentType)
-               && this.metadata.equals(that.metadata);
+        Content that = (Content)o;
+        return this.url.equals(that.url) && this.base.equals(that.base) && Arrays.equals(this.getContent(), that.getContent()) && this.contentType.equals(that.contentType)
+            && this.metadata.equals(that.metadata);
     }
 
     public String toString() {
@@ -248,7 +239,6 @@ public class Content {
         return builder.toString();
     }
 
-    private static class Null extends Content {
-    }
+    private static class Null extends Content {}
 
 }

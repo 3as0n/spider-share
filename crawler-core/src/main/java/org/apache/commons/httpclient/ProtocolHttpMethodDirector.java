@@ -1,60 +1,75 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package org.apache.commons.httpclient;
 
-import java.io.IOException;
-import java.util.*;
-
-import org.apache.commons.httpclient.auth.*;
+import org.apache.commons.httpclient.auth.AuthChallengeException;
+import org.apache.commons.httpclient.auth.AuthChallengeParser;
+import org.apache.commons.httpclient.auth.AuthChallengeProcessor;
+import org.apache.commons.httpclient.auth.AuthScheme;
+import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.commons.httpclient.auth.AuthState;
+import org.apache.commons.httpclient.auth.AuthenticationException;
+import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
+import org.apache.commons.httpclient.auth.CredentialsProvider;
+import org.apache.commons.httpclient.auth.MalformedChallengeException;
 import org.apache.commons.httpclient.methods.CustomGetMethod;
-import org.apache.commons.httpclient.params.*;
+import org.apache.commons.httpclient.params.HostParams;
+import org.apache.commons.httpclient.params.HttpClientParams;
+import org.apache.commons.httpclient.params.HttpConnectionParams;
+import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.commons.httpclient.params.HttpParams;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.io.IOException;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * Handles the process of executing a method including authentication, redirection and retries.
+ * 
  * @since 3.0
  */
 public class ProtocolHttpMethodDirector extends HttpMethodDirector {
 
-    private static final Log                    LOG               = LogFactory.getLog(ProtocolHttpMethodDirector.class);
+    private static final Log LOG = LogFactory.getLog(ProtocolHttpMethodDirector.class);
 
-    private              ConnectMethod          connectMethod;
+    private ConnectMethod connectMethod;
 
-    private              HttpState              state;
+    private HttpState state;
 
-    private              HostConfiguration      hostConfiguration;
+    private HostConfiguration hostConfiguration;
 
-    private              HttpConnectionManager  connectionManager;
+    private HttpConnectionManager connectionManager;
 
-    private              HttpClientParams       params;
+    private HttpClientParams params;
 
-    private              HttpConnection         conn;
+    private HttpConnection conn;
 
     /** A flag to indicate if the connection should be released after the method is executed. */
-    private              boolean                releaseConnection = false;
+    private boolean releaseConnection = false;
 
     /** Authentication processor */
-    private              AuthChallengeProcessor authProcessor     = null;
+    private AuthChallengeProcessor authProcessor = null;
 
-    private              Set                    redirectLocations = null;
+    private Set redirectLocations = null;
 
-    public ProtocolHttpMethodDirector(final HttpConnectionManager connectionManager, final HostConfiguration hostConfiguration,
-            final HttpClientParams params, final HttpState state) {
+    public ProtocolHttpMethodDirector(final HttpConnectionManager connectionManager, final HostConfiguration hostConfiguration, final HttpClientParams params,
+        final HttpState state) {
         super(connectionManager, hostConfiguration, params, state);
         this.connectionManager = connectionManager;
         this.hostConfiguration = hostConfiguration;
@@ -65,6 +80,7 @@ public class ProtocolHttpMethodDirector extends HttpMethodDirector {
 
     /**
      * Executes the method associated with this method director.
+     * 
      * @exception IOException
      * @exception HttpException
      */
@@ -78,19 +94,18 @@ public class ProtocolHttpMethodDirector extends HttpMethodDirector {
         method.getParams().setDefaults(this.hostConfiguration.getParams());
 
         // Generate default request headers
-        Collection defaults = (Collection) this.hostConfiguration.getParams().
-                getParameter(HostParams.DEFAULT_HEADERS);
+        Collection defaults = (Collection)this.hostConfiguration.getParams().getParameter(HostParams.DEFAULT_HEADERS);
         if (defaults != null) {
             Iterator i = defaults.iterator();
             while (i.hasNext()) {
-                method.addRequestHeader((Header) i.next());
+                method.addRequestHeader((Header)i.next());
             }
         }
 
         try {
             int maxRedirects = this.params.getIntParameter(HttpClientParams.MAX_REDIRECTS, 100);
 
-            for (int redirectCount = 0; ; ) {
+            for (int redirectCount = 0;;) {
 
                 // make sure the connection we have is appropriate
                 if (this.conn != null && !hostConfiguration.hostEquals(this.conn)) {
@@ -143,20 +158,20 @@ public class ProtocolHttpMethodDirector extends HttpMethodDirector {
                 if (!retry) {
                     break;
                 }
-                // retry - close previous stream.  Caution - this causes
+                // retry - close previous stream. Caution - this causes
                 // responseBodyConsumed to be called, which may also close the
                 // connection.
                 if (method.getResponseBodyAsStream() != null) {
                     method.getResponseBodyAsStream().close();
                 }
 
-            } //end of retry loop
+            } // end of retry loop
         } finally {
             if (this.conn != null) {
                 this.conn.setLocked(false);
             }
             // If the response has been fully processed, return the connection
-            // to the pool.  Use this flag, rather than other tests (like
+            // to the pool. Use this flag, rather than other tests (like
             // responseStream == null), as subclasses, might reset the stream,
             // for example, reading the entire response into a file and then
             // setting the file as the stream.
@@ -165,6 +180,34 @@ public class ProtocolHttpMethodDirector extends HttpMethodDirector {
             }
         }
 
+    }
+
+    /**
+     * @return
+     */
+    public HostConfiguration getHostConfiguration() {
+        return hostConfiguration;
+    }
+
+    /**
+     * @return
+     */
+    public HttpState getState() {
+        return state;
+    }
+
+    /**
+     * @return
+     */
+    public HttpConnectionManager getConnectionManager() {
+        return connectionManager;
+    }
+
+    /**
+     * @return
+     */
+    public HttpParams getParams() {
+        return this.params;
     }
 
     private void authenticate(final HttpMethod method) {
@@ -265,6 +308,7 @@ public class ProtocolHttpMethodDirector extends HttpMethodDirector {
 
     /**
      * Applies connection parameters specified for a given method
+     *
      * @param method HTTP method
      * @exception IOException if an I/O occurs setting connection parameters
      */
@@ -277,17 +321,16 @@ public class ProtocolHttpMethodDirector extends HttpMethodDirector {
             param = this.conn.getParams().getParameter(HttpConnectionParams.SO_TIMEOUT);
         }
         if (param != null) {
-            timeout = ((Integer) param).intValue();
+            timeout = ((Integer)param).intValue();
         }
         this.conn.setSocketTimeout(timeout);
     }
 
     /**
      * Executes a method with the current hostConfiguration.
-     * @exception IOException   if an I/O (transport) error occurs. Some transport exceptions
-     *                          can be recovered from.
-     * @exception HttpException if a protocol exception occurs. Usually protocol exceptions
-     *                          cannot be recovered from.
+     *
+     * @exception IOException if an I/O (transport) error occurs. Some transport exceptions can be recovered from.
+     * @exception HttpException if a protocol exception occurs. Usually protocol exceptions cannot be recovered from.
      */
     private void executeWithRetry(final HttpMethod method) throws IOException, HttpException {
 
@@ -332,17 +375,16 @@ public class ProtocolHttpMethodDirector extends HttpMethodDirector {
                     // this code is provided for backward compatibility with 2.0
                     // will be removed in the next major release
                     if (method instanceof HttpMethodBase) {
-                        MethodRetryHandler handler = ((HttpMethodBase) method).getMethodRetryHandler();
+                        MethodRetryHandler handler = ((HttpMethodBase)method).getMethodRetryHandler();
                         if (handler != null) {
-                            if (!handler.retryMethod(method, this.conn, new HttpRecoverableException(e.getMessage()), execCount,
-                                    method.isRequestSent())) {
+                            if (!handler.retryMethod(method, this.conn, new HttpRecoverableException(e.getMessage()), execCount, method.isRequestSent())) {
                                 LOG.debug("Method retry handler returned false. " + "Automatic recovery will not be attempted");
                                 throw e;
                             }
                         }
                     }
                     // ========================================
-                    HttpMethodRetryHandler handler = (HttpMethodRetryHandler) method.getParams().getParameter(HttpMethodParams.RETRY_HANDLER);
+                    HttpMethodRetryHandler handler = (HttpMethodRetryHandler)method.getParams().getParameter(HttpMethodParams.RETRY_HANDLER);
                     if (handler == null) {
                         handler = new DefaultHttpMethodRetryHandler();
                     }
@@ -378,6 +420,7 @@ public class ProtocolHttpMethodDirector extends HttpMethodDirector {
 
     /**
      * Executes a ConnectMethod to establish a tunneled connection.
+     *
      * @return <code>true</code> if the connect was successful
      * @exception IOException
      * @exception HttpException
@@ -388,7 +431,7 @@ public class ProtocolHttpMethodDirector extends HttpMethodDirector {
         this.connectMethod.getParams().setDefaults(this.hostConfiguration.getParams());
 
         int code;
-        for (; ; ) {
+        for (;;) {
             if (!this.conn.isOpen()) {
                 this.conn.open();
             }
@@ -433,6 +476,7 @@ public class ProtocolHttpMethodDirector extends HttpMethodDirector {
 
     /**
      * Fake response
+     *
      * @param method
      * @return
      */
@@ -456,8 +500,7 @@ public class ProtocolHttpMethodDirector extends HttpMethodDirector {
         // the wrapped method closes the response connection in
         // releaseConnection().
         if (method instanceof HttpMethodBase) {
-            ((HttpMethodBase) method).fakeResponse(this.connectMethod.getStatusLine(), this.connectMethod.getResponseHeaderGroup(),
-                    this.connectMethod.getResponseBodyAsStream());
+            ((HttpMethodBase)method).fakeResponse(this.connectMethod.getStatusLine(), this.connectMethod.getResponseHeaderGroup(), this.connectMethod.getResponseBodyAsStream());
             method.getProxyAuthState().setAuthScheme(this.connectMethod.getProxyAuthState().getAuthScheme());
             this.connectMethod = null;
         } else {
@@ -468,10 +511,11 @@ public class ProtocolHttpMethodDirector extends HttpMethodDirector {
 
     /**
      * Process the redirect response.
+     *
      * @return <code>true</code> if the redirect was successful
      */
     private boolean processRedirectResponse(final HttpMethod method) throws RedirectException {
-        //get the location header to find out where to redirect to
+        // get the location header to find out where to redirect to
         Header locationHeader = method.getResponseHeader("location");
         if (locationHeader == null) {
             // got a redirect response, but no location header
@@ -483,8 +527,8 @@ public class ProtocolHttpMethodDirector extends HttpMethodDirector {
             LOG.debug("Redirect requested to location '" + location + "'");
         }
 
-        //rfc2616 demands the location value be a complete URI
-        //Location       = "Location" ":" absoluteURI
+        // rfc2616 demands the location value be a complete URI
+        // Location = "Location" ":" absoluteURI
         URI redirectUri = null;
         URI currentUri = null;
 
@@ -493,7 +537,7 @@ public class ProtocolHttpMethodDirector extends HttpMethodDirector {
 
             String charset = method.getParams().getUriCharset();
 
-            if (method instanceof CustomGetMethod && !((CustomGetMethod) method).isUriEscaped()) {
+            if (method instanceof CustomGetMethod && !((CustomGetMethod)method).isUriEscaped()) {
                 redirectUri = new URI(location, false, charset);
             } else {
                 redirectUri = new URI(location, true, charset);
@@ -504,7 +548,7 @@ public class ProtocolHttpMethodDirector extends HttpMethodDirector {
                     LOG.warn("Relative redirect location '" + location + "' not allowed");
                     return false;
                 } else {
-                    //location is incomplete, use current values for defaults
+                    // location is incomplete, use current values for defaults
                     LOG.debug("Redirect URI is not absolute - parsing as relative");
                     redirectUri = new URI(currentUri, redirectUri);
                 }
@@ -523,8 +567,7 @@ public class ProtocolHttpMethodDirector extends HttpMethodDirector {
             throw new InvalidRedirectLocationException("Invalid redirect location: " + location, location, ex);
         }
 
-        if (this.params.isParameterFalse(HttpClientParams.ALLOW_CIRCULAR_REDIRECTS) ||
-                method.getParams().isParameterFalse(HttpClientParams.ALLOW_CIRCULAR_REDIRECTS)) {
+        if (this.params.isParameterFalse(HttpClientParams.ALLOW_CIRCULAR_REDIRECTS) || method.getParams().isParameterFalse(HttpClientParams.ALLOW_CIRCULAR_REDIRECTS)) {
             if (this.redirectLocations == null) {
                 this.redirectLocations = new HashSet();
             }
@@ -546,17 +589,18 @@ public class ProtocolHttpMethodDirector extends HttpMethodDirector {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Redirecting from '" + currentUri.getEscapedURI() + "' to '" + redirectUri.getEscapedURI());
         }
-        //And finally invalidate the actual authentication scheme
+        // And finally invalidate the actual authentication scheme
         method.getHostAuthState().invalidate();
         return true;
     }
 
     /**
      * Processes a response that requires authentication
+     *
      * @param method the current {@link HttpMethod HTTP method}
-     * @return <tt>true</tt> if the authentication challenge can be responsed to,
-     * (that is, at least one of the requested authentication scheme is supported,
-     * and matching credentials have been found), <tt>false</tt> otherwise.
+     * @return <tt>true</tt> if the authentication challenge can be responsed to, (that is, at least one of the
+     *         requested authentication scheme is supported, and matching credentials have been found), <tt>false</tt>
+     *         otherwise.
      */
     private boolean processAuthenticationResponse(final HttpMethod method) {
         LOG.trace("enter HttpMethodBase.processAuthenticationResponse(" + "HttpState, HttpConnection)");
@@ -687,6 +731,7 @@ public class ProtocolHttpMethodDirector extends HttpMethodDirector {
 
     /**
      * Tests if the {@link HttpMethod method} requires a redirect to another location.
+     *
      * @param method HTTP method
      * @return boolean <tt>true</tt> if a retry is needed, <tt>false</tt> otherwise.
      */
@@ -704,11 +749,12 @@ public class ProtocolHttpMethodDirector extends HttpMethodDirector {
                 }
             default:
                 return false;
-        } //end of switch
+        } // end of switch
     }
 
     /**
      * Tests if the {@link HttpMethod method} requires authentication.
+     *
      * @param method HTTP method
      * @return boolean <tt>true</tt> if a retry is needed, <tt>false</tt> otherwise.
      */
@@ -717,9 +763,9 @@ public class ProtocolHttpMethodDirector extends HttpMethodDirector {
         method.getProxyAuthState().setAuthRequested(method.getStatusCode() == HttpStatus.SC_PROXY_AUTHENTICATION_REQUIRED);
         if (method.getHostAuthState().isAuthRequested() || method.getProxyAuthState().isAuthRequested()) {
             LOG.debug("Authorization required");
-            if (method.getDoAuthentication()) { //process authentication response
+            if (method.getDoAuthentication()) { // process authentication response
                 return true;
-            } else { //let the client handle the authenticaiton
+            } else { // let the client handle the authenticaiton
                 LOG.info("Authentication requested but doAuthentication is " + "disabled");
                 return false;
             }
@@ -731,7 +777,7 @@ public class ProtocolHttpMethodDirector extends HttpMethodDirector {
     private Credentials promptForCredentials(final AuthScheme authScheme, final HttpParams params, final AuthScope authscope) {
         LOG.debug("Credentials required");
         Credentials creds = null;
-        CredentialsProvider credProvider = (CredentialsProvider) params.getParameter(CredentialsProvider.PROVIDER);
+        CredentialsProvider credProvider = (CredentialsProvider)params.getParameter(CredentialsProvider.PROVIDER);
         if (credProvider != null) {
             try {
                 creds = credProvider.getCredentials(authScheme, authscope.getHost(), authscope.getPort(), false);
@@ -753,7 +799,7 @@ public class ProtocolHttpMethodDirector extends HttpMethodDirector {
     private Credentials promptForProxyCredentials(final AuthScheme authScheme, final HttpParams params, final AuthScope authscope) {
         LOG.debug("Proxy credentials required");
         Credentials creds = null;
-        CredentialsProvider credProvider = (CredentialsProvider) params.getParameter(CredentialsProvider.PROVIDER);
+        CredentialsProvider credProvider = (CredentialsProvider)params.getParameter(CredentialsProvider.PROVIDER);
         if (credProvider != null) {
             try {
                 creds = credProvider.getCredentials(authScheme, authscope.getHost(), authscope.getPort(), true);
@@ -770,33 +816,5 @@ public class ProtocolHttpMethodDirector extends HttpMethodDirector {
             LOG.debug("Proxy credentials provider not available");
         }
         return creds;
-    }
-
-    /**
-     * @return
-     */
-    public HostConfiguration getHostConfiguration() {
-        return hostConfiguration;
-    }
-
-    /**
-     * @return
-     */
-    public HttpState getState() {
-        return state;
-    }
-
-    /**
-     * @return
-     */
-    public HttpConnectionManager getConnectionManager() {
-        return connectionManager;
-    }
-
-    /**
-     * @return
-     */
-    public HttpParams getParams() {
-        return this.params;
     }
 }

@@ -1,26 +1,17 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.service.collector.actor;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Resource;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
@@ -37,7 +28,11 @@ import com.datatrees.spider.share.common.utils.IpUtils;
 import com.datatrees.spider.share.common.utils.RedisUtils;
 import com.datatrees.spider.share.common.utils.TaskUtils;
 import com.datatrees.spider.share.common.utils.WebsiteUtils;
-import com.datatrees.spider.share.domain.*;
+import com.datatrees.spider.share.domain.AttributeKey;
+import com.datatrees.spider.share.domain.CollectorMessage;
+import com.datatrees.spider.share.domain.ErrorCode;
+import com.datatrees.spider.share.domain.RedisKeyPrefixEnum;
+import com.datatrees.spider.share.domain.ResultMessage;
 import com.datatrees.spider.share.domain.directive.DirectiveEnum;
 import com.datatrees.spider.share.domain.exception.LoginTimeOutException;
 import com.datatrees.spider.share.domain.http.HttpResult;
@@ -71,6 +66,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Resource;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author <A HREF="mailto:wangcheng@datatrees.com.cn">Cheng Wang</A>
@@ -117,119 +123,12 @@ public class Collector {
     @Resource
     private MonitorService monitorService;
 
-    @Nonnull
-    private TaskMessage initTask(CollectorMessage message) {
-        Preconditions.notNull("taskId", message.getTaskId());
-        this.clearStatus(message.getTaskId());
-
-        SearchProcessorContext context = createSearchProcessContext(message);
-
-        Task task = makeTask(context);
-
-        // set task unique sign
-        ProcessorContextUtil.setTaskUnique(context, task.getId());
-
-        TaskMessage taskMessage = new TaskMessage(task, context);
-        taskMessage.setCollectorMessage(message);
-
-        return taskMessage;
-    }
-
-    private Task makeTask(SearchProcessorContext context) {
-        Task task = new Task();
-        task.setTaskId(context.getTaskId());
-        task.setWebsiteId(context.getWebsiteId());
-        task.setWebsiteName(context.getWebsiteName());
-        task.setNodeName(IpUtils.getLocalHostName());
-        task.setOpenUrlCount(new AtomicInteger(0));
-        task.setOpenPageCount(new AtomicInteger(0));
-        task.setRequestFailedCount(new AtomicInteger(0));
-        task.setRetryCount(new AtomicInteger(0));
-        task.setFilteredCount(new AtomicInteger(0));
-        task.setNetworkTraffic(new AtomicLong(0));
-        task.setStatus(0);
-        task.setStartedAt(UnifiedSysTime.INSTANCE.getSystemTime());
-        task.setCreatedAt(UnifiedSysTime.INSTANCE.getSystemTime());
-        taskService.insertTask(task);
-
-        logger.info("create new task. id: {}, taskId: {}", task.getId(), task.getTaskId());
-
-        return task;
-    }
-
-    /**
-     * 初始化爬虫搜索过程的上下文环境。
-     */
-    private SearchProcessorContext createSearchProcessContext(CollectorMessage message) {
-        SearchProcessorContext context = websiteConfigService.getSearchProcessorContext(message.getTaskId(), message.getWebsiteName());
-        context.setLoginCheckIgnore(message.isLoginCheckIgnore());
-        context.setAttribute(AttributeKey.TASK_ID, message.getTaskId());
-        context.setAttribute(AttributeKey.ACCOUNT_KEY, message.getTaskId() + "");
-        //context.set(AttributeKey.ACCOUNT_NO, message.getAccountNo());
-        // init cookie
-        context.setCookies(message.getCookie());
-        context.setAttribute(AttributeKey.END_URL, message.getEndURL());
-
-        Map<String, String> shares = TaskUtils.getTaskShares(message.getTaskId());
-        if (null != shares && !shares.isEmpty()) {
-            logger.info("Add shared fields into context attributes: {}", Jackson.toJSONString(shares));
-            shares.forEach(context::setAttribute);
-        }
-
-        context.addAttributes(message.getProperty());
-        // set status level 1 status
-        context.addStatusAttr(ResultMessage.LEVAL_1_STATUS, message.isLevel1Status());
-
-        return context;
-    }
-
-    /**
-     * 历史状态清理
-     */
-    private void clearStatus(Long taskId) {
-        //todo 这里会有问题,待处理
-        String key = "verify_result_" + taskId;
-        String getKey = "plugin_remark_" + taskId;
-        redisDao.deleteKey(key);
-        redisDao.deleteKey(getKey);
-        logger.info("do verify_result and plugin_remark  data clear for taskId: {}", taskId);
-    }
-
-    private AbstractLockerWatcher actorLockWatchInit(TaskMessage taskMessage) {
-        String templateId = taskMessage.getTemplateId();
-        String uniqueSuffix = taskMessage.getUniqueSuffix();
-        String serialNum = taskMessage.getCollectorMessage().getSerialNum();
-        Long taskId = taskMessage.getTaskId();
-        String path = Long.toString(taskId);
-        path = StringUtils.isNotBlank(templateId) ? path + "_" + templateId : path;
-        path = StringUtils.isNotBlank(uniqueSuffix) ? path + "_" + uniqueSuffix : path;
-        path = StringUtils.isNotBlank(serialNum) ? path + "_" + serialNum : path;
-        AbstractLockerWatcher watcher = new ActorLockEventWatcher("CollectorActor", path, Thread.currentThread(), zookeeperClient);
-        zookeeperClient.registerWatcher(watcher);
-        if (watcher.init()) {
-            logger.info("Get actorLock begin to start ...");
-        } else {
-            logger.info("Lost actorLock,waiting for interrupt...");
-        }
-        return watcher;
-    }
-
-    private void actorLockWatchRelease(AbstractLockerWatcher watcher) {
-        if (watcher != null) {
-            zookeeperClient.unregisterWatcher(watcher);
-            ThreadInterruptedUtil.clearInterrupted(Thread.currentThread());
-            watcher.unLock();
-        } else {
-            logger.warn("watcher is empty ...");
-        }
-    }
-
     public ProcessorResult processMessage(CollectorMessage message) {
-        //初始化,生成上下文,保存task
+        // 初始化,生成上下文,保存task
         TaskMessage taskMessage = this.initTask(message);
         Task task = taskMessage.getTask();
 
-        //zookeeper做去重处理,后来的线程活着,ThreadInterruptedUtil.isInterrupted(Thread.currentThread())手动判断,并停止
+        // zookeeper做去重处理,后来的线程活着,ThreadInterruptedUtil.isInterrupted(Thread.currentThread())手动判断,并停止
         AbstractLockerWatcher watcher = null;
         try {
             watcher = this.actorLockWatchInit(taskMessage);
@@ -262,13 +161,15 @@ public class Collector {
                 if (!searchResult.getStatus()) {
                     taskMessage.failure(searchResult.getResponseCode(), searchResult.getMessage());
                 } else if (ThreadInterruptedUtil.isInterrupted(Thread.currentThread())) {
-                    logger.warn("Thread interrupt before result send to queue. threadId={},taskId={},websiteName={}", Thread.currentThread().getId(), taskMessage.getTaskId(), taskMessage.getWebsiteName());
+                    logger.warn("Thread interrupt before result send to queue. threadId={},taskId={},websiteName={}", Thread.currentThread().getId(), taskMessage.getTaskId(),
+                        taskMessage.getWebsiteName());
                     taskMessage.failure(ErrorCode.TASK_INTERRUPTED_ERROR);
                 } else {
                     Map submitkeyResult = searchResult.getData();
 
                     if (taskMessage.isSubTask() && MapUtils.isEmpty(submitkeyResult)) {
-                        logger.info("skip send mq message threadId={},taskId={},websiteName={},parent={}", Thread.currentThread().getId(), taskMessage.getTaskId(), taskMessage.getWebsiteName(), taskMessage.getParentTaskId());
+                        logger.info("skip send mq message threadId={},taskId={},websiteName={},parent={}", Thread.currentThread().getId(), taskMessage.getTaskId(),
+                            taskMessage.getWebsiteName(), taskMessage.getParentTaskId());
                     } else {
                         Set<String> resultTagSet = collectorWorker.getResultTagSet();
                         if (CollectionUtils.isEmpty(resultTagSet)) {
@@ -321,7 +222,8 @@ public class Collector {
                     messageService.sendDirective(task.getTaskId(), DirectiveEnum.TASK_FAIL.getCode(), StringUtils.defaultString(newRemark));
                 }
             }
-            logger.info("task complete pid={}, taskId={},isSubTask={},status={},remark={},websiteName={}", task.getId(), task.getTaskId(), task.isSubTask(), task.getStatus(), task.getRemark(), task.getWebsiteName());
+            logger.info("task complete pid={}, taskId={},isSubTask={},status={},remark={},websiteName={}", task.getId(), task.getTaskId(), task.isSubTask(), task.getStatus(),
+                task.getRemark(), task.getWebsiteName());
         }
         message.setFinish(true);
         this.messageComplement(taskMessage, message);
@@ -331,6 +233,113 @@ public class Collector {
             monitorService.sendTaskCompleteMsg(task.getTaskId(), task.getWebsiteName(), task.getStatus(), task.getRemark());
         }
         return taskMessage.getContext().getProcessorResult();
+    }
+
+    @Nonnull
+    private TaskMessage initTask(CollectorMessage message) {
+        Preconditions.notNull("taskId", message.getTaskId());
+        this.clearStatus(message.getTaskId());
+
+        SearchProcessorContext context = createSearchProcessContext(message);
+
+        Task task = makeTask(context);
+
+        // set task unique sign
+        ProcessorContextUtil.setTaskUnique(context, task.getId());
+
+        TaskMessage taskMessage = new TaskMessage(task, context);
+        taskMessage.setCollectorMessage(message);
+
+        return taskMessage;
+    }
+
+    private Task makeTask(SearchProcessorContext context) {
+        Task task = new Task();
+        task.setTaskId(context.getTaskId());
+        task.setWebsiteId(context.getWebsiteId());
+        task.setWebsiteName(context.getWebsiteName());
+        task.setNodeName(IpUtils.getLocalHostName());
+        task.setOpenUrlCount(new AtomicInteger(0));
+        task.setOpenPageCount(new AtomicInteger(0));
+        task.setRequestFailedCount(new AtomicInteger(0));
+        task.setRetryCount(new AtomicInteger(0));
+        task.setFilteredCount(new AtomicInteger(0));
+        task.setNetworkTraffic(new AtomicLong(0));
+        task.setStatus(0);
+        task.setStartedAt(UnifiedSysTime.INSTANCE.getSystemTime());
+        task.setCreatedAt(UnifiedSysTime.INSTANCE.getSystemTime());
+        taskService.insertTask(task);
+
+        logger.info("create new task. id: {}, taskId: {}", task.getId(), task.getTaskId());
+
+        return task;
+    }
+
+    /**
+     * 初始化爬虫搜索过程的上下文环境。
+     */
+    private SearchProcessorContext createSearchProcessContext(CollectorMessage message) {
+        SearchProcessorContext context = websiteConfigService.getSearchProcessorContext(message.getTaskId(), message.getWebsiteName());
+        context.setLoginCheckIgnore(message.isLoginCheckIgnore());
+        context.setAttribute(AttributeKey.TASK_ID, message.getTaskId());
+        context.setAttribute(AttributeKey.ACCOUNT_KEY, message.getTaskId() + "");
+        // context.set(AttributeKey.ACCOUNT_NO, message.getAccountNo());
+        // init cookie
+        context.setCookies(message.getCookie());
+        context.setAttribute(AttributeKey.END_URL, message.getEndURL());
+
+        Map<String, String> shares = TaskUtils.getTaskShares(message.getTaskId());
+        if (null != shares && !shares.isEmpty()) {
+            logger.info("Add shared fields into context attributes: {}", Jackson.toJSONString(shares));
+            shares.forEach(context::setAttribute);
+        }
+
+        context.addAttributes(message.getProperty());
+        // set status level 1 status
+        context.addStatusAttr(ResultMessage.LEVAL_1_STATUS, message.isLevel1Status());
+
+        return context;
+    }
+
+    /**
+     * 历史状态清理
+     */
+    private void clearStatus(Long taskId) {
+        // todo 这里会有问题,待处理
+        String key = "verify_result_" + taskId;
+        String getKey = "plugin_remark_" + taskId;
+        redisDao.deleteKey(key);
+        redisDao.deleteKey(getKey);
+        logger.info("do verify_result and plugin_remark  data clear for taskId: {}", taskId);
+    }
+
+    private AbstractLockerWatcher actorLockWatchInit(TaskMessage taskMessage) {
+        String templateId = taskMessage.getTemplateId();
+        String uniqueSuffix = taskMessage.getUniqueSuffix();
+        String serialNum = taskMessage.getCollectorMessage().getSerialNum();
+        Long taskId = taskMessage.getTaskId();
+        String path = Long.toString(taskId);
+        path = StringUtils.isNotBlank(templateId) ? path + "_" + templateId : path;
+        path = StringUtils.isNotBlank(uniqueSuffix) ? path + "_" + uniqueSuffix : path;
+        path = StringUtils.isNotBlank(serialNum) ? path + "_" + serialNum : path;
+        AbstractLockerWatcher watcher = new ActorLockEventWatcher("CollectorActor", path, Thread.currentThread(), zookeeperClient);
+        zookeeperClient.registerWatcher(watcher);
+        if (watcher.init()) {
+            logger.info("Get actorLock begin to start ...");
+        } else {
+            logger.info("Lost actorLock,waiting for interrupt...");
+        }
+        return watcher;
+    }
+
+    private void actorLockWatchRelease(AbstractLockerWatcher watcher) {
+        if (watcher != null) {
+            zookeeperClient.unregisterWatcher(watcher);
+            ThreadInterruptedUtil.clearInterrupted(Thread.currentThread());
+            watcher.unLock();
+        } else {
+            logger.warn("watcher is empty ...");
+        }
     }
 
     private void messageComplement(TaskMessage taskMessage, CollectorMessage message) {
@@ -399,7 +408,8 @@ public class Collector {
             }
         }
         if (needSendToMQ) {
-            if (submitkeyResult != null) result.putAll(submitkeyResult);
+            if (submitkeyResult != null)
+                result.putAll(submitkeyResult);
             result.putAll(taskMessage.getCollectorMessage().getSendBack());
             result.put("taskId", task.getTaskId());
             result.put("websiteName", resultMessage.getWebsiteName());

@@ -1,49 +1,45 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.protocol.metadata;
+
+import org.apache.commons.lang.StringUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
-
 /**
- * A decorator to Metadata that adds spellchecking capabilities to property names. Currently used
- * spelling vocabulary contains just the httpheaders from {@link HttpHeaders} class.
+ * A decorator to Metadata that adds spellchecking capabilities to property names. Currently used spelling vocabulary
+ * contains just the httpheaders from {@link HttpHeaders} class.
  */
 public class SpellCheckedMetadata extends Metadata {
 
     /**
-     * Treshold divider.
-     * <code>threshold = searched.length() / TRESHOLD_DIVIDER;</code>
+     * Treshold divider. <code>threshold = searched.length() / TRESHOLD_DIVIDER;</code>
      */
-    private static final int                 TRESHOLD_DIVIDER = 3;
+    private static final int TRESHOLD_DIVIDER = 3;
 
     /**
      * Normalized name to name mapping.
      */
-    private final static Map<String, String> NAMES_IDX        = new HashMap<String, String>();
+    private final static Map<String, String> NAMES_IDX = new HashMap<String, String>();
 
     /**
      * Array holding map keys.
      */
-    private static       String[]            normalized       = null;
+    private static String[] normalized = null;
 
     static {
 
@@ -56,7 +52,7 @@ public class SpellCheckedMetadata extends Metadata {
                 int mods = field.getModifiers();
                 if (Modifier.isFinal(mods) && Modifier.isPublic(mods) && Modifier.isStatic(mods) && field.getType().equals(String.class)) {
                     try {
-                        String val = (String) field.get(null);
+                        String val = (String)field.get(null);
                         NAMES_IDX.put(normalize(val), val);
                     } catch (Exception e) {
                         // Simply ignore...
@@ -69,6 +65,7 @@ public class SpellCheckedMetadata extends Metadata {
 
     /**
      * Normalizes String.
+     * 
      * @param str the string to normalize
      * @return normalized String
      */
@@ -85,15 +82,16 @@ public class SpellCheckedMetadata extends Metadata {
     }
 
     /**
-     * Get the normalized name of metadata attribute name. This method tries to find a well-known
-     * metadata name (one of the metadata names defined in this class) that matches the specified
-     * name. The matching is error tolerent. For instance,
+     * Get the normalized name of metadata attribute name. This method tries to find a well-known metadata name (one of
+     * the metadata names defined in this class) that matches the specified name. The matching is error tolerent. For
+     * instance,
      * <ul>
      * <li>content-type gives Content-Type</li>
      * <li>CoNtEntType gives Content-Type</li>
      * <li>ConTnTtYpe gives Content-Type</li>
      * </ul>
      * If no matching with a well-known metadata name is found, then the original name is returned.
+     * 
      * @param name Name to normalize
      * @return normalized name
      */

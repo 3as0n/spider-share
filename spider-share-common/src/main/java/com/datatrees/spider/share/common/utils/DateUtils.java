@@ -1,20 +1,21 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.common.utils;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,10 +23,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Created by zhouxinghai on 2017/5/16.
@@ -35,15 +32,15 @@ public class DateUtils {
     /**
      * 时间格式
      */
-    public static final  String                                     YMDHMS = "yyyy-MM-dd HH:mm:ss";
+    public static final String YMDHMS = "yyyy-MM-dd HH:mm:ss";
 
-    public static final  String                                     YMD    = "yyyy-MM-dd";
+    public static final String YMD = "yyyy-MM-dd";
 
-    public static final  String                                     GMT    = "EEE MMM ddHH:mm:ss 'GMT' yyyy";
+    public static final String GMT = "EEE MMM ddHH:mm:ss 'GMT' yyyy";
 
-    private static final Logger                                     logger = LoggerFactory.getLogger(DateUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(DateUtils.class);
 
-    private static       ThreadLocal<Map<String, SimpleDateFormat>> sfs    = new ThreadLocal<Map<String, SimpleDateFormat>>() {
+    private static ThreadLocal<Map<String, SimpleDateFormat>> sfs = new ThreadLocal<Map<String, SimpleDateFormat>>() {
         @Override
         protected Map<String, SimpleDateFormat> initialValue() {
             Map<String, SimpleDateFormat> map = new HashMap<>();
@@ -56,6 +53,7 @@ public class DateUtils {
 
     /**
      * 返回一个SimpleDateFormat,每个线程只会new一次pattern对应的sdf
+     * 
      * @param pattern
      * @return
      */
@@ -72,6 +70,7 @@ public class DateUtils {
 
     /**
      * 格式化
+     * 
      * @param date 时间
      * @return
      */
@@ -81,6 +80,7 @@ public class DateUtils {
 
     /**
      * 格式化成yyyy-MM-dd HH:mm:ss
+     * 
      * @param date 时间
      * @return
      */
@@ -90,6 +90,7 @@ public class DateUtils {
 
     /**
      * 格式化成yyyy-MM-dd HH:mm:ss
+     * 
      * @param date 时间
      * @return
      */
@@ -99,6 +100,7 @@ public class DateUtils {
 
     /**
      * 格式化成yyyy-MM-dd
+     * 
      * @param date 时间
      * @return
      */
@@ -108,6 +110,7 @@ public class DateUtils {
 
     /**
      * 计算耗时
+     * 
      * @param start
      * @return
      */

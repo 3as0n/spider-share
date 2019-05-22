@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class TaskPointManagerImpl implements TaskPointManager {
 
-    private static final byte SYSTEM_POINT_FLAG = (byte) 1;
+    private static final byte SYSTEM_POINT_FLAG = (byte)1;
     private final TaskPointFacade taskPointFacade;
 
     @Autowired

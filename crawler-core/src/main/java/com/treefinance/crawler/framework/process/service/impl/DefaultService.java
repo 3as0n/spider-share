@@ -1,17 +1,14 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.process.service.impl;
@@ -61,19 +58,20 @@ import java.util.stream.Collectors;
 
 /**
  * default httpclient service
+ * 
  * @author <A HREF="">Cheng Wang</A>
  * @version 1.0
  * @since Mar 10, 2014 10:55:36 AM
  */
 public class DefaultService extends ServiceBase {
 
-    private static final int DEFAULT_MAX_RETRIES   = PropertiesConfiguration.getInstance().getInt("default.request.max.retrycount", 3);
+    private static final int DEFAULT_MAX_RETRIES = PropertiesConfiguration.getInstance().getInt("default.request.max.retrycount", 3);
 
     private static final int DEFAULT_WAIT_INTERVAL = PropertiesConfiguration.getInstance().getInt("default.wait.interval", 500);
 
     @Override
     public void process(@Nonnull SpiderRequest request, @Nonnull SpiderResponse response) throws Exception {
-        SearchProcessorContext context = (SearchProcessorContext) request.getProcessorContext();
+        SearchProcessorContext context = (SearchProcessorContext)request.getProcessorContext();
 
         Assert.notNull(context, "Search context for default service must not be null!");
 
@@ -97,12 +95,13 @@ public class DefaultService extends ServiceBase {
         input.setCookieScope(scope);
         input.setCookie(context.getCookiesAsString());
 
-        Boolean coexist = cookie instanceof BaseCookie ? ((BaseCookie) cookie).getCoexist() : null;
+        Boolean coexist = cookie instanceof BaseCookie ? ((BaseCookie)cookie).getCoexist() : null;
         if (coexist != null) {
             input.setCoExist(coexist);
         }
 
-        input.setFollowRedirect(true).setRedirectUriEscaped(context.isRedirectUriEscaped()).setState(ProcessorContextUtil.getHttpState(context)).setAllowCircularRedirects(context.isAllowCircularRedirects());
+        input.setFollowRedirect(true).setRedirectUriEscaped(context.isRedirectUriEscaped()).setState(ProcessorContextUtil.getHttpState(context))
+            .setAllowCircularRedirects(context.isAllowCircularRedirects());
 
         Protocol protocol = this.getHttpClient(context.getHttpClientType());
 
@@ -217,7 +216,7 @@ public class DefaultService extends ServiceBase {
 
                 if (response instanceof HttpResponse && BooleanUtils.isTrue(coexist)) {
                     String cookieString = StringUtils.EMPTY;
-                    HttpResponse httpResponse = (HttpResponse) response;
+                    HttpResponse httpResponse = (HttpResponse)response;
                     final HttpState state = httpResponse.getState();
                     ProcessorContextUtil.setHttpState(context, state);
                     if (state != null) {
@@ -243,7 +242,7 @@ public class DefaultService extends ServiceBase {
         long millis = sleepMillis;
 
         if (millis == 0L) {
-            millis = 100 * (seed + 1) + (int) (Math.random() * getWaitInterval(context) * (seed + 1));
+            millis = 100 * (seed + 1) + (int)(Math.random() * getWaitInterval(context) * (seed + 1));
         }
 
         Thread.sleep(millis);

@@ -37,9 +37,9 @@ public class SeleniumTest {
         webDriver.get("https://www.alipay.com/favicon.ico");
 
         WebDriver.Options manage = webDriver.manage();
-        //添加最新的cookies
+        // 添加最新的cookies
         manage.deleteAllCookies();
-        Map<String, String> cookieMap =  CookiesFormatter.parseAsMap(cookies);
+        Map<String, String> cookieMap = CookiesFormatter.parseAsMap(cookies);
         for (Map.Entry<String, String> entry : cookieMap.entrySet()) {
             manage.addCookie(new Cookie(entry.getKey(), entry.getValue(), "alipay.com", "/", null));
         }

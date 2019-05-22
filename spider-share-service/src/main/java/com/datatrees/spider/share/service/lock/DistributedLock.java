@@ -1,45 +1,43 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.service.lock;
-
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+
 /**
  * 分布式锁
+ * 
  * @author Jerry
  * @version 1.0.1
  * @since 1.0.1 [23:51, 11/2/15]
  */
 public class DistributedLock {
 
-    private static final Logger                            LOGGER    = LoggerFactory.getLogger(DistributedLock.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DistributedLock.class);
 
-    private static final ConcurrentHashMap<String, Thread> HOLDER    = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, Thread> HOLDER = new ConcurrentHashMap<>();
 
-    private final        RedisTemplate<String, Long>       redisTemplate;
+    private final RedisTemplate<String, Long> redisTemplate;
 
-    private final        String                            lockName;
+    private final String lockName;
 
-    private              long                              leaseTime = 3 * 60 * 1000;
+    private long leaseTime = 3 * 60 * 1000;
 
     DistributedLock(RedisTemplate<String, Long> redisTemplate, String key) {
         this.redisTemplate = redisTemplate;
@@ -50,12 +48,33 @@ public class DistributedLock {
         System.out.println(Thread.currentThread() == null);
     }
 
-    private String getLockName(String name) {
-        return "custom_distribution_lock:{" + name + "}";
-    }
-
     public void setLeaseTime(long leaseTime) {
         this.leaseTime = leaseTime;
+    }
+
+    public boolean tryLock(long timeout, TimeUnit unit) throws InterruptedException {
+        return tryLock(leaseTime, unit.toMillis(timeout));
+    }
+
+    public boolean tryLock(long leaseTime, TimeUnit leaseTimeUnit, long timeout, TimeUnit unit) throws InterruptedException {
+        return tryLock(leaseTimeUnit.toMillis(leaseTime), unit.toMillis(timeout));
+    }
+
+    public void unlock() {
+        LOGGER.info("unlock within the name: {}", lockName);
+        if (Thread.currentThread() == removeOwnerThread()) {
+            try {
+                redisTemplate.delete(lockName);
+            } catch (Exception e) {
+                LOGGER.warn("error unlock with the name: {}", lockName, e);
+            }
+        } else {
+            LOGGER.warn("The current thread is not the owner of lock. lock-name: {}", lockName);
+        }
+    }
+
+    private String getLockName(String name) {
+        return "custom_distribution_lock:{" + name + "}";
     }
 
     private Thread getOwnerThread() {
@@ -70,19 +89,12 @@ public class DistributedLock {
         return HOLDER.remove(this.lockName);
     }
 
-    public boolean tryLock(long timeout, TimeUnit unit) throws InterruptedException {
-        return tryLock(leaseTime, unit.toMillis(timeout));
-    }
-
-    public boolean tryLock(long leaseTime, TimeUnit leaseTimeUnit, long timeout, TimeUnit unit) throws InterruptedException {
-        return tryLock(leaseTimeUnit.toMillis(leaseTime), unit.toMillis(timeout));
-    }
-
     /**
-     * Acquires the lock if it is free within the given key and the
-     * current thread has not been {@linkplain Thread#interrupt interrupted}.
+     * Acquires the lock if it is free within the given key and the current thread has not been
+     * {@linkplain Thread#interrupt interrupted}.
+     *
      * @param leaseTime the lease time of lock
-     * @param timeout   the maximum time to wait for the lock
+     * @param timeout the maximum time to wait for the lock
      * @return true if acquiring the lock.
      * @exception InterruptedException
      */
@@ -150,19 +162,6 @@ public class DistributedLock {
         } while (true);
 
         return false;
-    }
-
-    public void unlock() {
-        LOGGER.info("unlock within the name: {}", lockName);
-        if (Thread.currentThread() == removeOwnerThread()) {
-            try {
-                redisTemplate.delete(lockName);
-            } catch (Exception e) {
-                LOGGER.warn("error unlock with the name: {}", lockName, e);
-            }
-        } else {
-            LOGGER.warn("The current thread is not the owner of lock. lock-name: {}", lockName);
-        }
     }
 
 }

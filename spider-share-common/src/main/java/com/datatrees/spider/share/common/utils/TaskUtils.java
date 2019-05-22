@@ -1,17 +1,14 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.common.utils;
@@ -97,9 +94,9 @@ public final class TaskUtils {
         List<Cookie> list = new ArrayList<>();
         List<org.apache.http.cookie.Cookie> cookies = cookieStore.getCookies();
         for (org.apache.http.cookie.Cookie cookie : cookies) {
-            list.add(toCrawlerCookie((BasicClientCookie) cookie));
+            list.add(toCrawlerCookie((BasicClientCookie)cookie));
         }
-        //更新自定义cookie
+        // 更新自定义cookie
         Header[] headers = httpResponse.getHeaders(HttpHeadKey.SET_COOKIE);
         if (null != headers && headers.length > 0) {
             for (Header header : headers) {
@@ -111,15 +108,15 @@ public final class TaskUtils {
                 HttpCookie httpCookie;
                 try {
                     httpCookie = HttpCookie.parse(headerValue).get(0);
-                }catch (IllegalArgumentException e){
-                    logger.warn("更新cookie时发生IllegalArgumentException,捕获后跳过此异常。headerValue={}",headerValue);
+                } catch (IllegalArgumentException e) {
+                    logger.warn("更新cookie时发生IllegalArgumentException,捕获后跳过此异常。headerValue={}", headerValue);
                     continue;
                 }
                 Cookie orignCookie = findCookie(host, httpCookie, list);
                 if (null != orignCookie) {
                     if (!StringUtils.equals(orignCookie.getValue(), httpCookie.getValue())) {
-                        logger.info("更新cookie,taskId={},cookeName={},domain={},update value {}-->{}", taskId, orignCookie.getName(),
-                                orignCookie.getDomain(), orignCookie.getValue(), httpCookie.getValue());
+                        logger.info("更新cookie,taskId={},cookeName={},domain={},update value {}-->{}", taskId, orignCookie.getName(), orignCookie.getDomain(),
+                            orignCookie.getValue(), httpCookie.getValue());
                         orignCookie.setValue(httpCookie.getValue());
                     }
                 } else {
@@ -188,7 +185,7 @@ public final class TaskUtils {
         List<Cookie> list = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(cookies)) {
             for (com.gargoylesoftware.htmlunit.util.Cookie htmlCookie : cookies) {
-                list.add(toCrawlerCookie((ClientCookie) (htmlCookie.toHttpClient())));
+                list.add(toCrawlerCookie((ClientCookie)(htmlCookie.toHttpClient())));
             }
         }
         return list;
@@ -248,8 +245,7 @@ public final class TaskUtils {
         String redisKey = RedisKeyPrefixEnum.TASK_COOKIE.getRedisKey(taskId);
         for (Cookie cookie : cookies) {
             String name = "[" + cookie.getName() + "][" + cookie.getDomain() + "]";
-            RedisUtils.hset(redisKey, name, JSON.toJSONString(cookie, SerializerFeature.DisableCircularReferenceDetect),
-                    RedisKeyPrefixEnum.TASK_COOKIE.toSeconds());
+            RedisUtils.hset(redisKey, name, JSON.toJSONString(cookie, SerializerFeature.DisableCircularReferenceDetect), RedisKeyPrefixEnum.TASK_COOKIE.toSeconds());
 
         }
     }
@@ -290,6 +286,7 @@ public final class TaskUtils {
 
     /**
      * 添加共享属性
+     * 
      * @param taskId
      * @param name
      * @param value
@@ -306,6 +303,7 @@ public final class TaskUtils {
 
     /**
      * 获取共享属性
+     * 
      * @param taskId
      * @param name
      */
@@ -320,6 +318,7 @@ public final class TaskUtils {
 
     /**
      * 删除共享属性
+     * 
      * @param taskId
      * @param name
      */
@@ -335,6 +334,7 @@ public final class TaskUtils {
 
     /**
      * 获取共享属性
+     * 
      * @param taskId
      */
     public static Map<String, String> getTaskShares(Long taskId) {
@@ -344,6 +344,7 @@ public final class TaskUtils {
 
     /**
      * 初始化共享信息
+     * 
      * @param taskId
      * @param websiteName
      */
@@ -420,6 +421,7 @@ public final class TaskUtils {
 
     /**
      * 记录任务阶段
+     * 
      * @param taskId
      * @param stepEnum
      */
@@ -430,6 +432,7 @@ public final class TaskUtils {
 
     /**
      * 获取环境变量
+     * 
      * @return
      */
     public static String getSassEnv() {

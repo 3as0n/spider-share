@@ -1,22 +1,37 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.service.collector.search;
 
+import com.datatrees.common.util.ThreadInterruptedUtil;
+import com.datatrees.spider.share.domain.ErrorCode;
+import com.datatrees.spider.share.domain.model.Keyword;
+import com.datatrees.spider.share.domain.model.Task;
+import com.datatrees.spider.share.service.KeywordService;
+import com.datatrees.spider.share.service.collector.common.CollectorConstants;
+import com.datatrees.spider.share.service.util.UnifiedSysTime;
+import com.treefinance.crawler.framework.config.xml.search.SearchTemplateConfig;
+import com.treefinance.crawler.framework.context.function.LinkNode;
+import com.treefinance.crawler.framework.exception.ResultEmptyException;
+import com.treefinance.crawler.framework.process.search.SearchTemplateCombine;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
 import javax.annotation.Resource;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -24,23 +39,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
-
-import com.datatrees.common.util.ThreadInterruptedUtil;
-import com.treefinance.crawler.framework.config.xml.search.SearchTemplateConfig;
-import com.treefinance.crawler.framework.context.function.LinkNode;
-import com.treefinance.crawler.framework.exception.ResultEmptyException;
-import com.treefinance.crawler.framework.process.search.SearchTemplateCombine;
-import com.datatrees.spider.share.service.collector.common.CollectorConstants;
-import com.datatrees.spider.share.service.util.UnifiedSysTime;
-import com.datatrees.spider.share.domain.model.Keyword;
-import com.datatrees.spider.share.domain.model.Task;
-import com.datatrees.spider.share.service.KeywordService;
-import com.datatrees.spider.share.domain.ErrorCode;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
 /**
  * @author <A HREF="">Cheng Wang</A>
@@ -50,10 +48,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class CrawlExecutor {
 
-    private static final Logger         log = LoggerFactory.getLogger(CrawlExecutor.class);
+    private static final Logger log = LoggerFactory.getLogger(CrawlExecutor.class);
 
     @Resource
-    private              KeywordService keywordService;
+    private KeywordService keywordService;
 
     /**
      * @param searchProcessor
@@ -68,8 +66,7 @@ public class CrawlExecutor {
             if (!linkQueue.init()) {
                 Task task = searchProcessor.getTask();
                 task.setErrorCode(ErrorCode.INIT_QUEUE_FAILED_ERROR_CODE);
-                log.info("{} -- The queue is empty, the system will exit. Template: {}", searchTemplateConfig.getType(),
-                        searchProcessor.getSearchTemplate());
+                log.info("{} -- The queue is empty, the system will exit. Template: {}", searchTemplateConfig.getType(), searchProcessor.getSearchTemplate());
                 return;
             }
 
@@ -98,7 +95,7 @@ public class CrawlExecutor {
     private void doExecute(SearchProcessor searchProcessor, LinkQueue linkQueue, String keyword, Integer threadCount) throws ResultEmptyException {
         searchProcessor.initWithKeyword(keyword);
         String url = SearchTemplateCombine.constructSearchURL(searchProcessor.getSearchTemplate(), keyword, searchProcessor.getEncoding(), 0, true,
-                searchProcessor.getProcessorContext().getVisibleScope());
+            searchProcessor.getProcessorContext().getVisibleScope());
 
         log.info("Actual search seed url: {}", url);
 
@@ -106,8 +103,7 @@ public class CrawlExecutor {
         this.doLoopCrawl(searchProcessor, linkQueue, linkNode, threadCount);
     }
 
-    private void doLoopCrawl(SearchProcessor searchProcessor, LinkQueue linkQueue, LinkNode linkNode,
-            Integer threadCount) throws ResultEmptyException {
+    private void doLoopCrawl(SearchProcessor searchProcessor, LinkQueue linkQueue, LinkNode linkNode, Integer threadCount) throws ResultEmptyException {
         Task task = searchProcessor.getTask();
         log.info("Start doLoopCrawl , Task id: {}, linkNode: {}", task.getId(), linkNode);
         if (linkNode != null && StringUtils.isNotBlank(linkNode.getUrl())) {
@@ -143,7 +139,7 @@ public class CrawlExecutor {
                         }
 
                         if (linkQueue.isFull()) {
-                            //searchProcessor.getTask().setErrorCode(ErrorCode.QUEUE_FULL_ERROR_CODE);
+                            // searchProcessor.getTask().setErrorCode(ErrorCode.QUEUE_FULL_ERROR_CODE);
                         }
                         if (threadCount != null && threadCount > 1) {
                             if (crawlExecutorPool != null) {
@@ -203,8 +199,7 @@ public class CrawlExecutor {
         boolean timeout = searchProcessor.isTimeout(currentTime);
 
         if (timeout) {
-            log.debug("Crawl task is time out! taskId : {}, startTime: {}, now: {}", searchProcessor.getTaskId(), searchProcessor.getStartTime(),
-                    currentTime);
+            log.debug("Crawl task is time out! taskId : {}, startTime: {}, now: {}", searchProcessor.getTaskId(), searchProcessor.getStartTime(), currentTime);
         }
 
         return timeout;
@@ -212,7 +207,7 @@ public class CrawlExecutor {
 
     private void exceptionHandle(Exception e, String remark) throws ResultEmptyException {
         if (e instanceof ResultEmptyException) {
-            throw (ResultEmptyException) e;
+            throw (ResultEmptyException)e;
         } else if (e.getCause() instanceof ResultEmptyException) {
             throw new ResultEmptyException(e);
         } else {

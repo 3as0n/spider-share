@@ -1,17 +1,14 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.protocol;
@@ -28,7 +25,7 @@ public class NameValuePair {
     /**
      * Name.
      */
-    private String name  = null;
+    private String name = null;
 
     /**
      * Value.
@@ -46,7 +43,8 @@ public class NameValuePair {
 
     /**
      * Constructor.
-     * @param name  The name.
+     * 
+     * @param name The name.
      * @param value The value.
      */
     public NameValuePair(String name, String value) {
@@ -58,6 +56,7 @@ public class NameValuePair {
 
     /**
      * Return the name.
+     * 
      * @return String name The name
      * @see #setName(String)
      */
@@ -67,6 +66,7 @@ public class NameValuePair {
 
     /**
      * Set the name.
+     * 
      * @param name The new name
      * @see #getName()
      */
@@ -76,6 +76,7 @@ public class NameValuePair {
 
     /**
      * Return the current value.
+     * 
      * @return String value The current value.
      */
     public String getValue() {
@@ -84,6 +85,7 @@ public class NameValuePair {
 
     /**
      * Set the value.
+     * 
      * @param value The new value.
      */
     public void setValue(String value) {
@@ -94,6 +96,7 @@ public class NameValuePair {
 
     /**
      * Get a String representation of this pair.
+     * 
      * @return A string representation.
      */
     public String toString() {
@@ -101,10 +104,12 @@ public class NameValuePair {
     }
 
     public boolean equals(final Object object) {
-        if (object == null) return false;
-        if (this == object) return true;
+        if (object == null)
+            return false;
+        if (this == object)
+            return true;
         if (object instanceof NameValuePair) {
-            NameValuePair that = (NameValuePair) object;
+            NameValuePair that = (NameValuePair)object;
             return LangUtils.equals(this.name, that.name) && LangUtils.equals(this.value, that.value);
         } else {
             return false;

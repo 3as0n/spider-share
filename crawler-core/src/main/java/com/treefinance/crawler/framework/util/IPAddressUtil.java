@@ -1,28 +1,25 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.util;
 
 public class IPAddressUtil {
 
-    private final static int INADDR4SZ  = 4;
+    private final static int INADDR4SZ = 4;
 
     private final static int INADDR16SZ = 16;
 
-    private final static int INT16SZ    = 2;
+    private final static int INT16SZ = 2;
 
     /*
      * Converts IPv4 address in its textual presentation form into its numeric binary form.
@@ -48,11 +45,12 @@ public class IPAddressUtil {
                      */
 
                     val = Long.parseLong(s[0]);
-                    if (val < 0 || val > 0xffffffffL) return null;
-                    res[0] = (byte) ((val >> 24) & 0xff);
-                    res[1] = (byte) (((val & 0xffffff) >> 16) & 0xff);
-                    res[2] = (byte) (((val & 0xffff) >> 8) & 0xff);
-                    res[3] = (byte) (val & 0xff);
+                    if (val < 0 || val > 0xffffffffL)
+                        return null;
+                    res[0] = (byte)((val >> 24) & 0xff);
+                    res[1] = (byte)(((val & 0xffffff) >> 16) & 0xff);
+                    res[2] = (byte)(((val & 0xffff) >> 8) & 0xff);
+                    res[3] = (byte)(val & 0xff);
                     break;
                 case 2:
                     /*
@@ -63,13 +61,15 @@ public class IPAddressUtil {
                      */
 
                     val = Integer.parseInt(s[0]);
-                    if (val < 0 || val > 0xff) return null;
-                    res[0] = (byte) (val & 0xff);
+                    if (val < 0 || val > 0xff)
+                        return null;
+                    res[0] = (byte)(val & 0xff);
                     val = Integer.parseInt(s[1]);
-                    if (val < 0 || val > 0xffffff) return null;
-                    res[1] = (byte) ((val >> 16) & 0xff);
-                    res[2] = (byte) (((val & 0xffff) >> 8) & 0xff);
-                    res[3] = (byte) (val & 0xff);
+                    if (val < 0 || val > 0xffffff)
+                        return null;
+                    res[1] = (byte)((val >> 16) & 0xff);
+                    res[2] = (byte)(((val & 0xffff) >> 8) & 0xff);
+                    res[3] = (byte)(val & 0xff);
                     break;
                 case 3:
                     /*
@@ -80,13 +80,15 @@ public class IPAddressUtil {
                      */
                     for (int i = 0; i < 2; i++) {
                         val = Integer.parseInt(s[i]);
-                        if (val < 0 || val > 0xff) return null;
-                        res[i] = (byte) (val & 0xff);
+                        if (val < 0 || val > 0xff)
+                            return null;
+                        res[i] = (byte)(val & 0xff);
                     }
                     val = Integer.parseInt(s[2]);
-                    if (val < 0 || val > 0xffff) return null;
-                    res[2] = (byte) ((val >> 8) & 0xff);
-                    res[3] = (byte) (val & 0xff);
+                    if (val < 0 || val > 0xffff)
+                        return null;
+                    res[2] = (byte)((val >> 8) & 0xff);
+                    res[3] = (byte)(val & 0xff);
                     break;
                 case 4:
                     /*
@@ -95,8 +97,9 @@ public class IPAddressUtil {
                      */
                     for (int i = 0; i < 4; i++) {
                         val = Integer.parseInt(s[i]);
-                        if (val < 0 || val > 0xff) return null;
-                        res[i] = (byte) (val & 0xff);
+                        if (val < 0 || val > 0xff)
+                            return null;
+                        res[i] = (byte)(val & 0xff);
                     }
                     break;
                 default:
@@ -144,7 +147,9 @@ public class IPAddressUtil {
         colonp = -1;
         int i = 0, j = 0;
         /* Leading :: requires some special handling. */
-        if (srcb[i] == ':') if (srcb[++i] != ':') return null;
+        if (srcb[i] == ':')
+            if (srcb[++i] != ':')
+                return null;
         int curtok = i;
         saw_xdigit = false;
         val = 0;
@@ -154,22 +159,25 @@ public class IPAddressUtil {
             if (chval != -1) {
                 val <<= 4;
                 val |= chval;
-                if (val > 0xffff) return null;
+                if (val > 0xffff)
+                    return null;
                 saw_xdigit = true;
                 continue;
             }
             if (ch == ':') {
                 curtok = i;
                 if (!saw_xdigit) {
-                    if (colonp != -1) return null;
+                    if (colonp != -1)
+                        return null;
                     colonp = j;
                     continue;
                 } else if (i == srcb_length) {
                     return null;
                 }
-                if (j + INT16SZ > INADDR16SZ) return null;
-                dst[j++] = (byte) ((val >> 8) & 0xff);
-                dst[j++] = (byte) (val & 0xff);
+                if (j + INT16SZ > INADDR16SZ)
+                    return null;
+                dst[j++] = (byte)((val >> 8) & 0xff);
+                dst[j++] = (byte)(val & 0xff);
                 saw_xdigit = false;
                 val = 0;
                 continue;
@@ -198,22 +206,25 @@ public class IPAddressUtil {
             return null;
         }
         if (saw_xdigit) {
-            if (j + INT16SZ > INADDR16SZ) return null;
-            dst[j++] = (byte) ((val >> 8) & 0xff);
-            dst[j++] = (byte) (val & 0xff);
+            if (j + INT16SZ > INADDR16SZ)
+                return null;
+            dst[j++] = (byte)((val >> 8) & 0xff);
+            dst[j++] = (byte)(val & 0xff);
         }
 
         if (colonp != -1) {
             int n = j - colonp;
 
-            if (j == INADDR16SZ) return null;
+            if (j == INADDR16SZ)
+                return null;
             for (i = 1; i <= n; i++) {
                 dst[INADDR16SZ - i] = dst[colonp + n - i];
                 dst[colonp + n - i] = 0;
             }
             j = INADDR16SZ;
         }
-        if (j != INADDR16SZ) return null;
+        if (j != INADDR16SZ)
+            return null;
         byte[] newdst = convertFromIPv4MappedAddress(dst);
         if (newdst != null) {
             return newdst;
@@ -257,14 +268,16 @@ public class IPAddressUtil {
 
     /**
      * Utility routine to check if the InetAddress is an IPv4 mapped IPv6 address.
-     * @return a <code>boolean</code> indicating if the InetAddress is an IPv4 mapped IPv6 address;
-     * or false if address is IPv4 address.
+     * 
+     * @return a <code>boolean</code> indicating if the InetAddress is an IPv4 mapped IPv6 address; or false if address
+     *         is IPv4 address.
      */
     private static boolean isIPv4MappedAddress(byte[] addr) {
         if (addr.length < INADDR16SZ) {
             return false;
         }
-        if ((addr[0] == 0x00) && (addr[1] == 0x00) && (addr[2] == 0x00) && (addr[3] == 0x00) && (addr[4] == 0x00) && (addr[5] == 0x00) && (addr[6] == 0x00) && (addr[7] == 0x00) && (addr[8] == 0x00) && (addr[9] == 0x00) && (addr[10] == (byte) 0xff) && (addr[11] == (byte) 0xff)) {
+        if ((addr[0] == 0x00) && (addr[1] == 0x00) && (addr[2] == 0x00) && (addr[3] == 0x00) && (addr[4] == 0x00) && (addr[5] == 0x00) && (addr[6] == 0x00) && (addr[7] == 0x00)
+            && (addr[8] == 0x00) && (addr[9] == 0x00) && (addr[10] == (byte)0xff) && (addr[11] == (byte)0xff)) {
             return true;
         }
         return false;
@@ -281,12 +294,12 @@ public class IPAddressUtil {
         // 10.x.x.x/8
         final byte SECTION_1 = 0x0A;
         // 172.16.x.x/12
-        final byte SECTION_2 = (byte) 0xAC;
-        final byte SECTION_3 = (byte) 0x10;
-        final byte SECTION_4 = (byte) 0x1F;
+        final byte SECTION_2 = (byte)0xAC;
+        final byte SECTION_3 = (byte)0x10;
+        final byte SECTION_4 = (byte)0x1F;
         // 192.168.x.x/16
-        final byte SECTION_5 = (byte) 0xC0;
-        final byte SECTION_6 = (byte) 0xA8;
+        final byte SECTION_5 = (byte)0xC0;
+        final byte SECTION_6 = (byte)0xA8;
         switch (b0) {
             case SECTION_1:
                 return true;

@@ -1,23 +1,17 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.service.collector.worker;
-
-import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 import akka.dispatch.Await;
 import akka.dispatch.Future;
@@ -58,6 +52,16 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author <A HREF="">Cheng Wang</A>
  * @version 1.0
@@ -65,31 +69,30 @@ import org.slf4j.LoggerFactory;
  */
 public class CollectorWorker {
 
-    private static final Logger             LOGGER                    = LoggerFactory.getLogger(CollectorWorker.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CollectorWorker.class);
 
     // 爬虫任务超时时间，单位：秒
-    private static final int                DEFAULT_TASK_TIMEOUT      = PropertiesConfiguration.getInstance().getInt("crawler.task.timeout", 7 * 60);
+    private static final int DEFAULT_TASK_TIMEOUT = PropertiesConfiguration.getInstance().getInt("crawler.task.timeout", 7 * 60);
 
-    private final        long               maxLiveTime               = TimeUnit.SECONDS
-            .toMillis(PropertiesConfiguration.getInstance().getInt("max.live.seconds", 30));
+    private final long maxLiveTime = TimeUnit.SECONDS.toMillis(PropertiesConfiguration.getInstance().getInt("max.live.seconds", 30));
 
-    private              Integer            interactiveTimeoutSeconds = PropertiesConfiguration.getInstance()
-            .getInt("interactive.timeout.seconds", 300);
+    private Integer interactiveTimeoutSeconds = PropertiesConfiguration.getInstance().getInt("interactive.timeout.seconds", 300);
 
-    private              CrawlExecutor      crawlExecutor;
+    private CrawlExecutor crawlExecutor;
 
-    private              ResultDataHandler  resultDataHandler;
+    private ResultDataHandler resultDataHandler;
 
-    private              SubTaskManager     subTaskManager;
+    private SubTaskManager subTaskManager;
 
-    private              Set<String>        resultTagSet              = new HashSet<>();
+    private Set<String> resultTagSet = new HashSet<>();
 
-    private              RedisDao           redisDao;
+    private RedisDao redisDao;
 
-    private              BusinessTypeFilter businessTypeFilter;
+    private BusinessTypeFilter businessTypeFilter;
 
     /**
      * 登录
+     * 
      * @param taskMessage
      * @return
      */
@@ -101,16 +104,15 @@ public class CollectorWorker {
             if (context.needInteractive()) {
                 String keyString = RedisKeyUtils.genCollectorMessageRedisKey(taskMessage.getCollectorMessage());
                 String result = redisDao.pullResult(keyString);
-                //重复消息 or 指令等待中
+                // 重复消息 or 指令等待中
                 if (StringUtils.isNotBlank(result)) {
                     LOGGER.warn("Give up retry ,taskId={},websiteName={} ", task.getTaskId(), task.getWebsiteName());
                     return loginResult.failure(ErrorCode.GIVE_UP_RETRY);
                 }
-                //消息延迟了
+                // 消息延迟了
                 if ((System.currentTimeMillis() - taskMessage.getCollectorMessage().getBornTimestamp()) > maxLiveTime) {
                     LOGGER.warn("Message drop! Born at  bornTime = {} ,maxLiveTime ={},taskId={},websiteName={}",
-                            DateUtils.formatYmdhms(taskMessage.getCollectorMessage().getBornTimestamp()), maxLiveTime, task.getTaskId(),
-                            task.getWebsiteName());
+                        DateUtils.formatYmdhms(taskMessage.getCollectorMessage().getBornTimestamp()), maxLiveTime, task.getTaskId(), task.getWebsiteName());
                     return loginResult.failure(ErrorCode.MESSAGE_DROP);
                 }
                 redisDao.pushMessage(keyString, keyString, interactiveTimeoutSeconds);
@@ -139,6 +141,7 @@ public class CollectorWorker {
 
     /**
      * 爬取数据
+     * 
      * @param taskMessage
      * @return
      */
@@ -172,6 +175,53 @@ public class CollectorWorker {
         }
     }
 
+    /**
+     * @param crawlExecutor the crawl executor to set
+     */
+    public CollectorWorker setCrawlExecutor(CrawlExecutor crawlExecutor) {
+        this.crawlExecutor = crawlExecutor;
+        return this;
+    }
+
+    /**
+     * @param resultDataHandler the resultDataHandler to set
+     */
+    public CollectorWorker setResultDataHandler(ResultDataHandler resultDataHandler) {
+        this.resultDataHandler = resultDataHandler;
+        return this;
+    }
+
+    public Set<String> getResultTagSet() {
+        return resultTagSet;
+    }
+
+    /**
+     * @param subTaskManager the subTaskManager to set
+     */
+    public CollectorWorker setSubTaskManager(SubTaskManager subTaskManager) {
+        this.subTaskManager = subTaskManager;
+        return this;
+    }
+
+    /**
+     * @param redisDao the redisDao to set
+     */
+    public CollectorWorker setRedisDao(RedisDao redisDao) {
+        this.redisDao = redisDao;
+        return this;
+    }
+
+    /**
+     * businessTypeFilter to set
+     *
+     * @param businessTypeFilter
+     * @return
+     */
+    public CollectorWorker setBusinessTypeFilter(BusinessTypeFilter businessTypeFilter) {
+        this.businessTypeFilter = businessTypeFilter;
+        return this;
+    }
+
     private Map<String, Object> awaitDone(List<Future<Object>> futureList, TaskMessage taskMessage) {
         Map<String, Object> extractResult = new HashMap<>();
 
@@ -179,7 +229,7 @@ public class CollectorWorker {
 
         for (Future future : futureList) {
             try {
-                ExtractMessage message = (ExtractMessage) Await.result(future, new Timeout(CollectorConstants.EXTRACT_ACTOR_TIMEOUT).duration());
+                ExtractMessage message = (ExtractMessage)Await.result(future, new Timeout(CollectorConstants.EXTRACT_ACTOR_TIMEOUT).duration());
                 this.extractCodeCount(extractCount, message, extractResult);
             } catch (Exception e) {
                 extractCount.extractFailedCount++;
@@ -238,8 +288,8 @@ public class CollectorWorker {
             LOGGER.info("Start search template: {}", templateConfig.getId());
 
             if (TemplateFilter.isFilter(templateConfig, templateId) || businessTypeFilter.isFilter(templateConfig.getBusinessType(), context)) {
-                LOGGER.info("Skip search template: {}, taskId: {}, websiteName: {}, businessType: {}", templateConfig.getId(), context.getTaskId(),
-                        context.getWebsiteName(), templateConfig.getBusinessType());
+                LOGGER.info("Skip search template: {}, taskId: {}, websiteName: {}, businessType: {}", templateConfig.getId(), context.getTaskId(), context.getWebsiteName(),
+                    templateConfig.getBusinessType());
                 continue;
             }
 
@@ -261,8 +311,7 @@ public class CollectorWorker {
         return futureList;
     }
 
-    private Collection<Future<Object>> crawlByExtension(SearchTemplateConfig templateConfig, SearchProcessorContext context,
-            TaskMessage taskMessage) {
+    private Collection<Future<Object>> crawlByExtension(SearchTemplateConfig templateConfig, SearchProcessorContext context, TaskMessage taskMessage) {
         try {
             AbstractPlugin plugin = templateConfig.getPlugin();
 
@@ -282,28 +331,26 @@ public class CollectorWorker {
      * @exception ResultEmptyException
      * @exception ResponseCheckException
      */
-    private Collection<Future<Object>> crawlByNormal(SearchTemplateConfig templateConfig, SearchProcessorContext context, TaskMessage taskMessage,
-            Task task) throws ResultEmptyException {
+    private Collection<Future<Object>> crawlByNormal(SearchTemplateConfig templateConfig, SearchProcessorContext context, TaskMessage taskMessage, Task task)
+        throws ResultEmptyException {
         try {
             Request request = templateConfig.getRequest();
             if (null == request) {
-                LOGGER.warn("Request in search-template[{}] is empty! taskId: {}, websiteName: {}", templateConfig.getId(), task.getTaskId(),
-                        task.getWebsiteName());
+                LOGGER.warn("Request in search-template[{}] is empty! taskId: {}, websiteName: {}", templateConfig.getId(), task.getTaskId(), task.getWebsiteName());
                 return null;
             }
 
             String searchTemplate = getSearchSeedUrl(request, context, templateConfig.getId());
 
             if (StringUtils.isEmpty(searchTemplate)) {
-                LOGGER.warn("Not found seed url in search-template[{}]! taskId: {}, websiteName: {}", templateConfig.getId(), task.getTaskId(),
-                        task.getWebsiteName());
+                LOGGER.warn("Not found seed url in search-template[{}]! taskId: {}, websiteName: {}", templateConfig.getId(), task.getTaskId(), task.getWebsiteName());
                 return null;
             }
 
             addDefaultHeaders(context, request);
 
-            SearchProcessor searchProcessor = new SearchProcessor(taskMessage).setSearchTemplate(searchTemplate)
-                    .setSearchTemplateConfig(templateConfig).setResultDataHandler(resultDataHandler);
+            SearchProcessor searchProcessor =
+                new SearchProcessor(taskMessage).setSearchTemplate(searchTemplate).setSearchTemplateConfig(templateConfig).setResultDataHandler(resultDataHandler);
             searchProcessor.setDefaultTimeout(DEFAULT_TASK_TIMEOUT, TimeUnit.SECONDS);
             if (request.getMaxExecuteMinutes() != null) {
                 searchProcessor.setTimeout(request.getMaxExecuteMinutes(), TimeUnit.MINUTES);
@@ -369,63 +416,17 @@ public class CollectorWorker {
         }
     }
 
-    /**
-     * @param crawlExecutor the crawl executor to set
-     */
-    public CollectorWorker setCrawlExecutor(CrawlExecutor crawlExecutor) {
-        this.crawlExecutor = crawlExecutor;
-        return this;
-    }
-
-    /**
-     * @param resultDataHandler the resultDataHandler to set
-     */
-    public CollectorWorker setResultDataHandler(ResultDataHandler resultDataHandler) {
-        this.resultDataHandler = resultDataHandler;
-        return this;
-    }
-
-    public Set<String> getResultTagSet() {
-        return resultTagSet;
-    }
-
-    /**
-     * @param subTaskManager the subTaskManager to set
-     */
-    public CollectorWorker setSubTaskManager(SubTaskManager subTaskManager) {
-        this.subTaskManager = subTaskManager;
-        return this;
-    }
-
-    /**
-     * @param redisDao the redisDao to set
-     */
-    public CollectorWorker setRedisDao(RedisDao redisDao) {
-        this.redisDao = redisDao;
-        return this;
-    }
-
-    /**
-     * businessTypeFilter to set
-     * @param businessTypeFilter
-     * @return
-     */
-    public CollectorWorker setBusinessTypeFilter(BusinessTypeFilter businessTypeFilter) {
-        this.businessTypeFilter = businessTypeFilter;
-        return this;
-    }
-
     static class ExtractCount {
 
-        int extractedCount      = 0;
+        int extractedCount = 0;
 
         int extractSucceedCount = 0;
 
-        int extractFailedCount  = 0;
+        int extractFailedCount = 0;
 
-        int storeFailedCount    = 0;
+        int storeFailedCount = 0;
 
-        int notExtractCount     = 0;
+        int notExtractCount = 0;
     }
 
 }

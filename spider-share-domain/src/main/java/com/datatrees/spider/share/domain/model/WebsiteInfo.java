@@ -1,17 +1,14 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.domain.model;
@@ -19,87 +16,61 @@ package com.datatrees.spider.share.domain.model;
 import java.io.Serializable;
 import java.util.Date;
 
- /** create by system from table website_info(非运营商配置)  */
+/** create by system from table website_info(非运营商配置) */
 public class WebsiteInfo implements Serializable {
-    //主键(website_id)
-    private Integer websiteId;
-
-    //区分不同环境(env)
-    private String env;
-
-    //1:mail,3:ecommerce,4:bank,5:internal,6:education(website_type)
-    private Integer websiteType;
-
-    //配置名称(website_name)
-    private String websiteName;
-
-    //配置标题(website_title)
-    private String websiteTitle;
-
-    //是否启用(0:不启用,1:启用)(enable)
-    private Boolean enable;
-
-    //代理(0:不启用,1:启用)(proxy_enable)
-    private Boolean proxyEnable;
-
-    //搜索配置(search_config)
-    private String searchConfig;
-
-    //解析配置(extractor_config)
-    private String extractorConfig;
-
-    //分组(group_code)
-    private String groupCode;
-
-    //修改时间(updated_at)
-    private Date updatedAt;
-
-    //插件启动阶段(在***表单提交成功之后发送登录成功消息)(start_stage)
-    private String startStage;
-
-    //登录地址(login_url)
-    private String loginUrl;
-
-    //插件地址(plugin_class)
-    private String pluginClass;
-
-    //登录配置(login_config)
-    private String loginConfig;
-
-    //短信重发间隔时间(全局)(sms_interval)
-    private Integer smsInterval;
-
-    //描述(remark)
-    private String remark;
-
-    //登录过程中自定义提示(login_tip)
-    private String loginTip;
-
-    //爬过过程中校验,短信输入框提示(verify_tip)
-    private String verifyTip;
-
-    //重置密码方式(SMS:短信, TEL:拨打电话, WEB:url重置)(reset_type)
-    private String resetType;
-
-    //重置密码短信模板(sms_template)
-    private String smsTemplate;
-
-    //重置密码接收手机号(sms_receiver)
-    private String smsReceiver;
-
-    //重置密码url(reset_url)
-    private String resetUrl;
-
-    //重置密码提示(reset_tip)
-    private String resetTip;
-
-    //(created_at)
-    private Date createdAt;
-
-    //扩展信息(attribute)
-    private String attribute;
-
     private static final long serialVersionUID = 1L;
+    // 主键(website_id)
+    private Integer websiteId;
+    // 区分不同环境(env)
+    private String env;
+    // 1:mail,3:ecommerce,4:bank,5:internal,6:education(website_type)
+    private Integer websiteType;
+    // 配置名称(website_name)
+    private String websiteName;
+    // 配置标题(website_title)
+    private String websiteTitle;
+    // 是否启用(0:不启用,1:启用)(enable)
+    private Boolean enable;
+    // 代理(0:不启用,1:启用)(proxy_enable)
+    private Boolean proxyEnable;
+    // 搜索配置(search_config)
+    private String searchConfig;
+    // 解析配置(extractor_config)
+    private String extractorConfig;
+    // 分组(group_code)
+    private String groupCode;
+    // 修改时间(updated_at)
+    private Date updatedAt;
+    // 插件启动阶段(在***表单提交成功之后发送登录成功消息)(start_stage)
+    private String startStage;
+    // 登录地址(login_url)
+    private String loginUrl;
+    // 插件地址(plugin_class)
+    private String pluginClass;
+    // 登录配置(login_config)
+    private String loginConfig;
+    // 短信重发间隔时间(全局)(sms_interval)
+    private Integer smsInterval;
+    // 描述(remark)
+    private String remark;
+    // 登录过程中自定义提示(login_tip)
+    private String loginTip;
+    // 爬过过程中校验,短信输入框提示(verify_tip)
+    private String verifyTip;
+    // 重置密码方式(SMS:短信, TEL:拨打电话, WEB:url重置)(reset_type)
+    private String resetType;
+    // 重置密码短信模板(sms_template)
+    private String smsTemplate;
+    // 重置密码接收手机号(sms_receiver)
+    private String smsReceiver;
+    // 重置密码url(reset_url)
+    private String resetUrl;
+    // 重置密码提示(reset_tip)
+    private String resetTip;
+    // (created_at)
+    private Date createdAt;
+    // 扩展信息(attribute)
+    private String attribute;
 
     public Integer getWebsiteId() {
         return websiteId;

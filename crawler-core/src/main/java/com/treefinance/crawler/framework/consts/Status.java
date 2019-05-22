@@ -1,17 +1,14 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.consts;
@@ -25,26 +22,25 @@ public final class Status {
 
     public static final int PROCESS_EXCEPTION = -2005;
 
-    public static final int BLOCKED           = -2004;
+    public static final int BLOCKED = -2004;
 
-    public static final int NO_SEARCH_RESULT  = -2003;
+    public static final int NO_SEARCH_RESULT = -2003;
 
-    public static final int FILTERED          = -2002;
+    public static final int FILTERED = -2002;
 
-    public static final int LAST_PAGE         = -2000;
+    public static final int LAST_PAGE = -2000;
 
-    public static final int VISIT_SUCCESS     = 1;
+    public static final int VISIT_SUCCESS = 1;
 
-    public static final int VISIT_REDIRECT    = 2;
+    public static final int VISIT_REDIRECT = 2;
 
-    public static final int VISIT_ERROR       = 3;
+    public static final int VISIT_ERROR = 3;
 
-    public static final int NO_PROXY          = 4;
+    public static final int NO_PROXY = 4;
 
-    public static final int REQUEUE           = 1999;
+    public static final int REQUEUE = 1999;
 
-    private Status() {
-    }
+    private Status() {}
 
     public static boolean success(int code) {
         return code == VISIT_SUCCESS;

@@ -1,25 +1,17 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package org.apache.commons.httpclient.cookie;
-
-import java.util.Collection;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.Header;
@@ -30,8 +22,14 @@ import org.apache.commons.httpclient.util.DateUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.Collection;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Cookie management functions shared by all specification.
+ * 
  * @author B.C. Holmes
  * @author <a href="mailto:jericho@thinkfree.com">Park, Sung-Gu</a>
  * @author <a href="mailto:dsale@us.britannica.com">Doug Sale</a>
@@ -47,10 +45,10 @@ import org.apache.commons.logging.LogFactory;
 public class CookieSpecBase implements CookieSpec {
 
     /** Log object */
-    protected static final Log        LOG          = LogFactory.getLog(CookieSpec.class);
+    protected static final Log LOG = LogFactory.getLog(CookieSpec.class);
 
     /** Valid date patterns */
-    private                Collection datepatterns = null;
+    private Collection datepatterns = null;
 
     /** Default constructor */
     public CookieSpecBase() {
@@ -58,18 +56,18 @@ public class CookieSpecBase implements CookieSpec {
     }
 
     /**
-     * Adds the given cookie into the given list in descending path order. That
-     * is, more specific path to least specific paths.  This may not be the
-     * fastest algorythm, but it'll work OK for the small number of cookies
-     * we're generally dealing with.
-     * @param list      - the list to add the cookie to
+     * Adds the given cookie into the given list in descending path order. That is, more specific path to least specific
+     * paths. This may not be the fastest algorythm, but it'll work OK for the small number of cookies we're generally
+     * dealing with.
+     * 
+     * @param list - the list to add the cookie to
      * @param addCookie - the Cookie to add to list
      */
     private static void addInPathOrder(List list, Cookie addCookie) {
         int i = 0;
 
         for (i = 0; i < list.size(); i++) {
-            Cookie c = (Cookie) list.get(i);
+            Cookie c = (Cookie)list.get(i);
             if (addCookie.compare(addCookie, c) > 0) {
                 break;
             }
@@ -79,7 +77,9 @@ public class CookieSpecBase implements CookieSpec {
 
     /**
      * Parses the Set-Cookie value into an array of <tt>Cookie</tt>s.
-     * <P>The syntax for the Set-Cookie response header is:
+     * <P>
+     * The syntax for the Set-Cookie response header is:
+     * 
      * <PRE>
      * set-cookie      =    "Set-Cookie:" cookies
      * cookies         =    1#cookie
@@ -93,14 +93,11 @@ public class CookieSpecBase implements CookieSpec {
      * |    "Secure"
      * |    "Version" "=" 1*DIGIT
      * </PRE>
-     * @param host   the host from which the <tt>Set-Cookie</tt> value was
-     *               received
-     * @param port   the port from which the <tt>Set-Cookie</tt> value was
-     *               received
-     * @param path   the path from which the <tt>Set-Cookie</tt> value was
-     *               received
-     * @param secure <tt>true</tt> when the <tt>Set-Cookie</tt> value was
-     *               received over secure conection
+     * 
+     * @param host the host from which the <tt>Set-Cookie</tt> value was received
+     * @param port the port from which the <tt>Set-Cookie</tt> value was received
+     * @param path the path from which the <tt>Set-Cookie</tt> value was received
+     * @param secure <tt>true</tt> when the <tt>Set-Cookie</tt> value was received over secure conection
      * @param header the <tt>Set-Cookie</tt> received from the server
      * @return an array of <tt>Cookie</tt>s parsed from the Set-Cookie value
      * @exception MalformedCookieException if an exception occurs during parsing
@@ -134,7 +131,7 @@ public class CookieSpecBase implements CookieSpec {
         int lastSlashIndex = defaultPath.lastIndexOf(PATH_DELIM);
         if (lastSlashIndex >= 0) {
             if (lastSlashIndex == 0) {
-                //Do not remove the very first slash
+                // Do not remove the very first slash
                 lastSlashIndex = 1;
             }
             defaultPath = defaultPath.substring(0, lastSlashIndex);
@@ -158,7 +155,7 @@ public class CookieSpecBase implements CookieSpec {
             }
         }
         if (isNetscapeCookie) {
-            headerElements = new HeaderElement[]{new HeaderElement(header.toCharArray())};
+            headerElements = new HeaderElement[] {new HeaderElement(header.toCharArray())};
         } else {
             headerElements = HeaderElement.parseElements(header.toCharArray());
         }
@@ -189,9 +186,10 @@ public class CookieSpecBase implements CookieSpec {
     }
 
     /**
-     * Parse the <tt>"Set-Cookie"</tt> {@link Header} into an array of {@link
-     * Cookie}s.
-     * <P>The syntax for the Set-Cookie response header is:
+     * Parse the <tt>"Set-Cookie"</tt> {@link Header} into an array of {@link Cookie}s.
+     * <P>
+     * The syntax for the Set-Cookie response header is:
+     * 
      * <PRE>
      * set-cookie      =    "Set-Cookie:" cookies
      * cookies         =    1#cookie
@@ -205,14 +203,11 @@ public class CookieSpecBase implements CookieSpec {
      * |    "Secure"
      * |    "Version" "=" 1*DIGIT
      * </PRE>
-     * @param host   the host from which the <tt>Set-Cookie</tt> header was
-     *               received
-     * @param port   the port from which the <tt>Set-Cookie</tt> header was
-     *               received
-     * @param path   the path from which the <tt>Set-Cookie</tt> header was
-     *               received
-     * @param secure <tt>true</tt> when the <tt>Set-Cookie</tt> header was
-     *               received over secure conection
+     * 
+     * @param host the host from which the <tt>Set-Cookie</tt> header was received
+     * @param port the port from which the <tt>Set-Cookie</tt> header was received
+     * @param path the path from which the <tt>Set-Cookie</tt> header was received
+     * @param secure <tt>true</tt> when the <tt>Set-Cookie</tt> header was received over secure conection
      * @param header the <tt>Set-Cookie</tt> received from the server
      * @return an array of <tt>Cookie</tt>s parsed from the <tt>"Set-Cookie"
      * </tt> header
@@ -228,11 +223,10 @@ public class CookieSpecBase implements CookieSpec {
     }
 
     /**
-     * Parse the cookie attribute and update the corresponsing {@link Cookie}
-     * properties.
-     * @param attribute {@link HeaderElement} cookie attribute from the
-     *                  <tt>Set- Cookie</tt>
-     * @param cookie    {@link Cookie} to be updated
+     * Parse the cookie attribute and update the corresponsing {@link Cookie} properties.
+     * 
+     * @param attribute {@link HeaderElement} cookie attribute from the <tt>Set- Cookie</tt>
+     * @param cookie {@link Cookie} to be updated
      * @exception MalformedCookieException if an exception occurs during parsing
      */
     public void parseAttribute(final NameValuePair attribute, final Cookie cookie) throws MalformedCookieException {
@@ -315,14 +309,13 @@ public class CookieSpecBase implements CookieSpec {
 
     /**
      * Performs most common {@link Cookie} validation
-     * @param host   the host from which the {@link Cookie} was received
-     * @param port   the port from which the {@link Cookie} was received
-     * @param path   the path from which the {@link Cookie} was received
-     * @param secure <tt>true</tt> when the {@link Cookie} was received using a
-     *               secure connection
+     * 
+     * @param host the host from which the {@link Cookie} was received
+     * @param port the port from which the {@link Cookie} was received
+     * @param path the path from which the {@link Cookie} was received
+     * @param secure <tt>true</tt> when the {@link Cookie} was received using a secure connection
      * @param cookie The cookie to validate.
-     * @exception MalformedCookieException if an exception occurs during
-     *                                     validation
+     * @exception MalformedCookieException if an exception occurs during validation
      */
     public void validate(String host, int port, String path, boolean secure, final Cookie cookie) throws MalformedCookieException {
 
@@ -351,13 +344,13 @@ public class CookieSpecBase implements CookieSpec {
         // security check... we musn't allow the server to give us an
         // invalid domain scope
 
-        // Validate the cookies domain attribute.  NOTE:  Domains without
+        // Validate the cookies domain attribute. NOTE: Domains without
         // any dots are allowed to support hosts on private LANs that don't
-        // have DNS names.  Since they have no dots, to domain-match the
+        // have DNS names. Since they have no dots, to domain-match the
         // request-host and domain must be identical for the cookie to sent
         // back to the origin-server.
         if (host.indexOf(".") >= 0) {
-            // Not required to have at least two dots.  RFC 2965.
+            // Not required to have at least two dots. RFC 2965.
             // A Set-Cookie2 with Domain=ajax.com will be accepted.
 
             // domain must match host
@@ -385,11 +378,12 @@ public class CookieSpecBase implements CookieSpec {
     }
 
     /**
-     * Return <tt>true</tt> if the cookie should be submitted with a request
-     * with given attributes, <tt>false</tt> otherwise.
-     * @param host   the host to which the request is being submitted
-     * @param port   the port to which the request is being submitted (ignored)
-     * @param path   the path to which the request is being submitted
+     * Return <tt>true</tt> if the cookie should be submitted with a request with given attributes, <tt>false</tt>
+     * otherwise.
+     * 
+     * @param host the host to which the request is being submitted
+     * @param port the port to which the request is being submitted (ignored)
+     * @param path the path to which the request is being submitted
      * @param secure <tt>true</tt> if the request is using a secure connection
      * @param cookie {@link Cookie} to be matched
      * @return true if the cookie matches the criterium
@@ -427,20 +421,21 @@ public class CookieSpecBase implements CookieSpec {
         }
 
         return
-                // only add the cookie if it hasn't yet expired
-                (cookie.getExpiryDate() == null || cookie.getExpiryDate().after(new Date()))
-                        // and the domain pattern matches
-                        && (domainMatch(host, cookie.getDomain()))
-                        // and the path is null or matching
-                        && (pathMatch(path, cookie.getPath()))
-                        // and if the secure flag is set, only if the request is
-                        // actually secure
-                        && (cookie.getSecure() ? secure : true);
+        // only add the cookie if it hasn't yet expired
+        (cookie.getExpiryDate() == null || cookie.getExpiryDate().after(new Date()))
+            // and the domain pattern matches
+            && (domainMatch(host, cookie.getDomain()))
+            // and the path is null or matching
+            && (pathMatch(path, cookie.getPath()))
+            // and if the secure flag is set, only if the request is
+            // actually secure
+            && (cookie.getSecure() ? secure : true);
     }
 
     /**
      * Performs domain-match as implemented in common browsers.
-     * @param host   The target host.
+     * 
+     * @param host The target host.
      * @param domain The cookie domain attribute.
      * @return true if the specified host matches the given domain.
      */
@@ -456,7 +451,8 @@ public class CookieSpecBase implements CookieSpec {
 
     /**
      * Performs path-match as implemented in common browsers.
-     * @param path        The target path.
+     * 
+     * @param path The target path.
      * @param topmostPath The cookie path attribute.
      * @return true if the paths match
      */
@@ -473,13 +469,13 @@ public class CookieSpecBase implements CookieSpec {
     }
 
     /**
-     * Return an array of {@link Cookie}s that should be submitted with a
-     * request with given attributes, <tt>false</tt> otherwise.
-     * @param host    the host to which the request is being submitted
-     * @param port    the port to which the request is being submitted (currently
-     *                ignored)
-     * @param path    the path to which the request is being submitted
-     * @param secure  <tt>true</tt> if the request is using a secure protocol
+     * Return an array of {@link Cookie}s that should be submitted with a request with given attributes, <tt>false</tt>
+     * otherwise.
+     * 
+     * @param host the host to which the request is being submitted
+     * @param port the port to which the request is being submitted (currently ignored)
+     * @param path the path to which the request is being submitted
+     * @param secure <tt>true</tt> if the request is using a secure protocol
      * @param cookies an array of <tt>Cookie</tt>s to be matched
      * @return an array of <tt>Cookie</tt>s matching the criterium
      */
@@ -496,11 +492,12 @@ public class CookieSpecBase implements CookieSpec {
                 addInPathOrder(matching, cookies[i]);
             }
         }
-        return (Cookie[]) matching.toArray(new Cookie[matching.size()]);
+        return (Cookie[])matching.toArray(new Cookie[matching.size()]);
     }
 
     /**
      * Return a string suitable for sending in a <tt>"Cookie"</tt> header
+     * 
      * @param cookie a {@link Cookie} to be formatted as string
      * @return a string suitable for sending in a <tt>"Cookie"</tt> header.
      */
@@ -520,8 +517,9 @@ public class CookieSpecBase implements CookieSpec {
     }
 
     /**
-     * Create a <tt>"Cookie"</tt> header value containing all {@link Cookie}s in
-     * <i>cookies</i> suitable for sending in a <tt>"Cookie"</tt> header
+     * Create a <tt>"Cookie"</tt> header value containing all {@link Cookie}s in <i>cookies</i> suitable for sending in
+     * a <tt>"Cookie"</tt> header
+     * 
      * @param cookies an array of {@link Cookie}s to be formatted
      * @return a string suitable for sending in a Cookie header.
      * @exception IllegalArgumentException if an input parameter is illegal
@@ -546,8 +544,8 @@ public class CookieSpecBase implements CookieSpec {
     }
 
     /**
-     * Create a <tt>"Cookie"</tt> {@link Header} containing all {@link Cookie}s
-     * in <i>cookies</i>.
+     * Create a <tt>"Cookie"</tt> {@link Header} containing all {@link Cookie}s in <i>cookies</i>.
+     * 
      * @param cookies an array of {@link Cookie}s to be formatted as a <tt>"
      *                Cookie"</tt> header
      * @return a <tt>"Cookie"</tt> {@link Header}.
@@ -559,8 +557,8 @@ public class CookieSpecBase implements CookieSpec {
 
     /**
      * Create a <tt>"Cookie"</tt> {@link Header} containing the {@link Cookie}.
-     * @param cookie <tt>Cookie</tt>s to be formatted as a <tt>Cookie</tt>
-     *               header
+     * 
+     * @param cookie <tt>Cookie</tt>s to be formatted as a <tt>Cookie</tt> header
      * @return a Cookie header.
      */
     public Header formatCookieHeader(Cookie cookie) {

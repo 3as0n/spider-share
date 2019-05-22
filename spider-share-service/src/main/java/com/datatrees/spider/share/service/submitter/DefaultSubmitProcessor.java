@@ -1,36 +1,27 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.service.submitter;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 
 import com.datatrees.common.util.GsonUtils;
 import com.datatrees.spider.share.common.share.service.RedisService;
 import com.datatrees.spider.share.common.utils.BackRedisUtils;
 import com.datatrees.spider.share.domain.RedisKeyPrefixEnum;
-import com.datatrees.spider.share.service.domain.*;
+import com.datatrees.spider.share.service.domain.ExtractMessage;
+import com.datatrees.spider.share.service.domain.SpiderTask;
+import com.datatrees.spider.share.service.domain.SubSeed;
+import com.datatrees.spider.share.service.domain.SubTask;
+import com.datatrees.spider.share.service.domain.SubmitMessage;
 import com.datatrees.spider.share.service.extra.SubTaskManager;
 import com.datatrees.spider.share.service.normalizers.SubmitNormalizerFactory;
 import com.datatrees.spider.share.service.util.RedisKeyUtils;
@@ -40,6 +31,17 @@ import org.apache.commons.lang.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Resource;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 @Component
 public class DefaultSubmitProcessor implements SubmitProcessor {
@@ -96,7 +98,7 @@ public class DefaultSubmitProcessor implements SubmitProcessor {
         doMonitor(taskId, redisKey, entry, value -> {
             if (value instanceof Collection) {
                 List<String> jsonStringList = new ArrayList<String>();
-                for (Object obj : (Collection) value) {
+                for (Object obj : (Collection)value) {
                     if (obj != null) {
                         jsonStringList.add(GsonUtils.toJson(obj));
                     }
@@ -127,7 +129,7 @@ public class DefaultSubmitProcessor implements SubmitProcessor {
 
         Object result = function.apply(entry.getValue());
         if (result instanceof List) {
-            List<String> jsonStringList = (List<String>) result;
+            List<String> jsonStringList = (List<String>)result;
             try {
                 if (!jsonStringList.isEmpty()) {
                     BackRedisUtils.rpush(backKey, jsonStringList.toArray(new String[0]));
@@ -137,7 +139,7 @@ public class DefaultSubmitProcessor implements SubmitProcessor {
             }
         } else if (result instanceof String) {
             try {
-                BackRedisUtils.set(backKey, (String) result);
+                BackRedisUtils.set(backKey, (String)result);
             } catch (Throwable e) {
                 logger.warn("save to back redis error ", e);
             }
@@ -154,7 +156,7 @@ public class DefaultSubmitProcessor implements SubmitProcessor {
         SpiderTask task = extractMessage.getTask();
 
         if (entry.getValue() instanceof Collection) {
-            for (Object obj : (Collection) entry.getValue()) {
+            for (Object obj : (Collection)entry.getValue()) {
                 this.doSubTask(task, obj);
             }
         } else {
@@ -164,7 +166,7 @@ public class DefaultSubmitProcessor implements SubmitProcessor {
 
     private void doSubTask(SpiderTask task, Object seed) {
         if (seed instanceof Map) {
-            SubSeed subSeed = new SubSeed((Map) seed);
+            SubSeed subSeed = new SubSeed((Map)seed);
 
             logger.info("submit sub-seed {}", subSeed);
             subTaskManager.submitSubTask(new SubTask(task, subSeed));

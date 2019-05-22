@@ -1,26 +1,17 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.format.datetime;
-
-import javax.annotation.Nonnull;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.treefinance.crawler.framework.consts.Constants;
 import com.treefinance.crawler.framework.exception.FormatException;
@@ -32,6 +23,13 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeParserBucket;
 
+import javax.annotation.Nonnull;
+
+import java.util.Arrays;
+import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * @author Jerry
  * @since 00:43 2018/6/2
@@ -39,6 +37,26 @@ import org.joda.time.format.DateTimeParserBucket;
 public class DateFormatter extends ConfigurableFormatter<Date> {
 
     private static final Pattern HOUR_PATTERN = Pattern.compile("(\\b|[^0-9a-zA-Z])hh(\\b|[^0-9a-zA-Z])");
+
+    /**
+     * 适配日期。如果时间缺少日期，那么按一定规则补上年月日。
+     */
+    private static DateTime adaptDate(DateTime dateTime, String pattern) {
+        if (pattern.toLowerCase().contains("yy") || dateTime.getYear() != DateTimeFormats.BASE_YEAR) {
+            return dateTime;
+        }
+
+        DateTime now = DateTime.now();
+        if (!dateTime.isAfter(now.withYear(DateTimeFormats.BASE_YEAR))) {
+            if (!pattern.contains("MM") && dateTime.getMonthOfYear() == 1 && dateTime.getDayOfMonth() == 1) {
+                return dateTime.withDate(now.toLocalDate());
+            } else {
+                return dateTime.withYear(now.getYear());
+            }
+        } else {
+            return dateTime.withYear(now.minusYears(1).getYear());
+        }
+    }
 
     @Override
     protected Date toFormat(@Nonnull String value, @Nonnull FormatConfig config) throws Exception {
@@ -89,29 +107,8 @@ public class DateFormatter extends ConfigurableFormatter<Date> {
     }
 
     /**
-     * 适配日期。如果时间缺少日期，那么按一定规则补上年月日。
-     */
-    private static DateTime adaptDate(DateTime dateTime, String pattern) {
-        if (pattern.toLowerCase().contains("yy") || dateTime.getYear() != DateTimeFormats.BASE_YEAR) {
-            return dateTime;
-        }
-
-        DateTime now = DateTime.now();
-        if (!dateTime.isAfter(now.withYear(DateTimeFormats.BASE_YEAR))) {
-            if (!pattern.contains("MM") && dateTime.getMonthOfYear() == 1 && dateTime.getDayOfMonth() == 1) {
-                return dateTime.withDate(now.toLocalDate());
-            } else {
-                return dateTime.withYear(now.getYear());
-            }
-        } else {
-            return dateTime.withYear(now.minusYears(1).getYear());
-        }
-    }
-
-    /**
-     * 由于一些历史遗留的问题，对格式进行一定程度的适配。
-     * 1. hh 等同于 HH。比如：yyyy-MM-dd hh:mm 等同 yyyy-MM-dd HH:mm
-     * 2. 局部匹配。比如：输入：2018-07-16 23:38，格式：yyyy-MM-dd，输出：2018-07-16
+     * 由于一些历史遗留的问题，对格式进行一定程度的适配。 1. hh 等同于 HH。比如：yyyy-MM-dd hh:mm 等同 yyyy-MM-dd HH:mm 2. 局部匹配。比如：输入：2018-07-16
+     * 23:38，格式：yyyy-MM-dd，输出：2018-07-16
      */
     private DateTime adaptPatternFormat(String pattern, String input, @Nonnull DateTimeFormats dateTimeFormats) {
         String newPattern = pattern;

@@ -1,24 +1,17 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.service.plugin.login;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import com.datatrees.common.conf.PropertiesConfiguration;
 import com.datatrees.common.util.GsonUtils;
@@ -46,23 +39,27 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 public abstract class AbstractLoginPlugin extends AbstractRawdataPlugin implements Login {
 
-    private static Logger             logger                = LoggerFactory.getLogger(AbstractLoginPlugin.class);
+    private static Logger logger = LoggerFactory.getLogger(AbstractLoginPlugin.class);
 
-    private static String             REDIS_PREFIX          = PropertiesConfiguration.getInstance().get("core.redis.redis.prefix", "rawdata_");
+    private static String REDIS_PREFIX = PropertiesConfiguration.getInstance().get("core.redis.redis.prefix", "rawdata_");
 
-    private static long               defaultTimeToLiveTime = PropertiesConfiguration.getInstance().getLong("data.default.ttl.time", 3600 * 24 * 2);
+    private static long defaultTimeToLiveTime = PropertiesConfiguration.getInstance().getLong("data.default.ttl.time", 3600 * 24 * 2);
 
-    protected      QRCodeVerification qRCodeVerification;
+    protected QRCodeVerification qRCodeVerification;
 
     int refreshCodeCount = 0;
 
-    int loginCount       = 0;
+    int loginCount = 0;
 
-    int qrCodeCount      = 0;
+    int qrCodeCount = 0;
 
-    int verifyCodeCount  = 0;
+    int verifyCodeCount = 0;
 
     private MonitorService monitorService = BeanFactoryUtils.getBean(MonitorService.class);
 
@@ -81,14 +78,16 @@ public abstract class AbstractLoginPlugin extends AbstractRawdataPlugin implemen
     }
 
     public Map<String, Object> preLogin(Map<String, String> preLoginParams) {
-        if (logger.isDebugEnabled()) logger.debug("run default preLogin!");
+        if (logger.isDebugEnabled())
+            logger.debug("run default preLogin!");
         Map<String, Object> paramsMap = new HashMap<String, Object>();
         paramsMap.putAll(preLoginParams);
         return paramsMap;
     }
 
     public Map<String, Object> postLogin(Map<String, Object> postLoginParams) {
-        if (logger.isDebugEnabled()) logger.debug("run default postLogin!");
+        if (logger.isDebugEnabled())
+            logger.debug("run default postLogin!");
         return postLoginParams;
     }
 
@@ -96,8 +95,8 @@ public abstract class AbstractLoginPlugin extends AbstractRawdataPlugin implemen
 
     /**
      * 返回
-     * @param params {"username":手机号}
-     *               有的要密码
+     * 
+     * @param params {"username":手机号} 有的要密码
      * @return 短信发送成功/短信验证码发送失败
      */
     public String sendRamdomPassword(Map<String, Object> params) {
@@ -125,14 +124,13 @@ public abstract class AbstractLoginPlugin extends AbstractRawdataPlugin implemen
         final String groupKey = DirectiveResult.getGroupKey(DirectiveType.PLUGIN_LOGIN, taskId);
         String errorCode = null;
         DirectiveResult<String> sendResult = new DirectiveResult<>(DirectiveType.PLUGIN_LOGIN, taskId);
-        //5分钟超时
+        // 5分钟超时
         long maxInterval = TimeUnit.MINUTES.toMillis(5) + System.currentTimeMillis();
         while (System.currentTimeMillis() < maxInterval) {
             if (ThreadInterruptedUtil.isInterrupted(Thread.currentThread())) {
                 monitorService.sendTaskLog(taskId, "模拟登录-->任务-->失败", ErrorCode.TASK_CANCEL);
                 throw new InterruptedException(
-                        "refreshCodeCount:" + refreshCodeCount + ",loginCount:" + loginCount + ",qrCodeCount:" + qrCodeCount + ",verifyCodeCount:" +
-                                verifyCodeCount);
+                    "refreshCodeCount:" + refreshCodeCount + ",loginCount:" + loginCount + ",qrCodeCount:" + qrCodeCount + ",verifyCodeCount:" + verifyCodeCount);
             }
             DirectiveResult<Map<String, Object>> directive = getRedisService().getNextDirectiveResult(groupKey, 500, TimeUnit.MILLISECONDS);
             if (null == directive) {
@@ -142,7 +140,7 @@ public abstract class AbstractLoginPlugin extends AbstractRawdataPlugin implemen
             String status = directive.getStatus();
             String directiveId = directive.getDirectiveId();
             Map<String, Object> extra = directive.getData();
-            //刷新图片验证码
+            // 刷新图片验证码
             if (StringUtils.equals(DirectiveRedisCode.REFRESH_LOGIN_CODE, status)) {
                 String remark = getVeryCode(loginParamMap);
                 sendResult.fill(DirectiveRedisCode.SERVER_SUCCESS, remark);
@@ -154,9 +152,9 @@ public abstract class AbstractLoginPlugin extends AbstractRawdataPlugin implemen
                 logger.info("refresh login code,taskId={},websiteName={},directiveId={}", taskId, websiteName, directiveId);
                 continue;
             }
-            //刷新短信验证码
+            // 刷新短信验证码
             if (StringUtils.equals(DirectiveRedisCode.REFRESH_LOGIN_RANDOMPASSWORD, status)) {
-                //短信发送成功/短信验证码发送失败
+                // 短信发送成功/短信验证码发送失败
                 String remark = sendRamdomPassword(extra);
                 sendResult.fill(DirectiveRedisCode.SERVER_SUCCESS, remark);
                 getRedisService().saveDirectiveResult(directiveId, sendResult);
@@ -167,11 +165,11 @@ public abstract class AbstractLoginPlugin extends AbstractRawdataPlugin implemen
                 logger.info("send ramdom password,taskId={},websiteName={},directiveId={}", taskId, websiteName, directiveId);
                 continue;
             }
-            //登陆
+            // 登陆
             if (StringUtils.equals(DirectiveRedisCode.START_LOGIN, status)) {
                 loginCount++;
                 loginParamMap.putAll(extra);
-                //init context
+                // init context
                 this.setLonginInfo(loginParamMap);
                 Map<String, Object> loginResultMap = null;
                 try {
@@ -182,16 +180,14 @@ public abstract class AbstractLoginPlugin extends AbstractRawdataPlugin implemen
                     loginResultMap.put(AttributeKey.ERROR_CODE, ErrorMessage.SERVER_INTERNAL_ERROR);
                 }
                 if (loginResultMap.get(AttributeKey.ERROR_CODE) != null) {
-                    errorCode = null != loginResultMap.get(AttributeKey.ERROR_CODE) ? String.valueOf(loginResultMap.get(AttributeKey.ERROR_CODE)) :
-                            StringUtils.EMPTY;
+                    errorCode = null != loginResultMap.get(AttributeKey.ERROR_CODE) ? String.valueOf(loginResultMap.get(AttributeKey.ERROR_CODE)) : StringUtils.EMPTY;
                     sendResult.fill(DirectiveRedisCode.SERVER_FAIL, errorCode);
                     getRedisService().saveDirectiveResult(directiveId, sendResult);
                     getMessageService().sendTaskLog(taskId, "登陆失败", errorCode);
                     monitorService.sendTaskLog(taskId, "登录-->校验-->失败", ErrorCode.LOGIN_UNEXPECTED_RESULT, errorCode);
 
-                    logger.warn("login fail taskId={},websiteName={},directiveId={},errorCode={},loginCount={}", taskId, websiteName, directiveId,
-                            errorCode, loginCount);
-                    //清理,避免对下一次登陆产生影响
+                    logger.warn("login fail taskId={},websiteName={},directiveId={},errorCode={},loginCount={}", taskId, websiteName, directiveId, errorCode, loginCount);
+                    // 清理,避免对下一次登陆产生影响
                     loginResultMap.remove(AttributeKey.ERROR_CODE);
                     loginParamMap.putAll(loginResultMap);
                     continue;
@@ -222,16 +218,8 @@ public abstract class AbstractLoginPlugin extends AbstractRawdataPlugin implemen
         } else {
             // mark the task login time out
             throw new LoginTimeOutException(
-                    "refreshCodeCount:" + refreshCodeCount + ",loginCount:" + loginCount + ",qrCodeCount:" + qrCodeCount + ",verifyCodeCount:" +
-                            verifyCodeCount);
+                "refreshCodeCount:" + refreshCodeCount + ",loginCount:" + loginCount + ",qrCodeCount:" + qrCodeCount + ",verifyCodeCount:" + verifyCodeCount);
         }
-    }
-
-    private boolean initLoginStatus() {
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("status", "PREPARE_FOR_CRAWL");
-        map.put("remark", StringUtils.EMPTY);
-        return this.sendMessageToApp(map);
     }
 
     protected Object getResponseByWebRequest(LinkNode linkNode, ContentType contentType) {
@@ -261,8 +249,8 @@ public abstract class AbstractLoginPlugin extends AbstractRawdataPlugin implemen
     }
 
     protected void setLonginInfo(Map<String, Object> loginParams) throws Exception {
-        String userName = StringUtils.defaultIfEmpty((String) loginParams.get("username"), "");
-        String passWord = StringUtils.defaultIfEmpty((String) loginParams.get("password"), "");
+        String userName = StringUtils.defaultIfEmpty((String)loginParams.get("username"), "");
+        String passWord = StringUtils.defaultIfEmpty((String)loginParams.get("password"), "");
         String userId = ProcessorContextUtil.getAccountKey(PluginFactory.getProcessorContext());
         Object taskId = ProcessorContextUtil.getTaskUnique(PluginFactory.getProcessorContext());
         String key = REDIS_PREFIX + userId + "_" + taskId;
@@ -278,6 +266,13 @@ public abstract class AbstractLoginPlugin extends AbstractRawdataPlugin implemen
         } else {
             logger.warn("illeage post map ...");
         }
+    }
+
+    private boolean initLoginStatus() {
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("status", "PREPARE_FOR_CRAWL");
+        map.put("remark", StringUtils.EMPTY);
+        return this.sendMessageToApp(map);
     }
 
     public enum ContentType {

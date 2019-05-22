@@ -29,8 +29,7 @@ public abstract class AbstractSimpleLoginMessageHandler extends AbstractLoginMes
 
     protected final Collector collector;
 
-    public AbstractSimpleLoginMessageHandler(Collector collector, MonitorService monitorService,
-        TaskPointManager taskPointManager) {
+    public AbstractSimpleLoginMessageHandler(Collector collector, MonitorService monitorService, TaskPointManager taskPointManager) {
         super(monitorService, taskPointManager);
         this.collector = collector;
     }

@@ -1,27 +1,17 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.context;
-
-import javax.annotation.Nonnull;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Function;
 
 import com.treefinance.crawler.framework.config.xml.plugin.AbstractPlugin;
 import com.treefinance.crawler.framework.config.xml.plugin.JavaPlugin;
@@ -30,6 +20,14 @@ import com.treefinance.crawler.framework.extension.plugin.AbstractClientPlugin;
 import com.treefinance.crawler.lang.SynchronizedMap;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.Nonnull;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+
 /**
  * @author <A HREF="">Cheng Wang</A>
  * @version 1.0
@@ -37,13 +35,13 @@ import org.apache.commons.lang3.StringUtils;
  */
 public abstract class AbstractProcessorContext extends ProcessContext {
 
-    protected final Long                            taskId;
+    protected final Long taskId;
 
-    private final   Map<String, Object>             statusContext;
+    private final Map<String, Object> statusContext;
 
-    private final   Map<Thread, Object>             threadContext;
+    private final Map<Thread, Object> threadContext;
 
-    private         ProcessorResult<String, Object> processorResult;
+    private ProcessorResult<String, Object> processorResult;
 
     public AbstractProcessorContext(Website website, Long taskId) {
         super(website);
@@ -93,12 +91,6 @@ public abstract class AbstractProcessorContext extends ProcessContext {
         map.remove(key);
     }
 
-    @SuppressWarnings("unchecked")
-    @Nonnull
-    private Map<String, Object> threadAttributes(Thread thread) {
-        return (Map<String, Object>) getThreadContext().computeIfAbsent(thread, t -> new HashMap<String, Object>());
-    }
-
     /**
      * @return the processorResult
      */
@@ -116,6 +108,7 @@ public abstract class AbstractProcessorContext extends ProcessContext {
 
     /**
      * the shared fields map with the global processor-result scope.
+     *
      * @return the unmodifiable map.
      */
     public Map<String, Object> getResultScope() {
@@ -138,6 +131,7 @@ public abstract class AbstractProcessorContext extends ProcessContext {
 
     /**
      * 给context赋值
+     *
      * @param key
      * @param value
      * @return
@@ -148,6 +142,7 @@ public abstract class AbstractProcessorContext extends ProcessContext {
 
     /**
      * 给context赋值
+     *
      * @param key
      * @param value
      * @return
@@ -162,6 +157,7 @@ public abstract class AbstractProcessorContext extends ProcessContext {
 
     /**
      * 从context取值
+     *
      * @param key
      * @return
      */
@@ -178,6 +174,7 @@ public abstract class AbstractProcessorContext extends ProcessContext {
 
     /**
      * 从context取值
+     *
      * @param key
      * @return
      */
@@ -189,15 +186,16 @@ public abstract class AbstractProcessorContext extends ProcessContext {
         if (null == v) {
             return null;
         } else if (v instanceof Long) {
-            return (Long) v;
+            return (Long)v;
         } else if (v instanceof String) {
-            return Long.valueOf((String) v);
+            return Long.valueOf((String)v);
         }
         return Long.valueOf(v.toString());
     }
 
     /**
      * 从context取值
+     *
      * @param key
      * @return
      */
@@ -209,9 +207,9 @@ public abstract class AbstractProcessorContext extends ProcessContext {
         if (null == v) {
             return null;
         } else if (v instanceof Boolean) {
-            return (Boolean) v;
+            return (Boolean)v;
         } else if (v instanceof String) {
-            return Boolean.valueOf((String) v);
+            return Boolean.valueOf((String)v);
         }
         throw new ClassCastException("Can not cast class '" + v.getClass() + "' to 'Boolean'.");
     }
@@ -228,5 +226,11 @@ public abstract class AbstractProcessorContext extends ProcessContext {
         String mainClass = pluginMetadata.getMainClass();
 
         return getPluginManager().loadPlugin(fileName, mainClass, taskId);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Nonnull
+    private Map<String, Object> threadAttributes(Thread thread) {
+        return (Map<String, Object>)getThreadContext().computeIfAbsent(thread, t -> new HashMap<String, Object>());
     }
 }

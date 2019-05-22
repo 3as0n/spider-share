@@ -1,30 +1,34 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.service.collector.bdb.operator;
 
-import java.util.LinkedList;
-
-import com.treefinance.crawler.framework.context.function.LinkNode;
 import com.datatrees.spider.share.service.collector.bdb.manger.BDBFactory;
 import com.datatrees.spider.share.service.collector.bdb.wapper.BDBWapper;
 import com.datatrees.spider.share.service.collector.common.LinkNodeTupleBinding;
-import com.sleepycat.je.*;
+import com.sleepycat.je.Cursor;
+import com.sleepycat.je.CursorConfig;
+import com.sleepycat.je.Database;
+import com.sleepycat.je.DatabaseEntry;
+import com.sleepycat.je.DatabaseException;
+import com.sleepycat.je.OperationStatus;
+import com.sleepycat.je.SecondaryCursor;
+import com.sleepycat.je.SecondaryDatabase;
+import com.treefinance.crawler.framework.context.function.LinkNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.LinkedList;
 
 /**
  * @author <A HREF="">Cheng Wang</A>
@@ -33,23 +37,23 @@ import org.slf4j.LoggerFactory;
  */
 public class BDBOperator implements Operator {
 
-    private static final Logger               log             = LoggerFactory.getLogger(BDBOperator.class);
+    private static final Logger log = LoggerFactory.getLogger(BDBOperator.class);
 
-    private static       LinkNodeTupleBinding linkNodeBinding = new LinkNodeTupleBinding();
+    private static LinkNodeTupleBinding linkNodeBinding = new LinkNodeTupleBinding();
 
-    private              Database             linkDB          = null;
+    private Database linkDB = null;
 
-    private              SecondaryDatabase    slinkDB         = null;
+    private SecondaryDatabase slinkDB = null;
 
-    private              Cursor               queueFront      = null;
+    private Cursor queueFront = null;
 
-    private              BDBWapper            bdbWapper       = null;
+    private BDBWapper bdbWapper = null;
 
-    private              String               databaseName    = null;
+    private String databaseName = null;
 
-    private              long                 currentId       = 1;
+    private long currentId = 1;
 
-    private              long                 lastFetchId     = 0;
+    private long lastFetchId = 0;
 
     public BDBOperator() throws Exception {
         bdbWapper = BDBFactory.INSTANCE.createDB();
@@ -86,7 +90,7 @@ public class BDBOperator implements Operator {
                     break;
                 }
 
-                LinkNode node = (LinkNode) linkNodeBinding.entryToObject(value);
+                LinkNode node = (LinkNode)linkNodeBinding.entryToObject(value);
                 newLinks.add(node);
                 lastFetchId++;
                 num++;
@@ -178,8 +182,7 @@ public class BDBOperator implements Operator {
                     }
                     newLinkNum++;
                     currentId = currentId + 1;
-                    log.info("url add to linkQueue, url: " + link.getUrl() + " depth : " + link.getDepth() + ", currentId " + currentId +
-                            ", lastFetchedId : " + lastFetchId);
+                    log.info("url add to linkQueue, url: " + link.getUrl() + " depth : " + link.getDepth() + ", currentId " + currentId + ", lastFetchedId : " + lastFetchId);
                 }
             } else {
                 log.debug("already exists in queue: {}", foundValue.getData());

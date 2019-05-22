@@ -1,30 +1,27 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.context.function;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.treefinance.crawler.framework.consts.Constants;
-import com.treefinance.crawler.framework.context.SearchProcessorContext;
 import com.treefinance.crawler.framework.context.RequestUtil;
+import com.treefinance.crawler.framework.context.SearchProcessorContext;
 import com.treefinance.crawler.framework.process.search.URLHandler;
 import com.treefinance.toolkit.util.Preconditions;
 import org.apache.commons.lang.StringUtils;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author <A HREF="">Cheng Wang</A>
@@ -33,7 +30,10 @@ import org.apache.commons.lang.StringUtils;
  */
 public class CrawlRequest extends Request {
 
-    private CrawlRequest() {
+    private CrawlRequest() {}
+
+    public static Builder newBuilder() {
+        return new Builder();
     }
 
     public String getSearchTemplateId() {
@@ -73,20 +73,15 @@ public class CrawlRequest extends Request {
         return "Request [url=" + getUrl().toString() + ", template=" + getSearchTemplateId() + "]";
     }
 
-    public static Builder newBuilder() {
-        return new Builder();
-    }
-
     public static class Builder {
 
-        private LinkNode               url;
+        private LinkNode url;
         private SearchProcessorContext searchContext;
-        private String                 templateId;
-        private String                 seedUrl;
-        private URLHandler             urlHandler;
+        private String templateId;
+        private String seedUrl;
+        private URLHandler urlHandler;
 
-        private Builder() {
-        }
+        private Builder() {}
 
         public Builder setUrl(LinkNode url) {
             this.url = url;

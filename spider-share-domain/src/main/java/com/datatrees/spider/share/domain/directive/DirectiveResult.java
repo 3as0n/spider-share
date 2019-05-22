@@ -1,17 +1,14 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.domain.directive;
@@ -19,64 +16,62 @@ package com.datatrees.spider.share.domain.directive;
 import java.io.Serializable;
 
 /**
- * redis交互指令
- * Created by zhouxinghai on 2017/5/19.
+ * redis交互指令 Created by zhouxinghai on 2017/5/19.
  */
 public class DirectiveResult<T> implements Serializable {
 
     /**
      * 应用名称
      */
-    private static final String  appName       = "spider";
+    private static final String appName = "spider";
 
     /**
      * 当前线程ID
      */
-    private static       String  threadId      = "t0";
+    private static String threadId = "t0";
 
     /**
      * 指令ID
      */
-    private              String  directiveId;
+    private String directiveId;
 
     /**
      * 发送指令后,是否等待插件处理完成并返回数据
      */
-    private              boolean requireReturn = false;
+    private boolean requireReturn = false;
 
     /**
      * 交互类别
      */
-    private              String  type;
+    private String type;
 
     /**
      * 任务ID
      */
-    private              long    taskId;
+    private long taskId;
 
     /**
      * 当前指令状态
      */
-    private              String  status;
+    private String status;
 
     /**
      * 错误代码
      */
-    private              String  errorCode;
+    private String errorCode;
 
     /**
      * 错误信息
      */
-    private              String  errorMsg;
+    private String errorMsg;
 
     /**
      * 交互数据
      */
-    private              T       data;
+    private T data;
 
     @Deprecated
-    public DirectiveResult() {
-    }
+    public DirectiveResult() {}
 
     public DirectiveResult(String type, long taskId) {
         this.type = type;
@@ -92,6 +87,7 @@ public class DirectiveResult<T> implements Serializable {
 
     /**
      * 获取指令池:一个插件就是一个指令池
+     * 
      * @return
      */
     public static String getGroupKey(String type, long taskId) {
@@ -101,12 +97,13 @@ public class DirectiveResult<T> implements Serializable {
         if (taskId <= 0) {
             throw new RuntimeException("getSendRedisKey taskId is blank");
         }
-        //暂时不用多线程,不加线程threadId
+        // 暂时不用多线程,不加线程threadId
         return new StringBuilder(appName).append("_directive_").append(type).append("_").append(taskId).toString();
     }
 
     /**
      * 指令独立存储key
+     * 
      * @return
      */
     public static String getDirectiveKey(String type, String status, long taskId) {
@@ -124,10 +121,8 @@ public class DirectiveResult<T> implements Serializable {
     }
 
     /**
-     * 指令枷锁的key
-     * 相同命令枷锁
-     * 加锁成功:发送指令,清除结果key,进入等待
-     * 加锁失败:进入等待结果
+     * 指令枷锁的key 相同命令枷锁 加锁成功:发送指令,清除结果key,进入等待 加锁失败:进入等待结果
+     * 
      * @return
      */
     public static String getLockKey(String type, String status, long taskId) {
@@ -148,6 +143,7 @@ public class DirectiveResult<T> implements Serializable {
 
     /**
      * 获取指令池:一个插件就是一个指令池
+     * 
      * @return
      */
     public String getGroupKey() {
@@ -156,6 +152,7 @@ public class DirectiveResult<T> implements Serializable {
 
     /**
      * 指令独立存储key
+     * 
      * @return
      */
     public String getDirectiveKey() {
@@ -164,6 +161,7 @@ public class DirectiveResult<T> implements Serializable {
 
     /**
      * 指令独立存储key
+     * 
      * @return
      */
     public String getDirectiveKey(String status) {
@@ -171,10 +169,8 @@ public class DirectiveResult<T> implements Serializable {
     }
 
     /**
-     * 指令枷锁的key
-     * 相同命令枷锁
-     * 加锁成功:发送指令,清除结果key,进入等待
-     * 加锁失败:进入等待结果
+     * 指令枷锁的key 相同命令枷锁 加锁成功:发送指令,清除结果key,进入等待 加锁失败:进入等待结果
+     * 
      * @return
      */
     public String getLockKey() {
@@ -183,6 +179,7 @@ public class DirectiveResult<T> implements Serializable {
 
     /**
      * 处理成功
+     * 
      * @param status
      * @return
      */
@@ -193,6 +190,7 @@ public class DirectiveResult<T> implements Serializable {
 
     /**
      * 处理成功
+     * 
      * @param status
      * @param data
      * @return
@@ -205,6 +203,7 @@ public class DirectiveResult<T> implements Serializable {
 
     /**
      * 发生错误
+     * 
      * @param status
      * @param errorMsg
      * @return
@@ -215,6 +214,7 @@ public class DirectiveResult<T> implements Serializable {
 
     /**
      * 发生错误
+     * 
      * @param status
      * @param errorCode
      * @param errorMsg
@@ -226,6 +226,7 @@ public class DirectiveResult<T> implements Serializable {
 
     /**
      * 发生错误
+     * 
      * @param status
      * @param errorCode
      * @param errorMsg

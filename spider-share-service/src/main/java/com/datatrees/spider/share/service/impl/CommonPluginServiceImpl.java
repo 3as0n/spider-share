@@ -1,38 +1,45 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.service.impl;
-
-import javax.annotation.Resource;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import com.alibaba.fastjson.JSON;
 import com.datatrees.spider.share.common.http.ProxyUtils;
 import com.datatrees.spider.share.common.share.service.ProxyService;
 import com.datatrees.spider.share.common.share.service.RedisService;
-import com.datatrees.spider.share.common.utils.*;
-import com.datatrees.spider.share.domain.*;
+import com.datatrees.spider.share.common.utils.BackRedisUtils;
+import com.datatrees.spider.share.common.utils.BeanFactoryUtils;
+import com.datatrees.spider.share.common.utils.DateUtils;
+import com.datatrees.spider.share.common.utils.RedisUtils;
+import com.datatrees.spider.share.common.utils.TaskUtils;
+import com.datatrees.spider.share.common.utils.TemplateUtils;
+import com.datatrees.spider.share.domain.AttributeKey;
+import com.datatrees.spider.share.domain.CommonPluginParam;
+import com.datatrees.spider.share.domain.ErrorCode;
+import com.datatrees.spider.share.domain.FormType;
+import com.datatrees.spider.share.domain.LoginMessage;
+import com.datatrees.spider.share.domain.RedisKeyPrefixEnum;
+import com.datatrees.spider.share.domain.StepEnum;
+import com.datatrees.spider.share.domain.TopicTag;
 import com.datatrees.spider.share.domain.http.Cookie;
 import com.datatrees.spider.share.domain.http.HttpResult;
 import com.datatrees.spider.share.domain.model.WebsiteInfo;
-import com.datatrees.spider.share.service.*;
+import com.datatrees.spider.share.service.ClassLoaderService;
+import com.datatrees.spider.share.service.CommonPluginService;
+import com.datatrees.spider.share.service.MessageService;
+import com.datatrees.spider.share.service.MonitorService;
+import com.datatrees.spider.share.service.WebsiteHolderService;
+import com.datatrees.spider.share.service.WebsiteInfoService;
 import com.datatrees.spider.share.service.plugin.QRPlugin;
 import com.treefinance.crawler.framework.context.Website;
 import org.apache.commons.lang3.StringUtils;
@@ -41,28 +48,36 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 @Service
 public class CommonPluginServiceImpl implements CommonPluginService {
 
     private static final Logger logger = LoggerFactory.getLogger(CommonPluginServiceImpl.class);
 
     @Resource
-    private ClassLoaderService   classLoaderService;
+    private ClassLoaderService classLoaderService;
 
     @Resource
-    private RedisService         redisService;
+    private RedisService redisService;
 
     @Resource
     private WebsiteHolderService websiteHolderService;
 
     @Resource
-    private MonitorService       monitorService;
+    private MonitorService monitorService;
 
     @Autowired
-    private ProxyService         proxyService;
+    private ProxyService proxyService;
 
     @Resource
-    private WebsiteInfoService   websiteInfoService;
+    private WebsiteInfoService websiteInfoService;
 
     @Override
     public HttpResult<Object> init(CommonPluginParam param) {
@@ -74,7 +89,7 @@ public class CommonPluginServiceImpl implements CommonPluginService {
             String formType = param.getFormType();
             if (StringUtils.equals(FormType.LOGIN, formType)) {
                 TaskUtils.addStep(param.getTaskId(), StepEnum.REC_INIT_MSG);
-                //清理共享信息
+                // 清理共享信息
                 RedisUtils.del(RedisKeyPrefixEnum.TASK_COOKIE.getRedisKey(taskId));
                 RedisUtils.del(RedisKeyPrefixEnum.TASK_SHARE.getRedisKey(taskId));
 
@@ -90,10 +105,10 @@ public class CommonPluginServiceImpl implements CommonPluginService {
                 RedisUtils.del(RedisKeyPrefixEnum.TASK_CONTEXT.getRedisKey(taskId));
                 RedisUtils.del(RedisKeyPrefixEnum.TASK_WEBSITE.getRedisKey(taskId));
 
-                //这里电商,邮箱,老运营商
+                // 这里电商,邮箱,老运营商
                 Website website = websiteHolderService.getWebsite(websiteName);
                 redisService.cache(RedisKeyPrefixEnum.TASK_WEBSITE, taskId, website);
-                //缓存task基本信息
+                // 缓存task基本信息
                 TaskUtils.initTaskShare(taskId, websiteName);
                 if (StringUtils.isNotBlank(username)) {
                     TaskUtils.addTaskShare(taskId, AttributeKey.USERNAME, username);
@@ -107,13 +122,13 @@ public class CommonPluginServiceImpl implements CommonPluginService {
                 TaskUtils.addTaskShare(taskId, AttributeKey.WEBSITE_TYPE, website.getWebsiteType());
                 TaskUtils.addTaskShare(taskId, AttributeKey.WEBSITE_NAME, websiteName);
 
-                //设置代理
+                // 设置代理
                 ProxyUtils.setProxyEnable(taskId, param.isProxyEnable());
                 ProxyUtils.queryIpLocale(taskId, param.getUserIp());
 
-                //记录登陆开始时间
+                // 记录登陆开始时间
                 TaskUtils.addTaskShare(taskId, RedisKeyPrefixEnum.START_TIMESTAMP.getRedisKey(param.getFormType()), System.currentTimeMillis() + "");
-                //初始化监控信息
+                // 初始化监控信息
                 monitorService.initTask(taskId, websiteName, username);
 
                 if (null != param.getExtral() && !param.getExtral().isEmpty()) {
@@ -122,10 +137,10 @@ public class CommonPluginServiceImpl implements CommonPluginService {
                     }
                 }
 
-                //执行运营商插件初始化操作
-                //运营商独立部分第一次初始化后不启动爬虫
+                // 执行运营商插件初始化操作
+                // 运营商独立部分第一次初始化后不启动爬虫
                 result = classLoaderService.getCommonPluginService(param).init(param);
-                //爬虫状态
+                // 爬虫状态
                 if (!result.getStatus()) {
                     TaskUtils.addStep(taskId, StepEnum.INIT_FAIL);
                     monitorService.sendTaskLog(taskId, websiteName, TemplateUtils.format("{}-->初始化-->失败", param.getActionName()));
@@ -167,7 +182,7 @@ public class CommonPluginServiceImpl implements CommonPluginService {
     public HttpResult<Object> refeshSmsCode(CommonPluginParam param) {
         try {
             WebsiteInfo websiteInfo = websiteInfoService.getByWebsiteName(param.getWebsiteName());
-            //刷新短信间隔时间
+            // 刷新短信间隔时间
             int sendSmsInterval = websiteInfo.getSmsInterval();
             Long taskId = param.getTaskId();
             String latestSendSmsTime = TaskUtils.getTaskShare(taskId, AttributeKey.LATEST_SEND_SMS_TIME);
@@ -176,7 +191,7 @@ public class CommonPluginServiceImpl implements CommonPluginService {
                 if (System.currentTimeMillis() < endTime) {
                     try {
                         logger.info("刷新短信有间隔时间限制,latestSendSmsTime={},将等待{}秒", DateUtils.formatYmdhms(Long.parseLong(latestSendSmsTime)),
-                                DateUtils.getUsedTime(System.currentTimeMillis(), endTime));
+                            DateUtils.getUsedTime(System.currentTimeMillis(), endTime));
                         TimeUnit.MILLISECONDS.sleep(endTime - System.currentTimeMillis());
                     } catch (InterruptedException e) {
                         throw new RuntimeException("refeshSmsCode error", e);
@@ -215,7 +230,7 @@ public class CommonPluginServiceImpl implements CommonPluginService {
                     if (null != param.getMobile()) {
                         TaskUtils.addTaskShare(taskId, AttributeKey.MOBILE, param.getMobile().toString());
                     }
-                    //登录成功
+                    // 登录成功
                     if (StringUtils.isNoneBlank(param.getPassword())) {
                         TaskUtils.addTaskShare(taskId, AttributeKey.PASSWORD, param.getPassword());
                     }
@@ -234,11 +249,11 @@ public class CommonPluginServiceImpl implements CommonPluginService {
             }
             TaskUtils.addTaskShare(taskId, RedisKeyPrefixEnum.FINISH_TIMESTAMP.getRedisKey(param.getFormType()), System.currentTimeMillis() + "");
             TaskUtils.addTaskShare(taskId, RedisKeyPrefixEnum.SUBMIT_RESULT.getRedisKey(param.getFormType()), JSON.toJSONString(result));
-            //腾讯企业邮箱h5和新浪邮箱h5时不再发一次mq，防止task_log中记录错误的数据
+            // 腾讯企业邮箱h5和新浪邮箱h5时不再发一次mq，防止task_log中记录错误的数据
             if (result.getData() != null) {
                 String str = result.getData().toString();
-                if ((str.contains("directive=login_fail") || str.contains("directive=require_picture") ||
-                        str.contains("directive=require_picture_again")) && str.contains("information")) {
+                if ((str.contains("directive=login_fail") || str.contains("directive=require_picture") || str.contains("directive=require_picture_again"))
+                    && str.contains("information")) {
                     return result;
                 }
             }
@@ -249,8 +264,8 @@ public class CommonPluginServiceImpl implements CommonPluginService {
             logger.error("submit error,param={}", JSON.toJSONString(param), e);
             return new HttpResult<>().failure(ErrorCode.SYS_ERROR);
         } finally {
-            monitorService.sendMethodUseTime(param.getTaskId(), param.getWebsiteName(), param.getFormType(), this.getClass().getName(), "submit",
-                    Arrays.asList(param), result, startTime, System.currentTimeMillis());
+            monitorService.sendMethodUseTime(param.getTaskId(), param.getWebsiteName(), param.getFormType(), this.getClass().getName(), "submit", Arrays.asList(param), result,
+                startTime, System.currentTimeMillis());
         }
     }
 
@@ -304,7 +319,7 @@ public class CommonPluginServiceImpl implements CommonPluginService {
     @Override
     public HttpResult<Object> refeshQRCode(CommonPluginParam param) {
         try {
-            return ((QRPlugin) (classLoaderService.getCommonPluginService(param))).refeshQRCode(param);
+            return ((QRPlugin)(classLoaderService.getCommonPluginService(param))).refeshQRCode(param);
         } catch (Throwable e) {
             logger.error("refeshQRCode error,param={}", JSON.toJSONString(param), e);
             return new HttpResult<>().failure(ErrorCode.SYS_ERROR);
@@ -314,7 +329,7 @@ public class CommonPluginServiceImpl implements CommonPluginService {
     @Override
     public HttpResult<Object> queryQRStatus(CommonPluginParam param) {
         try {
-            return ((QRPlugin) (classLoaderService.getCommonPluginService(param))).queryQRStatus(param);
+            return ((QRPlugin)(classLoaderService.getCommonPluginService(param))).queryQRStatus(param);
         } catch (Throwable e) {
             logger.error("queryQRStatus error,param={}", JSON.toJSONString(param), e);
             return new HttpResult<>().failure(ErrorCode.SYS_ERROR);

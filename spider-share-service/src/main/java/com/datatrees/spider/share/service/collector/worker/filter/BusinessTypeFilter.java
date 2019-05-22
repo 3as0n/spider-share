@@ -13,18 +13,12 @@
 
 package com.datatrees.spider.share.service.collector.worker.filter;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Resource;
-import java.util.Objects;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-
-import com.treefinance.crawler.framework.config.enums.BusinessType;
-import com.treefinance.crawler.framework.context.AbstractProcessorContext;
 import com.datatrees.spider.share.service.AppCrawlerConfigService;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.util.concurrent.UncheckedExecutionException;
+import com.treefinance.crawler.framework.config.enums.BusinessType;
+import com.treefinance.crawler.framework.context.AbstractProcessorContext;
 import com.treefinance.crawler.framework.context.control.IBusinessTypeFilter;
 import com.treefinance.saas.taskcenter.facade.request.TaskRequest;
 import com.treefinance.saas.taskcenter.facade.result.TaskRO;
@@ -34,6 +28,13 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Resource;
+
+import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * User: yand Date: 2018/4/9

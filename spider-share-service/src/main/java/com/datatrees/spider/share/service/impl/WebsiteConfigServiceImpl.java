@@ -1,26 +1,17 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.service.impl;
-
-import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
@@ -48,41 +39,48 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Created by zhouxinghai on 2017/6/30.
  */
 @Service
 public class WebsiteConfigServiceImpl implements WebsiteConfigService {
 
-    private static final Logger               logger  = LoggerFactory.getLogger(WebsiteConfigServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(WebsiteConfigServiceImpl.class);
 
-    private static       Map<Integer, String> bankIds = new HashMap<>();
-
-    @Resource
-    private              PluginManager        pluginManager;
+    private static Map<Integer, String> bankIds = new HashMap<>();
 
     @Resource
-    private              ProxyService         proxyService;
-
-    private              ParentConfigHandler  parentConfigHandler;
+    private PluginManager pluginManager;
 
     @Resource
-    private              WebsiteHolderService websiteHolderService;
+    private ProxyService proxyService;
+
+    private ParentConfigHandler parentConfigHandler;
 
     @Resource
-    private              RedisService         redisService;
+    private WebsiteHolderService websiteHolderService;
+
+    @Resource
+    private RedisService redisService;
 
     public WebsiteConfigServiceImpl() {
-        parentConfigHandler = (ParentConfigHandler<AbstractWebsiteConfig>) type -> {
+        parentConfigHandler = (ParentConfigHandler<AbstractWebsiteConfig>)type -> {
             String parentWebsiteName = type.getParentWebsiteName();
             if (StringUtils.isNotBlank(parentWebsiteName)) {
                 logger.info("do parentConfigHandler for parentWebsiteName named: " + parentWebsiteName + " for class " + type.getClass());
                 Website website = websiteHolderService.getWebsite(parentWebsiteName);
                 if (website != null) {
                     if (type instanceof SearchConfig) {
-                        ((SearchConfig) type).clone(website.getSearchConfig());
+                        ((SearchConfig)type).clone(website.getSearchConfig());
                     } else if (type instanceof ExtractorConfig) {
-                        ((ExtractorConfig) type).clone(website.getExtractorConfig());
+                        ((ExtractorConfig)type).clone(website.getExtractorConfig());
                     }
                 }
             }
@@ -147,19 +145,16 @@ public class WebsiteConfigServiceImpl implements WebsiteConfigService {
                 website.setSearchConfig(searchConfig);
                 website.setSearchConfigSource(websiteConfig.getSearchConfig());
             } catch (Exception e) {
-                logger.error("parse searchConfig  error websiteId={},websiteName={}", websiteConfig.getWebsiteId(), websiteConfig.getWebsiteName(),
-                        e);
+                logger.error("parse searchConfig  error websiteId={},websiteName={}", websiteConfig.getWebsiteId(), websiteConfig.getWebsiteName(), e);
             }
         }
         if (StringUtils.isNotEmpty(websiteConfig.getExtractorConfig())) {
             try {
-                ExtractorConfig extractorConfig = SpiderConfigFactory
-                        .build(websiteConfig.getExtractorConfig(), ExtractorConfig.class, parentConfigHandler);
+                ExtractorConfig extractorConfig = SpiderConfigFactory.build(websiteConfig.getExtractorConfig(), ExtractorConfig.class, parentConfigHandler);
                 website.setExtractorConfig(extractorConfig);
                 website.setExtractorConfigSource(websiteConfig.getExtractorConfig());
             } catch (Exception e) {
-                logger.error("parse extractorConfig  error websiteId={},websiteName={}", websiteConfig.getWebsiteId(), websiteConfig.getWebsiteName(),
-                        e);
+                logger.error("parse extractorConfig  error websiteId={},websiteName={}", websiteConfig.getWebsiteId(), websiteConfig.getWebsiteName(), e);
             }
         }
         website.setId(websiteConfig.getWebsiteId());
@@ -172,7 +167,7 @@ public class WebsiteConfigServiceImpl implements WebsiteConfigService {
             GroupEnum group = GroupEnum.getByWebsiteName(websiteConfig.getWebsiteName());
             if (null == group) {
                 logger.warn("not found group code for webisteName={}", websiteConfig.getWebsiteName());
-                //throw new RuntimeException("not found group code for webisteName=" + websiteConfig.getWebsiteName());
+                // throw new RuntimeException("not found group code for webisteName=" + websiteConfig.getWebsiteName());
             } else {
                 website.setGroupCode(group.getGroupCode());
                 website.setGroupName(group.getGroupName());
@@ -208,7 +203,7 @@ public class WebsiteConfigServiceImpl implements WebsiteConfigService {
         }
         WebsiteConf conf = websiteHolderService.getWebsiteConf(newWebsiteName);
         if (null != conf) {
-            //中文
+            // 中文
             conf.setName(websiteName);
         }
         return conf;

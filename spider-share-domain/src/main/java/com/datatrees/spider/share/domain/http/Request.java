@@ -1,17 +1,14 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.domain.http;
@@ -32,20 +29,21 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 请求
  */
 public class Request implements Serializable {
-//    public static final String USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36 (KHTML, " + "like Gecko) Chrome/71.0.3578.98 Safari/537.36";
+    // public static final String USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36
+    // (KHTML, " + "like Gecko) Chrome/71.0.3578.98 Safari/537.36";
     public static final String USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:64.0) Gecko/20100101 Firefox/64.0";
 
     /**
      * 请求ID随机,不保证重复,重复概率低
      */
     @JSONField(ordinal = 1)
-    private Long                requestId;
+    private Long requestId;
 
     @JSONField(ordinal = 1)
-    private Long                taskId;
+    private Long taskId;
 
     @JSONField(ordinal = 2)
-    private String              websiteName;
+    private String websiteName;
 
     /**
      * 是否重定向了
@@ -54,79 +52,79 @@ public class Request implements Serializable {
     private boolean isRedirect = false;
 
     @JSONField(ordinal = 3)
-    private String              proxy;
+    private String proxy;
 
     @JSONField(ordinal = 4)
-    private String              fullUrl;
+    private String fullUrl;
 
     @JSONField(ordinal = 5)
-    private String              url;
+    private String url;
 
     @JSONField(ordinal = 6)
-    private Map<String, Object> params         = new HashMap<>();
+    private Map<String, Object> params = new HashMap<>();
 
     @JSONField(ordinal = 7)
-    private String              remarkId;
+    private String remarkId;
 
     @JSONField(ordinal = 8)
-    private List<NameValue>     headers        = new ArrayList<>();
+    private List<NameValue> headers = new ArrayList<>();
 
     @JSONField(ordinal = 9)
-    private long                requestTimestamp;
+    private long requestTimestamp;
 
     @JSONField(ordinal = 10)
     private Map<String, String> requestCookies = new HashMap<>();
 
     @JSONField(ordinal = 12)
-    private String              contentType    = "application/x-www-form-urlencoded; charset=UTF-8";
+    private String contentType = "application/x-www-form-urlencoded; charset=UTF-8";
 
     @JSONField(ordinal = 12)
-    private Charset             charset        = Charset.forName("ISO-8859-1");
+    private Charset charset = Charset.forName("ISO-8859-1");
 
     @JSONField(ordinal = 13)
-    private RequestType         type           = RequestType.GET;
+    private RequestType type = RequestType.GET;
 
     @JSONField(ordinal = 9)
-    private int                 maxRetry               = 1;
+    private int maxRetry = 1;
 
     @JSONField(ordinal = 10)
-    private AtomicInteger       retry                  = new AtomicInteger(0);
+    private AtomicInteger retry = new AtomicInteger(0);
 
     @JSONField(ordinal = 11)
-    private int                 connectTimeout         = 10000;
+    private int connectTimeout = 10000;
 
     @JSONField(ordinal = 12)
-    private int                 socketTimeout          = 20000;
+    private int socketTimeout = 20000;
 
     @JSONField(ordinal = 13)
-    private String              requestBodyContent;
+    private String requestBodyContent;
 
     @JSONField(ordinal = 14)
-    private Boolean             proxyEnable;
+    private Boolean proxyEnable;
 
     @JSONField(ordinal = 15)
     private Map<String, String> extraCookie = new HashMap<>();
 
     @JSONField(ordinal = 16)
-    private String              host;
+    private String host;
 
     @JSONField(ordinal = 16)
-    private String              protocol;
+    private String protocol;
 
     @JSONField(ordinal = 16)
-    private String              defaultResponseCharset = "UTF-8";
+    private String defaultResponseCharset = "UTF-8";
 
     @JSONField(ordinal = 16)
-    private Integer             redirectCount          = 0;
+    private Integer redirectCount = 0;
 
     @JSONField(ordinal = 16)
-    private Integer             maxRedirectCount       = 5;
+    private Integer maxRedirectCount = 5;
 
     /**
      * 自动跳转
      */
     @JSONField(ordinal = 16)
-    private Boolean             autoRedirect           = true;
+    private Boolean autoRedirect = true;
 
     public Request() {
         addHead(HttpHeadKey.USER_AGENT, USER_AGENT);

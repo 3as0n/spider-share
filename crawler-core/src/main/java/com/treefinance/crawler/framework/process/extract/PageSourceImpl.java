@@ -1,45 +1,43 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.process.extract;
-
-import javax.annotation.Nonnull;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.treefinance.crawler.framework.config.xml.extractor.PageSource;
 import com.treefinance.crawler.framework.config.xml.page.Regexp;
 import com.treefinance.crawler.framework.config.xml.page.Replacement;
 import com.treefinance.crawler.framework.config.xml.plugin.AbstractPlugin;
 import com.treefinance.crawler.framework.context.AbstractProcessorContext;
-import com.treefinance.crawler.framework.extension.plugin.PluginConstants;
 import com.treefinance.crawler.framework.context.function.SpiderRequest;
 import com.treefinance.crawler.framework.context.function.SpiderResponse;
 import com.treefinance.crawler.framework.context.pipeline.ProcessorInvokerAdapter;
 import com.treefinance.crawler.framework.download.WrappedFile;
 import com.treefinance.crawler.framework.extension.plugin.PluginCaller;
+import com.treefinance.crawler.framework.extension.plugin.PluginConstants;
 import com.treefinance.crawler.framework.process.PageHelper;
 import com.treefinance.crawler.framework.util.FieldUtils;
 import com.treefinance.toolkit.util.Preconditions;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+
+import javax.annotation.Nonnull;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author <A HREF="">Cheng Wang</A>
@@ -103,7 +101,7 @@ public class PageSourceImpl extends ProcessorInvokerAdapter {
         if (plugin != null) {
             Object value = FieldUtils.getFieldValue(input, source.getField());
             if (value instanceof Collection) {
-                Stream<String> stream = ((Collection) value).stream().map(obj -> this.getSourceContent(obj, plugin, request));
+                Stream<String> stream = ((Collection)value).stream().map(obj -> this.getSourceContent(obj, plugin, request));
 
                 return stream.collect(Collectors.joining(separator));
             }
@@ -120,17 +118,17 @@ public class PageSourceImpl extends ProcessorInvokerAdapter {
         }
 
         AbstractProcessorContext context = request.getProcessorContext();
-        String content = (String) PluginCaller.call(pluginDesc, context, () -> {
+        String content = (String)PluginCaller.call(pluginDesc, context, () -> {
             Map<String, String> params = new HashMap<>();
             if (value instanceof WrappedFile) {
-                WrappedFile file = (WrappedFile) value;
-                file.download();//download attachment to local
+                WrappedFile file = (WrappedFile)value;
+                file.download();// download attachment to local
                 params.put(PluginConstants.FILE_WAPPER_PATH, file.getAbsolutePath());
                 params.put(PluginConstants.FILE_MIME_TYPE, file.getMimeType());
                 params.put(PluginConstants.FILE_NAME, file.getName());
                 params.put(PluginConstants.FILE_SOURCE_URL, file.getSourceURL());
             } else if (value instanceof String) {
-                params.put(PluginConstants.FILE_CONTENT, (String) value);
+                params.put(PluginConstants.FILE_CONTENT, (String)value);
             } else {
                 params.put(PluginConstants.FILE_CONTENT, value.toString());
                 logger.warn("Process page source by plugin with unexpected input type. input: {}, type: {}", value, value.getClass());

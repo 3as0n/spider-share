@@ -1,30 +1,27 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.process.search;
-
-import java.net.URLEncoder;
-import java.nio.charset.Charset;
-import java.util.Map;
 
 import com.treefinance.crawler.framework.expression.special.PageExpParser;
 import com.treefinance.crawler.framework.expression.special.SearchUrlExpParser;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
+import java.util.Map;
 
 /**
  * @author <A HREF="">Cheng Wang</A>
@@ -37,6 +34,7 @@ public class SearchTemplateCombine {
 
     /**
      * encode keyword in URL format
+     * 
      * @param keyword
      * @param urlCharset
      * @return the encoded keyword
@@ -64,6 +62,7 @@ public class SearchTemplateCombine {
 
     /**
      * construct search url from template with keyword, charset and page num.
+     * 
      * @param searchURLTemplate
      * @param keyword
      * @param urlCharset
@@ -75,7 +74,7 @@ public class SearchTemplateCombine {
             String encodedKeyword = null;
             if (StringUtils.isNotEmpty(keyword)) {
                 encodedKeyword = encodeKeyword(keyword, urlCharset);
-                log.debug("original keyword: {},urlCharset: {}, encoded keyword: {}" ,keyword,urlCharset, encodedKeyword);
+                log.debug("original keyword: {},urlCharset: {}, encoded keyword: {}", keyword, urlCharset, encodedKeyword);
             }
 
             String searchURL = SearchUrlExpParser.eval(searchURLTemplate, pageNum, notOverloadMax, encodedKeyword, fieldMap);
@@ -91,6 +90,7 @@ public class SearchTemplateCombine {
 
     /**
      * custom Template search url from template with page num.
+     * 
      * @param customURLTemplate
      * @param pageNum
      */

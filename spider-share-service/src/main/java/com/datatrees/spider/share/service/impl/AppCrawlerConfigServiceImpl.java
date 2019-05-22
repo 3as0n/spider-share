@@ -1,29 +1,19 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.service.impl;
 
-import javax.annotation.Resource;
-import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
 import com.alibaba.fastjson.JSON;
-import com.treefinance.crawler.framework.config.enums.BusinessType;
 import com.datatrees.spider.share.common.share.service.RedisService;
 import com.datatrees.spider.share.common.utils.CollectionUtils;
 import com.datatrees.spider.share.dao.AppCrawlerConfigDAO;
@@ -40,6 +30,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.treefinance.crawler.exception.UnexpectedException;
+import com.treefinance.crawler.framework.config.enums.BusinessType;
 import com.treefinance.saas.merchant.center.facade.result.console.AppBizLicenseSimpleResult;
 import com.treefinance.saas.merchant.center.facade.result.console.MerchantAppLicenseResult;
 import org.apache.commons.lang.StringUtils;
@@ -49,22 +40,34 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
 /**
- * User: yand
- * Date: 2018/4/10
+ * User: yand Date: 2018/4/10
  */
 @Service
 public class AppCrawlerConfigServiceImpl implements AppCrawlerConfigService, InitializingBean {
 
-    private static final Logger                              logger       = LoggerFactory.getLogger(AppCrawlerConfigServiceImpl.class);
-    private static final String                              CACHE_PREFIX = "com.treefinance.crawler.business.control.";
-    private final        Cache<String, Map<String, Boolean>> localCache   = CacheBuilder.newBuilder().expireAfterAccess(3, TimeUnit.MINUTES).softValues().build();
+    private static final Logger logger = LoggerFactory.getLogger(AppCrawlerConfigServiceImpl.class);
+    private static final String CACHE_PREFIX = "com.treefinance.crawler.business.control.";
+    private final Cache<String, Map<String, Boolean>> localCache = CacheBuilder.newBuilder().expireAfterAccess(3, TimeUnit.MINUTES).softValues().build();
     @Resource
-    private              AppCrawlerConfigDAO                 appCrawlerConfigDAO;
+    private AppCrawlerConfigDAO appCrawlerConfigDAO;
     @Resource
-    private              RedisService                        redisService;
+    private RedisService redisService;
     @Autowired
-    private              DistributedLocks                    distributedLocks;
+    private DistributedLocks distributedLocks;
 
     @Override
     public void afterPropertiesSet() {
@@ -73,7 +76,8 @@ public class AppCrawlerConfigServiceImpl implements AppCrawlerConfigService, Ini
             List<AppCrawlerConfig> list = selectAll();
 
             if (CollectionUtils.isNotEmpty(list)) {
-                Map<String, Map<String, Boolean>> map = list.stream().filter(config -> StringUtils.isNotEmpty(config.getAppId())).collect(Collectors.groupingBy(AppCrawlerConfig::getAppId, Collectors.toMap(AppCrawlerConfig::getProject, AppCrawlerConfig::getCrawlerStatus, (v1, v2) -> v2)));
+                Map<String, Map<String, Boolean>> map = list.stream().filter(config -> StringUtils.isNotEmpty(config.getAppId()))
+                    .collect(Collectors.groupingBy(AppCrawlerConfig::getAppId, Collectors.toMap(AppCrawlerConfig::getProject, AppCrawlerConfig::getCrawlerStatus, (v1, v2) -> v2)));
 
                 map.forEach((appId, configMap) -> {
                     redisService.putMap(CACHE_PREFIX + appId, configMap);
@@ -81,18 +85,6 @@ public class AppCrawlerConfigServiceImpl implements AppCrawlerConfigService, Ini
             }
             logger.info("app crawling business config was finished to load into cache.");
         }).start();
-    }
-
-    private List<AppCrawlerConfig> selectAll() {
-        AppCrawlerConfigCriteria criteria = new AppCrawlerConfigCriteria();
-        return appCrawlerConfigDAO.selectByExample(criteria);
-    }
-
-    private List<AppCrawlerConfig> selectListByAppId(String appId) {
-        AppCrawlerConfigCriteria criteria = new AppCrawlerConfigCriteria();
-        criteria.createCriteria().andAppIdEqualTo(appId);
-        criteria.setOrderByClause("website_type asc");
-        return appCrawlerConfigDAO.selectByExample(criteria);
     }
 
     @Override
@@ -141,6 +133,65 @@ public class AppCrawlerConfigServiceImpl implements AppCrawlerConfigService, Ini
         return appIds.parallelStream().map(this::getAppCrawlerConfigParamByAppId).collect(Collectors.toList());
     }
 
+    @Override
+    public void updateAppConfig(String appId, List<CrawlerProjectParam> projectConfigInfos) {
+        if (StringUtils.isBlank(appId) || CollectionUtils.isEmpty(projectConfigInfos)) {
+            throw new IllegalArgumentException("Incorrect parameters!");
+        }
+        logger.info("update crawling-business config >> appId: {}", appId);
+
+        try {
+            distributedLocks.doInLock("crawler_business_control_setting_update", 3, TimeUnit.SECONDS, () -> {
+                Map<String, Object> map = new HashMap<>();
+                for (CrawlerProjectParam crawlerProjectParam : projectConfigInfos) {
+                    List<ProjectParam> projectList = crawlerProjectParam.getProjects();
+
+                    if (CollectionUtils.isEmpty(projectList)) {
+                        continue;
+                    }
+
+                    for (ProjectParam projectParam : projectList) {
+                        AppCrawlerConfig config = new AppCrawlerConfig();
+                        config.setCrawlerStatus(projectParam.getCrawlerStatus() != 0);
+
+                        AppCrawlerConfigCriteria criteria = new AppCrawlerConfigCriteria();
+                        criteria.createCriteria().andAppIdEqualTo(appId).andWebsiteTypeEqualTo(crawlerProjectParam.getWebsiteType()).andProjectEqualTo(projectParam.getCode());
+                        int i = appCrawlerConfigDAO.updateByExampleSelective(config, criteria);
+                        if (i == 0) {
+                            config.setAppId(appId);
+                            config.setWebsiteType(crawlerProjectParam.getWebsiteType());
+                            config.setProject(projectParam.getCode());
+                            appCrawlerConfigDAO.insertSelective(config);
+                        }
+                        map.put(projectParam.getCode(), config.getCrawlerStatus());
+                    }
+                }
+                if (!map.isEmpty()) {
+                    redisService.deleteKey(CACHE_PREFIX + appId);
+                    logger.info("更新业务标签. appId: {}, 标签：{}", appId, JSON.toJSONString(map));
+                    redisService.putMap(CACHE_PREFIX + appId, map);
+                    localCache.invalidate(appId);
+                }
+            });
+        } catch (InterruptedException e) {
+            throw new UnexpectedException("The thread is interrupted unexpectedly", e);
+        } catch (LockingFailureException e) {
+            throw new UnexpectedException("其他人正在更新配置中，请稍后再试！");
+        }
+    }
+
+    private List<AppCrawlerConfig> selectAll() {
+        AppCrawlerConfigCriteria criteria = new AppCrawlerConfigCriteria();
+        return appCrawlerConfigDAO.selectByExample(criteria);
+    }
+
+    private List<AppCrawlerConfig> selectListByAppId(String appId) {
+        AppCrawlerConfigCriteria criteria = new AppCrawlerConfigCriteria();
+        criteria.createCriteria().andAppIdEqualTo(appId);
+        criteria.setOrderByClause("website_type asc");
+        return appCrawlerConfigDAO.selectByExample(criteria);
+    }
+
     private AppCrawlerConfigParam getAppCrawlerConfigParamByAppId(MerchantAppLicenseResult merchant) {
         if (logger.isDebugEnabled()) {
             logger.debug("查询业务标签，merchant: {}", JSON.toJSONString(merchant));
@@ -158,10 +209,12 @@ public class AppCrawlerConfigServiceImpl implements AppCrawlerConfigService, Ini
                     logger.debug("业务标签类型，bizType: {}, bizName: {}", result.getBizType(), result.getBizName());
 
                     WebsiteType websiteType = getWebsiteType(result.getBizType());
-                    if (websiteType == null) continue;
+                    if (websiteType == null)
+                        continue;
 
                     List<BusinessType> businessTypes = BusinessType.getBusinessTypeList(websiteType);
-                    if (CollectionUtils.isEmpty(businessTypes)) continue;
+                    if (CollectionUtils.isEmpty(businessTypes))
+                        continue;
 
                     Map<String, ProjectParam> map = new HashMap<>();
                     Iterator<AppCrawlerConfig> iterator = configs.iterator();
@@ -229,7 +282,7 @@ public class AppCrawlerConfigServiceImpl implements AppCrawlerConfigService, Ini
         projectParam.setCode(businessType.getCode());
         projectParam.setName(businessType.getName());
         boolean isOpen = open != null ? open : businessType.isOpen();
-        projectParam.setCrawlerStatus((byte) (isOpen ? 1 : 0));
+        projectParam.setCrawlerStatus((byte)(isOpen ? 1 : 0));
         projectParam.setOrder(businessType.getOrder());
         return projectParam;
     }
@@ -240,53 +293,6 @@ public class AppCrawlerConfigServiceImpl implements AppCrawlerConfigService, Ini
 
     private String uniqueKey(BusinessType businessType) {
         return uniqueKey(businessType.getWebsiteType().val(), businessType.getCode());
-    }
-
-    @Override
-    public void updateAppConfig(String appId, List<CrawlerProjectParam> projectConfigInfos) {
-        if (StringUtils.isBlank(appId) || CollectionUtils.isEmpty(projectConfigInfos)) {
-            throw new IllegalArgumentException("Incorrect parameters!");
-        }
-        logger.info("update crawling-business config >> appId: {}", appId);
-
-        try {
-            distributedLocks.doInLock("crawler_business_control_setting_update", 3, TimeUnit.SECONDS, () -> {
-                Map<String, Object> map = new HashMap<>();
-                for (CrawlerProjectParam crawlerProjectParam : projectConfigInfos) {
-                    List<ProjectParam> projectList = crawlerProjectParam.getProjects();
-
-                    if (CollectionUtils.isEmpty(projectList)) {
-                        continue;
-                    }
-
-                    for (ProjectParam projectParam : projectList) {
-                        AppCrawlerConfig config = new AppCrawlerConfig();
-                        config.setCrawlerStatus(projectParam.getCrawlerStatus() != 0);
-
-                        AppCrawlerConfigCriteria criteria = new AppCrawlerConfigCriteria();
-                        criteria.createCriteria().andAppIdEqualTo(appId).andWebsiteTypeEqualTo(crawlerProjectParam.getWebsiteType()).andProjectEqualTo(projectParam.getCode());
-                        int i = appCrawlerConfigDAO.updateByExampleSelective(config, criteria);
-                        if (i == 0) {
-                            config.setAppId(appId);
-                            config.setWebsiteType(crawlerProjectParam.getWebsiteType());
-                            config.setProject(projectParam.getCode());
-                            appCrawlerConfigDAO.insertSelective(config);
-                        }
-                        map.put(projectParam.getCode(), config.getCrawlerStatus());
-                    }
-                }
-                if (!map.isEmpty()) {
-                    redisService.deleteKey(CACHE_PREFIX + appId);
-                    logger.info("更新业务标签. appId: {}, 标签：{}", appId, JSON.toJSONString(map));
-                    redisService.putMap(CACHE_PREFIX + appId, map);
-                    localCache.invalidate(appId);
-                }
-            });
-        } catch (InterruptedException e) {
-            throw new UnexpectedException("The thread is interrupted unexpectedly", e);
-        } catch (LockingFailureException e) {
-            throw new UnexpectedException("其他人正在更新配置中，请稍后再试！");
-        }
     }
 
 }

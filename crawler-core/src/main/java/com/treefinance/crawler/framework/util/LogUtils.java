@@ -8,10 +8,9 @@ import org.apache.commons.lang3.StringUtils;
  */
 public final class LogUtils {
 
-    private LogUtils() {
-    }
+    private LogUtils() {}
 
     public static Object abbreviate(Object value) {
-        return value instanceof String ? StringUtils.abbreviate((String) value, 256) : value;
+        return value instanceof String ? StringUtils.abbreviate((String)value, 256) : value;
     }
 }

@@ -1,43 +1,34 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.process.operation.impl;
 
-import javax.annotation.Nonnull;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.stream.Collectors;
-
 import com.alibaba.fastjson.JSON;
 import com.datatrees.common.util.GsonUtils;
+import com.google.common.collect.ImmutableList;
+import com.google.gson.reflect.TypeToken;
 import com.treefinance.crawler.framework.config.xml.parser.IndexMapping;
 import com.treefinance.crawler.framework.config.xml.parser.Parser;
 import com.treefinance.crawler.framework.config.xml.parser.ParserPattern;
 import com.treefinance.crawler.framework.config.xml.service.AbstractService;
-import com.treefinance.crawler.framework.context.AbstractProcessorContext;
 import com.treefinance.crawler.framework.consts.Constants;
+import com.treefinance.crawler.framework.context.AbstractProcessorContext;
 import com.treefinance.crawler.framework.context.function.LinkNode;
-import com.treefinance.crawler.framework.exception.ResultEmptyException;
-import com.google.common.collect.ImmutableList;
-import com.google.gson.reflect.TypeToken;
 import com.treefinance.crawler.framework.context.function.SpiderRequest;
 import com.treefinance.crawler.framework.context.function.SpiderResponse;
 import com.treefinance.crawler.framework.context.pipeline.InvokeException;
 import com.treefinance.crawler.framework.exception.InvalidOperationException;
+import com.treefinance.crawler.framework.exception.ResultEmptyException;
 import com.treefinance.crawler.framework.expression.ExpressionParser;
 import com.treefinance.crawler.framework.util.ServiceUtils;
 import com.treefinance.crawler.framework.util.UrlExtractor;
@@ -47,18 +38,30 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.stream.Collectors;
+
 /**
  * parser segment content and send request or extract urls
+ * 
  * @author <A HREF="">Cheng Wang</A>
  * @version 1.0
  * @since Feb 20, 2014 8:57:12 PM
  */
 class ParserHandler {
 
-    private static final Logger  logger            = LoggerFactory.getLogger(ParserHandler.class);
-    private final        Parser  parser;
-    private              boolean needRequest       = false;
-    private              boolean needReturnUrlList = false;
+    private static final Logger logger = LoggerFactory.getLogger(ParserHandler.class);
+    private final Parser parser;
+    private boolean needRequest = false;
+    private boolean needReturnUrlList = false;
 
     public ParserHandler(Parser parser, boolean needRequest) {
         this(parser, needRequest, false);
@@ -102,9 +105,28 @@ class ParserHandler {
         }
     }
 
+    public boolean isNeedRequest() {
+        return needRequest;
+    }
+
+    public void setNeedRequest(boolean needRequest) {
+        this.needRequest = needRequest;
+    }
+
+    public Parser getParser() {
+        return parser;
+    }
+
+    public boolean isNeedReturnUrlList() {
+        return needReturnUrlList;
+    }
+
+    public void setNeedReturnUrlList(boolean needReturnUrlList) {
+        this.needReturnUrlList = needReturnUrlList;
+    }
+
     /**
-     * First: replaced from visible field scope;
-     * Second: replaced by the matched string in input content by regexp
+     * First: replaced from visible field scope; Second: replaced by the matched string in input content by regexp
      * Third: replaced by global visible field context;
      */
     private List<String> evalExp(String url, SpiderRequest request, SpiderResponse response, String content) {
@@ -147,10 +169,12 @@ class ParserHandler {
         List<Map<String, Object>> fieldScopes = new ArrayList<>();
         for (ParserPattern parserPattern : mappings) {
             String regex = parserPattern.getRegex();
-            if (StringUtils.isEmpty(regex)) continue;
+            if (StringUtils.isEmpty(regex))
+                continue;
 
             List<IndexMapping> indexMappings = parserPattern.getIndexMappings();
-            if (CollectionUtils.isEmpty(indexMappings)) continue;
+            if (CollectionUtils.isEmpty(indexMappings))
+                continue;
 
             Matcher m = RegExp.getMatcher(regex, content);
             int i = 0;
@@ -164,7 +188,8 @@ class ParserHandler {
                 }
 
                 for (IndexMapping indexMapping : indexMappings) {
-                    if (StringUtils.isEmpty(indexMapping.getPlaceholder())) continue;
+                    if (StringUtils.isEmpty(indexMapping.getPlaceholder()))
+                        continue;
 
                     try {
                         indexFieldMap.put(indexMapping.getPlaceholder(), m.group(indexMapping.getGroupIndex()));
@@ -208,26 +233,6 @@ class ParserHandler {
         AbstractService service = processorContext.getDefaultService();
 
         return ServiceUtils.invokeAsString(service, currentLinkNode, processorContext, request.getConfiguration(), request.getVisibleScope());
-    }
-
-    public boolean isNeedRequest() {
-        return needRequest;
-    }
-
-    public void setNeedRequest(boolean needRequest) {
-        this.needRequest = needRequest;
-    }
-
-    public Parser getParser() {
-        return parser;
-    }
-
-    public boolean isNeedReturnUrlList() {
-        return needReturnUrlList;
-    }
-
-    public void setNeedReturnUrlList(boolean needReturnUrlList) {
-        this.needReturnUrlList = needReturnUrlList;
     }
 
 }

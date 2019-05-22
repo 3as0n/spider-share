@@ -1,25 +1,17 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.common.utils;
-
-import javax.annotation.Nonnull;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 import com.datatrees.spider.share.domain.AttributeKey;
 import com.datatrees.spider.share.domain.RedisKeyPrefixEnum;
@@ -28,17 +20,28 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
+
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+
 /**
  * website工具类
  */
 public class WebsiteUtils {
 
-    private static final Logger                   logger            = LoggerFactory.getLogger(WebsiteUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(WebsiteUtils.class);
 
-    private static       Map<String, Set<String>> NICK_GROU_WEBSITE = new ConcurrentHashMap<>();
+    private static Map<String, Set<String>> NICK_GROU_WEBSITE = new ConcurrentHashMap<>();
 
     /**
      * 是否是运营商
+     * 
      * @param websiteName
      * @return
      */
@@ -47,8 +50,8 @@ public class WebsiteUtils {
     }
 
     /**
-     * 是否正常：
-     * 若分组的各网站存在连续失败人数小于最大连续失败人数的，即为正常
+     * 是否正常： 若分组的各网站存在连续失败人数小于最大连续失败人数的，即为正常
+     * 
      * @param nickGroupCode
      * @param maxFailUser
      * @return
@@ -73,8 +76,8 @@ public class WebsiteUtils {
     }
 
     /**
-     * 是否稳定：
-     * 若分组的各网站存在连续失败人数小于最大连续失败人数的，且最后成功时间在30分钟以前的，即为稳定
+     * 是否稳定： 若分组的各网站存在连续失败人数小于最大连续失败人数的，且最后成功时间在30分钟以前的，即为稳定
+     * 
      * @param nickGroupCode
      * @param maxFailUser
      * @return
@@ -120,7 +123,7 @@ public class WebsiteUtils {
             RedisUtils.hset(redisKey, AttributeKey.FAIL_USER_COUNT, "0");
             updateWebsiteDayList(websiteName, taskId, timestamp);
             logger.info("upate website last info with task success,websiteName={},taskId={},timestamp={},successUserCount={}", websiteName, taskId,
-                    DateUtils.formatYmdhms(timestamp), successUserCount);
+                DateUtils.formatYmdhms(timestamp), successUserCount);
         }
     }
 
@@ -135,8 +138,8 @@ public class WebsiteUtils {
             long successUserCount = RedisUtils.hincrBy(redisKey, AttributeKey.SUCCESS_USER_COUNT, 1);
             RedisUtils.hset(redisKey, AttributeKey.FAIL_USER_COUNT, "0");
             updateNickGroupDayList(nickGroupCode, taskId, timestamp);
-            logger.info("upate nickGroup last info with task success,nickGroupCode={},taskId={},timestamp={},successUserCount={}", nickGroupCode,
-                    taskId, DateUtils.formatYmdhms(timestamp), successUserCount);
+            logger.info("upate nickGroup last info with task success,nickGroupCode={},taskId={},timestamp={},successUserCount={}", nickGroupCode, taskId,
+                DateUtils.formatYmdhms(timestamp), successUserCount);
         }
     }
 
@@ -152,8 +155,8 @@ public class WebsiteUtils {
             long successUserCount = RedisUtils.hincrBy(redisKey, AttributeKey.SUCCESS_USER_COUNT, 1);
             RedisUtils.hset(redisKey, AttributeKey.FAIL_USER_COUNT, "0");
             updateWebsiteGroupDayList(websiteName, nickGroupCode, taskId, timestamp);
-            logger.info("upate website group last info with task success,websiteName={},nickGroupCode={},taskId={},timestamp={},successUserCount={}",
-                    websiteName, nickGroupCode, taskId, DateUtils.formatYmdhms(timestamp), successUserCount);
+            logger.info("upate website group last info with task success,websiteName={},nickGroupCode={},taskId={},timestamp={},successUserCount={}", websiteName, nickGroupCode,
+                taskId, DateUtils.formatYmdhms(timestamp), successUserCount);
         }
     }
 
@@ -168,8 +171,8 @@ public class WebsiteUtils {
             long failUserCount = RedisUtils.hincrBy(redisKey, AttributeKey.FAIL_USER_COUNT, 1);
             RedisUtils.hset(redisKey, AttributeKey.SUCCESS_USER_COUNT, "0");
             updateWebsiteDayList(websiteName, taskId, timestamp);
-            logger.info("upate website last info with task fail,websiteName={},taskId={},timestamp={},failUserCount={}", websiteName, taskId,
-                    DateUtils.formatYmdhms(timestamp), failUserCount);
+            logger.info("upate website last info with task fail,websiteName={},taskId={},timestamp={},failUserCount={}", websiteName, taskId, DateUtils.formatYmdhms(timestamp),
+                failUserCount);
         }
     }
 
@@ -185,7 +188,7 @@ public class WebsiteUtils {
             RedisUtils.hset(redisKey, AttributeKey.SUCCESS_USER_COUNT, "0");
             updateNickGroupDayList(nickGroupCode, taskId, timestamp);
             logger.info("upate nickGroup last info with task fail,nickGroupCode={},taskId={},timestamp={},failUserCount={}", nickGroupCode, taskId,
-                    DateUtils.formatYmdhms(timestamp), failUserCount);
+                DateUtils.formatYmdhms(timestamp), failUserCount);
         }
     }
 
@@ -202,7 +205,7 @@ public class WebsiteUtils {
             RedisUtils.hset(redisKey, AttributeKey.SUCCESS_USER_COUNT, "0");
             updateWebsiteGroupDayList(websiteName, nickGroupCode, taskId, timestamp);
             logger.info("upate website group last info with task fail,websiteName={},taskId={},timestamp={},failUserCount={}", websiteName, taskId,
-                    DateUtils.formatYmdhms(timestamp), failUserCount);
+                DateUtils.formatYmdhms(timestamp), failUserCount);
         }
     }
 
@@ -213,8 +216,7 @@ public class WebsiteUtils {
         boolean update = StringUtils.isBlank(redisTimestamp) || timestamp > Long.parseLong(redisTimestamp);
         if (update) {
             RedisUtils.hset(redisKey, AttributeKey.WARN_TIMESTAMP, String.valueOf(timestamp));
-            logger.info("upate website last info with warnTimestamp,websiteName={},taskId={},timestamp={}", websiteName,
-                    DateUtils.formatYmdhms(timestamp));
+            logger.info("upate website last info with warnTimestamp,websiteName={},taskId={},timestamp={}", websiteName, DateUtils.formatYmdhms(timestamp));
         }
     }
 
@@ -379,13 +381,11 @@ public class WebsiteUtils {
         return Long.valueOf(id);
     }
 
-    public static Long getWebisteGroupMonitorId(@Nonnull String websiteName, @Nonnull String nickGroupCode, @Nonnull Long preId,
-            @Nonnull Date orderDate) {
+    public static Long getWebisteGroupMonitorId(@Nonnull String websiteName, @Nonnull String nickGroupCode, @Nonnull Long preId, @Nonnull Date orderDate) {
         return getWebisteGroupMonitorId(websiteName, nickGroupCode, preId, DateUtils.formatYmd(orderDate));
     }
 
-    public static Long getWebisteGroupMonitorId(@Nonnull String websiteName, @Nonnull String nickGroupCode, @Nonnull Long preId,
-            @Nonnull String monitorDay) {
+    public static Long getWebisteGroupMonitorId(@Nonnull String websiteName, @Nonnull String nickGroupCode, @Nonnull Long preId, @Nonnull String monitorDay) {
         String postfix = TaskUtils.getSassEnv(websiteName + "." + nickGroupCode + "." + monitorDay);
         String redisKey = RedisKeyPrefixEnum.WEBSITE_GROUP_MONITOR_ID.getRedisKey(postfix);
         if (RedisUtils.exists(redisKey)) {
@@ -431,8 +431,7 @@ public class WebsiteUtils {
         if (update) {
             RedisUtils.hset(redisKey, AttributeKey.SUCCESS_TIMESTAMP, String.valueOf(timestamp));
             RedisUtils.hset(redisKey, AttributeKey.SUCCESS_TASK_ID, String.valueOf(taskId));
-            logger.info("upate group last info with task success,groupCode={},taskId={},timestamp={}", groupCode, taskId,
-                    DateUtils.formatYmdhms(timestamp));
+            logger.info("upate group last info with task success,groupCode={},taskId={},timestamp={}", groupCode, taskId, DateUtils.formatYmdhms(timestamp));
         }
     }
 

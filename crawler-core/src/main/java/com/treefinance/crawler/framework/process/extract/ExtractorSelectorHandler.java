@@ -1,23 +1,17 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.process.extract;
-
-import javax.annotation.Nonnull;
-import java.util.*;
 
 import com.treefinance.crawler.framework.config.xml.extractor.ExtractorSelector;
 import com.treefinance.crawler.framework.config.xml.page.PageExtractor;
@@ -30,14 +24,22 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
 /**
  * @author Jerry
  * @since 17:56 2018/7/25
  */
 public class ExtractorSelectorHandler {
 
-    private final Logger                     logger = LoggerFactory.getLogger(getClass());
-    private final List<ExtractorSelector>    extractorSelectors;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final List<ExtractorSelector> extractorSelectors;
     private final Map<String, PageExtractor> pageExtractors;
 
     public ExtractorSelectorHandler(@Nonnull List<ExtractorSelector> extractorSelectors, @Nonnull Map<String, PageExtractor> pageExtractors) {
@@ -62,9 +64,11 @@ public class ExtractorSelectorHandler {
             for (ExtractorSelector selector : extractorSelectors) {
                 String value = fields.computeIfAbsent(selector.getField(), fieldName -> FieldUtils.getFieldValueAsString(input, fieldName));
 
-                logger.trace("extractor selector >>> field: {}, value: {}, contains: {}, dis-contains: {}", selector.getField(), value, selector.getContainRegex(), selector.getDisContainRegex());
+                logger.trace("extractor selector >>> field: {}, value: {}, contains: {}, dis-contains: {}", selector.getField(), value, selector.getContainRegex(),
+                    selector.getDisContainRegex());
 
-                if (value == null) continue;
+                if (value == null)
+                    continue;
 
                 PageExtractor pageExtractor = selector.getPageExtractor();
                 if (match(value, selector.getDisContainRegex())) {

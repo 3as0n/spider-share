@@ -1,24 +1,17 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.config.factory.xml;
-
-import java.lang.reflect.Method;
-import java.util.*;
-import java.util.stream.Collectors;
 
 import com.datatrees.common.util.ReflectionUtils;
 import com.treefinance.crawler.framework.config.SpiderConfig;
@@ -36,6 +29,14 @@ import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 /**
  * @author <A HREF="mailto:wangcheng@datatrees.com.cn">Cheng Wang</A>
  * @version 1.0
@@ -43,10 +44,10 @@ import org.slf4j.LoggerFactory;
  */
 public class XmlConfigParser implements ConfigParser {
 
-    private static final Logger                      logger           = LoggerFactory.getLogger(XmlConfigParser.class);
-    private static final List<Class<?>>              valueTypes       = Arrays.asList(new Class<?>[]{String.class, Boolean.class, Short.class, Integer.class, Long.class, Float.class, Double.class});
-    private final        Map<String, Object>         contentMap       = new HashMap<>();
-    private final        Map<Class<?>, List<Method>> typeSetMethodMap = new HashMap<>();
+    private static final Logger logger = LoggerFactory.getLogger(XmlConfigParser.class);
+    private static final List<Class<?>> valueTypes = Arrays.asList(new Class<?>[] {String.class, Boolean.class, Short.class, Integer.class, Long.class, Float.class, Double.class});
+    private final Map<String, Object> contentMap = new HashMap<>();
+    private final Map<Class<?>, List<Method>> typeSetMethodMap = new HashMap<>();
 
     private XmlConfigParser() {}
 
@@ -142,7 +143,7 @@ public class XmlConfigParser implements ConfigParser {
         Class<?>[] nodeTypes = node.types();
         int length = nodeTypes.length;
         if (length <= 0) {
-            nodeTypes = new Class[]{setClassType};
+            nodeTypes = new Class[] {setClassType};
         }
 
         if (valueTypes.contains(nodeTypes[0])) {
@@ -155,7 +156,8 @@ public class XmlConfigParser implements ConfigParser {
     private void setNodeValue(List<Object> elements, Method method, Class<?>[] nodeTypes, Object parent) throws Exception {
         for (Object element : elements) {
             for (Class<?> type : nodeTypes) {
-                if (this.customTypeProcess(element, type, parent, method) != null) break;
+                if (this.customTypeProcess(element, type, parent, method) != null)
+                    break;
             }
         }
     }
@@ -174,10 +176,10 @@ public class XmlConfigParser implements ConfigParser {
         Node node = method.getAnnotation(Node.class);
         Object value = null;
         if (node.referenced()) {
-            String id = (String) processValue(element, String.class);// get id
+            String id = (String)processValue(element, String.class);// get id
             value = contentMap.get(id);
         } else {
-            value = processNodes((Element) element, setClassType);
+            value = processNodes((Element)element, setClassType);
         }
 
         if (value != null) {

@@ -1,17 +1,14 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.service.extra;
@@ -29,24 +26,24 @@ import org.slf4j.LoggerFactory;
  */
 public class SimpleProxyManager implements ProxyManager {
 
-    private static final Logger       logger = LoggerFactory.getLogger(SimpleProxyManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(SimpleProxyManager.class);
 
     /**
      * proxy dubbo service
      */
-    private              ProxyService proxyService;
+    private ProxyService proxyService;
 
     /**
      * 当前代理
      */
-    private              Proxy        last;
+    private Proxy last;
 
     /**
      * 根据taskId获取,全部session模式,
      */
-    private              Long         taskId;
+    private Long taskId;
 
-    private              String       websiteName;
+    private String websiteName;
 
     public SimpleProxyManager(Long taskId, String websiteName, ProxyService proxyService) {
         CheckUtils.checkNotNull(taskId, "taskId is null");
@@ -75,7 +72,7 @@ public class SimpleProxyManager implements ProxyManager {
 
     @Override
     public void callBackProxy(ProxyStatus status) throws Exception {
-        // TODO: 2017/8/4  
+        // TODO: 2017/8/4
     }
 
     @Override

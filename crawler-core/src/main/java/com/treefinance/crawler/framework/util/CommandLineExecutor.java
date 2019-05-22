@@ -1,20 +1,27 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.util;
+
+import com.google.common.collect.Maps;
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecuteResultHandler;
+import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.ExecuteWatchdog;
+import org.apache.commons.exec.Executor;
+import org.apache.commons.exec.PumpStreamHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -25,11 +32,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.google.common.collect.Maps;
-import org.apache.commons.exec.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import static com.google.common.collect.ImmutableMap.copyOf;
 
 /**
@@ -39,23 +41,23 @@ import static com.google.common.collect.ImmutableMap.copyOf;
  */
 public class CommandLineExecutor {
 
-    private static final Logger                      log             = LoggerFactory.getLogger(CommandLineExecutor.class);
+    private static final Logger log = LoggerFactory.getLogger(CommandLineExecutor.class);
 
-    private final        ByteArrayOutputStream       inputOut        = new ByteArrayOutputStream();
+    private final ByteArrayOutputStream inputOut = new ByteArrayOutputStream();
 
-    private final        ByteArrayOutputStream       inputErrorOut   = new ByteArrayOutputStream();
+    private final ByteArrayOutputStream inputErrorOut = new ByteArrayOutputStream();
 
-    private final        DefaultExecuteResultHandler handler         = new DefaultExecuteResultHandler();
+    private final DefaultExecuteResultHandler handler = new DefaultExecuteResultHandler();
 
-    private final        Executor                    executor        = new DefaultExecutor();
+    private final Executor executor = new DefaultExecutor();
 
-    private final        CommandLine                 cl;
+    private final CommandLine cl;
 
-    private final        Map<String, String>         env             = new ConcurrentHashMap<String, String>();
+    private final Map<String, String> env = new ConcurrentHashMap<String, String>();
 
-    private volatile     String                      allInput;
+    private volatile String allInput;
 
-    private              ExecuteWatchdog             executeWatchdog = new ExecuteWatchdog(1000 * 60 * 10);
+    private ExecuteWatchdog executeWatchdog = new ExecuteWatchdog(1000 * 60 * 10);
 
     public CommandLineExecutor(String executable, String... args) {
         cl = new CommandLine(executable);
@@ -84,29 +86,11 @@ public class CommandLineExecutor {
         return copyOf(env);
     }
 
-    private Map<String, String> getMergedEnv() {
-        HashMap<String, String> newEnv = Maps.newHashMap(System.getenv());
-        newEnv.putAll(env);
-        return newEnv;
-    }
-
-    private ByteArrayInputStream getInputStream() {
-        return allInput != null ? new ByteArrayInputStream(allInput.getBytes()) : null;
-    }
-
     public void executeAsync() throws Exception {
         final OutputStream outputStream = getOutputStream();
         executor.setWatchdog(executeWatchdog);
         executor.setStreamHandler(new PumpStreamHandler(outputStream, getOutputErrorStream(), getInputStream()));
         executor.execute(cl, getMergedEnv(), handler);
-    }
-
-    private OutputStream getOutputStream() {
-        return inputOut;
-    }
-
-    private OutputStream getOutputErrorStream() {
-        return inputErrorOut;
     }
 
     public int destroy() {
@@ -177,6 +161,24 @@ public class CommandLineExecutor {
     @Override
     public String toString() {
         return cl.toString() + "[ " + env + "]";
+    }
+
+    private Map<String, String> getMergedEnv() {
+        HashMap<String, String> newEnv = Maps.newHashMap(System.getenv());
+        newEnv.putAll(env);
+        return newEnv;
+    }
+
+    private ByteArrayInputStream getInputStream() {
+        return allInput != null ? new ByteArrayInputStream(allInput.getBytes()) : null;
+    }
+
+    private OutputStream getOutputStream() {
+        return inputOut;
+    }
+
+    private OutputStream getOutputErrorStream() {
+        return inputErrorOut;
     }
 
 }

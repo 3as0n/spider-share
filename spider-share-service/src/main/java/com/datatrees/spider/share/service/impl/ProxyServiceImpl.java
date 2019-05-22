@@ -1,22 +1,17 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.service.impl;
-
-import javax.annotation.Resource;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
@@ -24,8 +19,8 @@ import com.datatrees.spider.share.common.share.service.ProxyService;
 import com.datatrees.spider.share.common.share.service.RedisService;
 import com.datatrees.spider.share.common.utils.CheckUtils;
 import com.datatrees.spider.share.common.utils.RedisUtils;
-import com.datatrees.spider.share.domain.RedisKeyPrefixEnum;
 import com.datatrees.spider.share.domain.ErrorCode;
+import com.datatrees.spider.share.domain.RedisKeyPrefixEnum;
 import com.treefinance.proxy.api.ProxyProvider;
 import com.treefinance.proxy.domain.IpLocale;
 import com.treefinance.proxy.domain.Proxy;
@@ -34,16 +29,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+
 @Service
 public class ProxyServiceImpl implements ProxyService {
 
-    private static final Logger        logger = LoggerFactory.getLogger(ProxyServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProxyServiceImpl.class);
 
     @Resource
-    private              ProxyProvider proxyProvider;
+    private ProxyProvider proxyProvider;
 
     @Resource
-    private              RedisService  redisService;
+    private RedisService redisService;
 
     @Override
     public Proxy getProxy(Long taskId, String websiteName) {
@@ -61,7 +58,7 @@ public class ProxyServiceImpl implements ProxyService {
             }
             proxy = redisService.getCache(RedisKeyPrefixEnum.TASK_PROXY.getRedisKey(taskId), new TypeReference<Proxy>() {});
             if (null != proxy) {
-                //ip为空不再访问dubbo接口,第一次调用没有取到proxy,中途不更换
+                // ip为空不再访问dubbo接口,第一次调用没有取到proxy,中途不更换
                 return StringUtils.isBlank(proxy.getIp()) ? null : proxy;
             }
             proxy = getProxyFromDubbo(taskId, websiteName);

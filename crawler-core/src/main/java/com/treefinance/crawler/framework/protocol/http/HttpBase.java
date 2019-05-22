@@ -1,97 +1,98 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.protocol.http;
 
 // JDK imports
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.concurrent.TimeUnit;
-
 import com.datatrees.common.conf.Configuration;
+import com.google.common.net.HttpHeaders;
 import com.treefinance.crawler.framework.consts.Constants;
-import com.treefinance.crawler.framework.protocol.*;
+import com.treefinance.crawler.framework.protocol.Content;
+import com.treefinance.crawler.framework.protocol.Protocol;
+import com.treefinance.crawler.framework.protocol.ProtocolInput;
+import com.treefinance.crawler.framework.protocol.ProtocolOutput;
+import com.treefinance.crawler.framework.protocol.ProtocolStatusCodes;
+import com.treefinance.crawler.framework.protocol.Response;
 import com.treefinance.crawler.framework.util.DeflateUtils;
 import com.treefinance.crawler.framework.util.GZIPUtils;
-import com.google.common.net.HttpHeaders;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.concurrent.TimeUnit;
 
 // crawler-commons imports
 
 public abstract class HttpBase implements Protocol {
 
-    public static final  int           BUFFER_SIZE              = 8 * 1024;
+    public static final int BUFFER_SIZE = 8 * 1024;
 
-    private static final byte[]        EMPTY_CONTENT            = new byte[0];
+    private static final byte[] EMPTY_CONTENT = new byte[0];
 
     /** The default logger */
-    private final static Logger        logger                   = LoggerFactory.getLogger(HttpBase.class);
+    private final static Logger logger = LoggerFactory.getLogger(HttpBase.class);
 
     /** The proxy hostname. */
-    protected            String        proxyHost                = null;
+    protected String proxyHost = null;
 
     /** The proxy port. */
-    protected            int           proxyPort                = 8080;
+    protected int proxyPort = 8080;
 
     /** Indicates if a proxy is used */
-    protected            boolean       useProxy                 = false;
+    protected boolean useProxy = false;
 
     /** The network timeout in millisecond default 3s */
-    protected            int           connectionTimeout        = (int) TimeUnit.SECONDS.toMillis(3);
+    protected int connectionTimeout = (int)TimeUnit.SECONDS.toMillis(3);
 
     /** The network read data timeout in 7s */
-    protected            int           socketTimeout            = (int) TimeUnit.SECONDS.toMillis(7);
+    protected int socketTimeout = (int)TimeUnit.SECONDS.toMillis(7);
 
     /** the timeout in milliseconds used when retrieving an http connection from pool */
-    protected            int           connectionManagerTimeout = (int) TimeUnit.SECONDS.toMillis(120);
+    protected int connectionManagerTimeout = (int)TimeUnit.SECONDS.toMillis(120);
 
     /** The length limit for downloaded content, in bytes. */
-    protected            int           maxContent               = 8 * 1024 * 1024; // max length 4M
+    protected int maxContent = 8 * 1024 * 1024; // max length 4M
 
     /** The 'User-Agent' request header */
-    protected            String        userAgent
-                                                                = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:29.0) Gecko/20100101 Firefox/29.0";
+    protected String userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:29.0) Gecko/20100101 Firefox/29.0";
 
     /** The "Accept-Language" request header value. */
-    protected            String        acceptLanguage           = "en-us,en-gb,en;q=0.7,*;q=0.3";
+    protected String acceptLanguage = "en-us,en-gb,en;q=0.7,*;q=0.3";
 
     /** The "Accept" request header value. */
-    protected            String        accept                   = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
+    protected String accept = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
 
     /** The "Accept-Encoding" request header value. */
-    protected            String        acceptEncoding           = "x-gzip, gzip, deflate";
+    protected String acceptEncoding = "x-gzip, gzip, deflate";
 
     /** The "Connection" request header value. */
-    protected            String        connection               = "keep-alive";
+    protected String connection = "keep-alive";
 
     /** The "Accept-Charset" request header value. */
-    protected            String        acceptCharset            = "utf-8,ISO-8859-1;q=0.7,*;q=0.7";
+    protected String acceptCharset = "utf-8,ISO-8859-1;q=0.7,*;q=0.7";
 
     /** The nutch configuration */
-    protected            Configuration conf                     = null;
+    protected Configuration conf = null;
 
-    protected            String        URLSPLIT;
+    protected String URLSPLIT;
 
-    protected            String        URLSEPARATOR;
+    protected String URLSEPARATOR;
 
     /** Do we use HTTP/1.1? */
-    protected            boolean       useHttp11                = true;
+    protected boolean useHttp11 = true;
 
     /** Creates a new instance of HttpBase */
     public HttpBase() {}
@@ -139,7 +140,7 @@ public abstract class HttpBase implements Protocol {
             if (input.getFollowRedirect()) {
                 String orignal = input.getUrl();
                 orignal = extractPostUrlBase(orignal);
-                String redirect = ((HttpResponse) response).getRedirectUrl();
+                String redirect = ((HttpResponse)response).getRedirectUrl();
                 if (redirect != null && !redirect.equalsIgnoreCase(orignal)) {
                     logger.info("find redirect url soure " + orignal + " redirect to " + redirect);
                     u = new URL(redirect);
@@ -147,8 +148,7 @@ public abstract class HttpBase implements Protocol {
                 }
             }
 
-            Content c = new Content(u.toString(), input.getUrl(), (content == null ? EMPTY_CONTENT : content), response.getHeader("Content-Type"),
-                    response.getHeaders());
+            Content c = new Content(u.toString(), input.getUrl(), (content == null ? EMPTY_CONTENT : content), response.getHeader("Content-Type"), response.getHeaders());
             c.setResponseCode(code);
 
             if (code == 200) { // got a good response
@@ -156,8 +156,10 @@ public abstract class HttpBase implements Protocol {
             } else if (code >= 300 && code < 400) { // handle redirect
                 String location = response.getHeader(HttpHeaders.LOCATION);
                 // some broken servers, such as MS IIS, use lowercase header name...
-                if (location == null) location = response.getHeader("location");
-                if (location == null) location = "";
+                if (location == null)
+                    location = response.getHeader("location");
+                if (location == null)
+                    location = "";
                 u = new URL(u, location);
                 c.setUrl(u.toString());
                 int protocolStatusCode;
@@ -202,21 +204,6 @@ public abstract class HttpBase implements Protocol {
         }
     }
 
-    /**
-     * @param orignal
-     * @return
-     */
-    private String extractPostUrlBase(String orignal) {
-
-        String result = orignal;
-        if (orignal.contains(URLSPLIT)) {
-            result = orignal.substring(0, orignal.indexOf(URLSPLIT));
-        }
-        return result;
-    }
-
-    abstract Response getResponse(ProtocolInput input) throws IOException;
-
     public ProtocolOutput getProtocolOutput(String url, long lastModified) {
         return getProtocolOutput(new ProtocolInput().setUrl(url).setLastModify(lastModified));
     }
@@ -246,6 +233,7 @@ public abstract class HttpBase implements Protocol {
 
     /**
      * Value of "Accept-Language" request header sent by Nutch.
+     *
      * @return The value of the header "Accept-Language" header.
      */
     public String getAcceptLanguage() {
@@ -258,18 +246,6 @@ public abstract class HttpBase implements Protocol {
 
     public boolean getUseHttp11() {
         return useHttp11;
-    }
-
-    protected void logConf() {
-        logger.debug("http.proxy.host = " + proxyHost);
-        logger.debug("http.proxy.port = " + proxyPort);
-        logger.debug("http.connection.timeout = " + connectionTimeout);
-        logger.debug("http.socket.timeout = " + socketTimeout);
-        logger.debug("http.connection.managertimeout = " + connectionManagerTimeout);
-        logger.debug("http.content.limit = " + maxContent);
-        logger.debug("http.agent = " + userAgent);
-        logger.debug("http.accept.language = " + acceptLanguage);
-        logger.debug("http.accept = " + accept);
     }
 
     public byte[] processGzipEncoded(byte[] compressed, String url) throws IOException {
@@ -298,11 +274,39 @@ public abstract class HttpBase implements Protocol {
 
         byte[] content = DeflateUtils.inflateBestEffort(compressed, getMaxContent());
 
-        if (content == null) throw new IOException("inflateBestEffort returned null");
+        if (content == null)
+            throw new IOException("inflateBestEffort returned null");
 
         logger.trace("fetched " + compressed.length + " bytes of compressed content (expanded to " + content.length + " bytes) from " + url);
 
         return content;
+    }
+
+    protected void logConf() {
+        logger.debug("http.proxy.host = " + proxyHost);
+        logger.debug("http.proxy.port = " + proxyPort);
+        logger.debug("http.connection.timeout = " + connectionTimeout);
+        logger.debug("http.socket.timeout = " + socketTimeout);
+        logger.debug("http.connection.managertimeout = " + connectionManagerTimeout);
+        logger.debug("http.content.limit = " + maxContent);
+        logger.debug("http.agent = " + userAgent);
+        logger.debug("http.accept.language = " + acceptLanguage);
+        logger.debug("http.accept = " + accept);
+    }
+
+    abstract Response getResponse(ProtocolInput input) throws IOException;
+
+    /**
+     * @param orignal
+     * @return
+     */
+    private String extractPostUrlBase(String orignal) {
+
+        String result = orignal;
+        if (orignal.contains(URLSPLIT)) {
+            result = orignal.substring(0, orignal.indexOf(URLSPLIT));
+        }
+        return result;
     }
 
 }

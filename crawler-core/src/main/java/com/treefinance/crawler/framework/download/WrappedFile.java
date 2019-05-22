@@ -1,24 +1,17 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.download;
-
-import javax.annotation.Nonnull;
-import java.io.*;
-import java.util.Objects;
 
 import com.datatrees.common.conf.PropertiesConfiguration;
 import com.treefinance.crawler.framework.protocol.Content;
@@ -34,21 +27,32 @@ import org.apache.http.impl.io.EmptyInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Objects;
+
 public class WrappedFile {
 
-    private static final Logger        logger                    = LoggerFactory.getLogger(WrappedFile.class);
-    private static final byte[]        EMPTY_BYTES               = new byte[0];
-    private static final int           sleepSecond               = PropertiesConfiguration.getInstance().getInt("default.sleep.seconds", 2000);
-    private static final int           retryCount                = PropertiesConfiguration.getInstance().getInt("default.file.download.retry.count", 3);
-    private static final String        textFileNameSuffixPattern = PropertiesConfiguration.getInstance().get("text.filename.suffix.pattern", "htm$|html$|txt$");
-    private static final String        textMimeTypePattern       = PropertiesConfiguration.getInstance().get("text.mimeType.pattern", "^text/");
-    private final        File          file;
-    private              String        name;
-    private              String        mimeType;
-    private              String        charSet;
-    private              long          size;
-    private              String        sourceURL;
-    private              ProtocolInput input;
+    private static final Logger logger = LoggerFactory.getLogger(WrappedFile.class);
+    private static final byte[] EMPTY_BYTES = new byte[0];
+    private static final int sleepSecond = PropertiesConfiguration.getInstance().getInt("default.sleep.seconds", 2000);
+    private static final int retryCount = PropertiesConfiguration.getInstance().getInt("default.file.download.retry.count", 3);
+    private static final String textFileNameSuffixPattern = PropertiesConfiguration.getInstance().get("text.filename.suffix.pattern", "htm$|html$|txt$");
+    private static final String textMimeTypePattern = PropertiesConfiguration.getInstance().get("text.mimeType.pattern", "^text/");
+    private final File file;
+    private String name;
+    private String mimeType;
+    private String charSet;
+    private long size;
+    private String sourceURL;
+    private ProtocolInput input;
 
     public WrappedFile(@Nonnull File file) {
         this.file = Objects.requireNonNull(file);
@@ -150,25 +154,10 @@ public class WrappedFile {
                     break;
                 } catch (Exception e) {
                     logger.error("Error downloading with url: {}, error: {}", input.getUrl(), e.getMessage());
-                    long sleepMillis = sleepSecond + (int) (Math.random() * sleepSecond) * (i + 1);
+                    long sleepMillis = sleepSecond + (int)(Math.random() * sleepSecond) * (i + 1);
                     Thread.sleep(sleepMillis);
                 }
             }
-        }
-    }
-
-    private void writeToFile(ProtocolInput input) throws IOException {
-        String url = input.getUrl();
-        logger.info("downloading file with url: {}", url);
-        this.setSourceURL(url);
-        ProtocolOutput out = WebClientUtil.getFileClient().getProtocolOutput(input);
-        Content content = out.getContent();
-        this.setMimeType(content.getMimeType());
-
-        if (this.needDetectContent()) {
-            write(content.detectContentAsString().getBytes(CharsetUtil.UTF_8_NAME));
-        } else {
-            write(content.getContent());
         }
     }
 
@@ -184,10 +173,24 @@ public class WrappedFile {
         FileUtils.deleteQuietly(file);
     }
 
-
     @Override
     public String toString() {
         return "WrappedFile [name=" + name + ", mimeType=" + mimeType + ", charSet=" + charSet + ", size=" + size + ", file=" + file + ", sourceURL=" + sourceURL + "]";
+    }
+
+    private void writeToFile(ProtocolInput input) throws IOException {
+        String url = input.getUrl();
+        logger.info("downloading file with url: {}", url);
+        this.setSourceURL(url);
+        ProtocolOutput out = WebClientUtil.getFileClient().getProtocolOutput(input);
+        Content content = out.getContent();
+        this.setMimeType(content.getMimeType());
+
+        if (this.needDetectContent()) {
+            write(content.detectContentAsString().getBytes(CharsetUtil.UTF_8_NAME));
+        } else {
+            write(content.getContent());
+        }
     }
 
 }

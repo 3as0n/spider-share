@@ -1,30 +1,27 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.config.xml.properties;
 
-import java.io.Serializable;
-
+import com.treefinance.crawler.framework.config.annotation.Node;
+import com.treefinance.crawler.framework.config.annotation.Tag;
 import com.treefinance.crawler.framework.config.enums.properties.UnicodeMode;
 import com.treefinance.crawler.framework.config.xml.properties.cookie.AbstractCookie;
 import com.treefinance.crawler.framework.config.xml.properties.cookie.BaseCookie;
 import com.treefinance.crawler.framework.config.xml.properties.cookie.CustomCookie;
-import com.treefinance.crawler.framework.config.annotation.Node;
-import com.treefinance.crawler.framework.config.annotation.Tag;
 import org.apache.commons.lang.StringUtils;
+
+import java.io.Serializable;
 
 /**
  * @author <A HREF="mailto:wangcheng@datatrees.com.cn">Cheng Wang</A>
@@ -36,33 +33,33 @@ public class Properties implements Serializable {
     /**
      *
      */
-    private static final long           serialVersionUID = -1340916732791297838L;
+    private static final long serialVersionUID = -1340916732791297838L;
 
-    private              Integer        waitIntervalMillis;
+    private Integer waitIntervalMillis;
 
-    private              AbstractCookie cookie;
+    private AbstractCookie cookie;
 
-    private              Proxy          proxy;
+    private Proxy proxy;
 
-    private              String         encoding;
+    private String encoding;
 
-    private              Boolean        useTaskHttp;
+    private Boolean useTaskHttp;
 
     private UnicodeMode unicodeMode;
 
-    private              String         taskRegion;
+    private String taskRegion;
 
-    private              Integer        maxRetryCount;
+    private Integer maxRetryCount;
 
-    private              Boolean        duplicateRemoval;
+    private Boolean duplicateRemoval;
 
-    private              String         httpClientType;
+    private String httpClientType;
 
-    private              Boolean        redirectUriEscaped;
+    private Boolean redirectUriEscaped;
 
-    private              Boolean        allowCircularRedirects;
+    private Boolean allowCircularRedirects;
 
-    private              Integer        captchaCode;
+    private Integer captchaCode;
 
     @Tag("captcha-code")
     public Integer getCaptchaCode() {

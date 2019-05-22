@@ -1,17 +1,14 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.context;
@@ -30,7 +27,7 @@ import com.treefinance.crawler.framework.process.search.URLHandler;
 public class RequestUtil {
 
     public static LinkNode getCurrentUrl(SpiderRequest req) {
-        return (LinkNode) req.getAttribute(Constants.CURRENT_LINK_NODE);
+        return (LinkNode)req.getAttribute(Constants.CURRENT_LINK_NODE);
     }
 
     public static void setCurrentUrl(SpiderRequest req, LinkNode node) {
@@ -38,7 +35,7 @@ public class RequestUtil {
     }
 
     public static Integer getRetryCount(SpiderRequest req) {
-        return (Integer) req.getAttribute(Constants.CRAWLER_REQUEST_RETRY_COUNT);
+        return (Integer)req.getAttribute(Constants.CRAWLER_REQUEST_RETRY_COUNT);
     }
 
     public static void setRetryCount(SpiderRequest req, Integer count) {
@@ -46,7 +43,7 @@ public class RequestUtil {
     }
 
     public static URLHandler getURLHandler(SpiderRequest req) {
-        return (URLHandler) req.getAttribute(Constants.CRAWLER_REQUEST_URL_HANDLER);
+        return (URLHandler)req.getAttribute(Constants.CRAWLER_REQUEST_URL_HANDLER);
     }
 
     public static void setURLHandler(SpiderRequest req, URLHandler handler) {
@@ -54,7 +51,7 @@ public class RequestUtil {
     }
 
     public static String getCurrentTemplateId(SpiderRequest req) {
-        return (String) req.getAttribute(Constants.CURRENT_SEARCH_TEMPLATE);
+        return (String)req.getAttribute(Constants.CURRENT_SEARCH_TEMPLATE);
     }
 
     public static void setCurrentTemplateId(SpiderRequest req, String content) {
@@ -62,7 +59,7 @@ public class RequestUtil {
     }
 
     public static String getContent(SpiderRequest req) {
-        return (String) req.getInput();
+        return (String)req.getInput();
     }
 
     public static void setContent(SpiderRequest req, String content) {
@@ -70,7 +67,7 @@ public class RequestUtil {
     }
 
     public static String getKeyWord(SpiderRequest req) {
-        return (String) req.getAttribute(Constants.CRAWLER_REQUEST_KEYWORD);
+        return (String)req.getAttribute(Constants.CRAWLER_REQUEST_KEYWORD);
     }
 
     public static void setKeyWord(SpiderRequest req, String keyword) {
@@ -78,7 +75,7 @@ public class RequestUtil {
     }
 
     public static String getContentCharset(SpiderRequest req) {
-        return (String) req.getAttribute(Constants.CRAWLER_PAGECONTENT_CHARSET);
+        return (String)req.getAttribute(Constants.CRAWLER_PAGECONTENT_CHARSET);
     }
 
     public static void setContentCharset(SpiderRequest req, String charset) {
@@ -86,7 +83,7 @@ public class RequestUtil {
     }
 
     public static String getSearchTemplate(SpiderRequest req) {
-        return (String) req.getAttribute(Constants.CRAWLER_REQUEST_TEMPLATE);
+        return (String)req.getAttribute(Constants.CRAWLER_REQUEST_TEMPLATE);
     }
 
     public static void setSearchTemplate(SpiderRequest req, String template) {
@@ -95,7 +92,7 @@ public class RequestUtil {
 
     @Deprecated
     public static String getAttribute(SpiderRequest req, String key) {
-        return (String) req.getAttribute(Constants.REQUEST_PREFIX + key);
+        return (String)req.getAttribute(Constants.REQUEST_PREFIX + key);
     }
 
     @Deprecated
@@ -112,7 +109,7 @@ public class RequestUtil {
     }
 
     public static Page getCurrentPage(SpiderRequest req) {
-        return (Page) req.getAttribute(Constants.CURRENT_PAGE);
+        return (Page)req.getAttribute(Constants.CURRENT_PAGE);
     }
 
     public static void setCurrentPage(SpiderRequest req, Page page) {

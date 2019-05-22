@@ -1,17 +1,14 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.protocol.metadata;
@@ -23,6 +20,7 @@ import java.util.Properties;
 
 /**
  * A multi-valued metadata container.
+ * 
  * @author Chris Mattmann
  * @author J&eacute;r&ocirc;me Charron
  */
@@ -42,6 +40,7 @@ public class Metadata implements CreativeCommons, DublinCore, HttpHeaders, Feed 
 
     /**
      * Returns true if named value is multivalued.
+     * 
      * @param name name of metadata
      * @return true is named value is multivalued, false if single value or null
      */
@@ -51,6 +50,7 @@ public class Metadata implements CreativeCommons, DublinCore, HttpHeaders, Feed 
 
     /**
      * Returns an array of the names contained in the metadata.
+     * 
      * @return Metadata names
      */
     public String[] names() {
@@ -58,8 +58,9 @@ public class Metadata implements CreativeCommons, DublinCore, HttpHeaders, Feed 
     }
 
     /**
-     * Get the value associated to a metadata name. If many values are
-     * assiociated to the specified name, then the first one is returned.
+     * Get the value associated to a metadata name. If many values are assiociated to the specified name, then the first
+     * one is returned.
+     * 
      * @param name of the metadata.
      * @return the value associated to the specified metadata name.
      */
@@ -74,6 +75,7 @@ public class Metadata implements CreativeCommons, DublinCore, HttpHeaders, Feed 
 
     /**
      * Get the values associated to a metadata name.
+     * 
      * @param name of the metadata.
      * @return the values associated to a metadata name.
      */
@@ -81,18 +83,11 @@ public class Metadata implements CreativeCommons, DublinCore, HttpHeaders, Feed 
         return _getValues(name);
     }
 
-    private String[] _getValues(final String name) {
-        String[] values = metadata.get(name);
-        if (values == null) {
-            values = new String[0];
-        }
-        return values;
-    }
-
     /**
-     * Add a metadata name/value mapping. Add the specified value to the list of
-     * values associated to the specified metadata name.
-     * @param name  the metadata name.
+     * Add a metadata name/value mapping. Add the specified value to the list of values associated to the specified
+     * metadata name.
+     *
+     * @param name the metadata name.
      * @param value the metadata value.
      */
     public void add(final String name, final String value) {
@@ -109,29 +104,31 @@ public class Metadata implements CreativeCommons, DublinCore, HttpHeaders, Feed 
 
     /**
      * Copy All key-value pairs from properties.
+     *
      * @param properties properties to copy from
      */
     public void setAll(Properties properties) {
         Enumeration<?> names = properties.propertyNames();
         while (names.hasMoreElements()) {
-            String name = (String) names.nextElement();
-            metadata.put(name, new String[]{properties.getProperty(name)});
+            String name = (String)names.nextElement();
+            metadata.put(name, new String[] {properties.getProperty(name)});
         }
     }
 
     /**
-     * Set metadata name/value. Associate the specified value to the specified
-     * metadata name. If some previous values were associated to this name, they
-     * are removed.
-     * @param name  the metadata name.
+     * Set metadata name/value. Associate the specified value to the specified metadata name. If some previous values
+     * were associated to this name, they are removed.
+     *
+     * @param name the metadata name.
      * @param value the metadata value.
      */
     public void set(String name, String value) {
-        metadata.put(name, new String[]{value});
+        metadata.put(name, new String[] {value});
     }
 
     /**
      * Remove a metadata and all its associated values.
+     *
      * @param name metadata name to remove
      */
     public void remove(String name) {
@@ -140,6 +137,7 @@ public class Metadata implements CreativeCommons, DublinCore, HttpHeaders, Feed 
 
     /**
      * Returns the number of metadata names in this metadata.
+     *
      * @return number of metadata names
      */
     public int size() {
@@ -159,7 +157,7 @@ public class Metadata implements CreativeCommons, DublinCore, HttpHeaders, Feed 
 
         Metadata other = null;
         try {
-            other = (Metadata) o;
+            other = (Metadata)o;
         } catch (ClassCastException cce) {
             return false;
         }
@@ -194,6 +192,14 @@ public class Metadata implements CreativeCommons, DublinCore, HttpHeaders, Feed 
             }
         }
         return buf.toString();
+    }
+
+    private String[] _getValues(final String name) {
+        String[] values = metadata.get(name);
+        if (values == null) {
+            values = new String[0];
+        }
+        return values;
     }
 
 }

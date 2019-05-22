@@ -1,17 +1,14 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.domain.http;
@@ -32,34 +29,34 @@ import java.util.stream.Collectors;
 public class Response implements Serializable {
 
     @JSONField(ordinal = 1)
-    private int                 statusCode;
+    private int statusCode;
 
     @JSONField(ordinal = 2)
-    private boolean             isRedirect = false;//是否重定向了
+    private boolean isRedirect = false;// 是否重定向了
 
     @JSONField(ordinal = 2)
-    private String              redirectUrl;
+    private String redirectUrl;
 
     @JSONField(ordinal = 3)
-    private Request             request;
+    private Request request;
 
     @JSONField(ordinal = 4)
-    private long                totalTime;
+    private long totalTime;
 
     @JSONField(ordinal = 5)
-    private List<NameValue>     headers    = new ArrayList<>();
+    private List<NameValue> headers = new ArrayList<>();
 
     @JSONField(ordinal = 6)
     private Map<String, String> responseCookies;
 
     @JSONField(serialize = false)
-    private byte[]              response;
+    private byte[] response;
 
     @JSONField(ordinal = 7)
-    private Charset             charset;
+    private Charset charset;
 
     @JSONField(ordinal = 8)
-    private String              contentType;
+    private String contentType;
 
     public Response(Request request) {
         this.request = request;
@@ -161,15 +158,15 @@ public class Response implements Serializable {
         return responseCookies;
     }
 
+    public void setResponseCookies(Map<String, String> responseCookies) {
+        this.responseCookies = responseCookies;
+    }
+
     public String getResponseCookie(String name) {
-        if(responseCookies != null){
+        if (responseCookies != null) {
             return responseCookies.get(name);
         }
         return null;
-    }
-
-    public void setResponseCookies(Map<String, String> responseCookies) {
-        this.responseCookies = responseCookies;
     }
 
     public int getStatusCode() {
@@ -231,7 +228,7 @@ public class Response implements Serializable {
         if ((json.startsWith("{") && json.endsWith("}")) || (json.startsWith("[") && json.endsWith("]"))) {
             return JSON.parseObject(json);
         }
-        //有的结尾带";"
+        // 有的结尾带";"
         if (null != json && json.contains("(") && json.trim().contains(")")) {
             json = json.substring(json.indexOf("(") + 1, json.lastIndexOf(")"));
             return JSON.parseObject(json);

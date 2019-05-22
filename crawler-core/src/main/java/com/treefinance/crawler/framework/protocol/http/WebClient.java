@@ -1,17 +1,14 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.protocol.http;
@@ -79,34 +76,34 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class is a protocol plugin that configures an HTTP client for Basic, Digest and NTLM
- * authentication schemes for web server as well as proxy server. It takes care of HTTPS protocol as
- * well as cookies in a single fetch session.
+ * This class is a protocol plugin that configures an HTTP client for Basic, Digest and NTLM authentication schemes for
+ * web server as well as proxy server. It takes care of HTTPS protocol as well as cookies in a single fetch session.
+ * 
  * @author Susam Pal
  */
 public class WebClient extends HttpBase {
 
-    private static final Logger                             LOG               = LoggerFactory.getLogger(WebClient.class);
+    private static final Logger LOG = LoggerFactory.getLogger(WebClient.class);
 
-    private              MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
+    private MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
 
     // Since the Configuration has not yet been set,
     // then an unconfigured client is returned.
-    private              HttpClient                         client            = new ProtocolHttpClient(connectionManager);
+    private HttpClient client = new ProtocolHttpClient(connectionManager);
 
-    private              int                                maxThreadsTotal   = 400;
+    private int maxThreadsTotal = 400;
 
-    private              int                                maxThreadsPerHost = 200;
+    private int maxThreadsPerHost = 200;
 
-    private              int                                maxRedirect       = 10;
+    private int maxRedirect = 10;
 
-    private              String                             proxyUsername;
+    private String proxyUsername;
 
-    private              String                             proxyPassword;
+    private String proxyPassword;
 
-    private              String                             proxyRealm;
+    private String proxyRealm;
 
-    private              String                             agentHost;
+    private String agentHost;
 
     /**
      * Constructs this plugin.
@@ -116,31 +113,36 @@ public class WebClient extends HttpBase {
     }
 
     /**
-     * Returns an authentication scope for the specified <code>host</code>, <code>port</code>,
-     * <code>realm</code> and <code>scheme</code>.
-     * @param host   Host name or address.
-     * @param port   Port number.
-     * @param realm  Authentication realm.
+     * Returns an authentication scope for the specified <code>host</code>, <code>port</code>, <code>realm</code> and
+     * <code>scheme</code>.
+     * 
+     * @param host Host name or address.
+     * @param port Port number.
+     * @param realm Authentication realm.
      * @param scheme Authentication scheme.
      */
     private static AuthScope getAuthScope(String host, int port, String realm, String scheme) {
 
-        if (host.length() == 0) host = null;
+        if (host.length() == 0)
+            host = null;
 
-        if (port < 0) port = -1;
+        if (port < 0)
+            port = -1;
 
-        if (realm.length() == 0) realm = null;
+        if (realm.length() == 0)
+            realm = null;
 
-        if (scheme.length() == 0) scheme = null;
+        if (scheme.length() == 0)
+            scheme = null;
 
         return new AuthScope(host, port, realm, scheme);
     }
 
     /**
-     * Returns an authentication scope for the specified <code>host</code>, <code>port</code> and
-     * <code>realm</code>.
-     * @param host  Host name or address.
-     * @param port  Port number.
+     * Returns an authentication scope for the specified <code>host</code>, <code>port</code> and <code>realm</code>.
+     * 
+     * @param host Host name or address.
+     * @param port Port number.
      * @param realm Authentication realm.
      */
     private static AuthScope getAuthScope(String host, int port, String realm) {
@@ -156,6 +158,7 @@ public class WebClient extends HttpBase {
 
     /**
      * Returns the configured HTTP client.
+     * 
      * @return HTTP client
      */
     public HttpClient getClient() {
@@ -164,6 +167,7 @@ public class WebClient extends HttpBase {
 
     /**
      * Reads the configuration from the Nutch configuration files and sets the configuration.
+     * 
      * @param conf Configuration
      */
     public void setConf(Configuration conf) {
@@ -179,155 +183,86 @@ public class WebClient extends HttpBase {
         configureClient();
     }
 
-    /**
-     * connectionParams Configures the HTTP client
-     */
-    private void configureClient() {
+    protected byte[] getResponseContent(String url, HttpMethod method, Metadata headers, int code) throws IOException {
+        byte[] content = null;
 
-        // Set up an HTTPS socket factory that accepts self-signed certs.
-        ProtocolSocketFactory factory = new EasySSLProtocolSocketFactory();
-        Protocol https = new Protocol("https", factory, 443);
-        Protocol.registerProtocol("https", https);
-
-        HttpConnectionManagerParams connectionParams = connectionManager.getParams();
-        connectionParams.setConnectionTimeout(connectionTimeout);
-        connectionParams.setSoTimeout(socketTimeout);
-        connectionParams.setSendBufferSize(BUFFER_SIZE);
-        connectionParams.setReceiveBufferSize(BUFFER_SIZE);
-        connectionParams.setMaxTotalConnections(maxThreadsTotal);
-        connectionParams.setDefaultMaxConnectionsPerHost(maxThreadsPerHost);
-        // connectionParams.setStaleCheckingEnabled(false);
-
-        // executeMethod(HttpMethod) seems to ignore the connection timeout on
-        // the connection manager.
-        // set it explicitly on the HttpClient.
-        client.getParams().setConnectionManagerTimeout(connectionManagerTimeout);
-        client.getParams().setIntParameter(HTTPConstants.MAX_REDIRECTS, maxRedirect);
-        client.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
-        // set retry handler
-        setRetryHandler();
-
-        HostConfiguration hostConf = client.getHostConfiguration();
-        ArrayList<Header> headers = new ArrayList<Header>();
-        // Set the User Agent in the header
-        // headers.add(new Header("User-Agent", userAgent));
-        // prefer English
-        headers.add(new Header(HttpHeaders.ACCEPT_LANGUAGE, acceptLanguage));
-        // prefer UTF-8
-        headers.add(new Header(HttpHeaders.ACCEPT_CHARSET, acceptCharset));
-        // prefer understandable formats
-        // headers.add(new Header("Accept", accept));
-        // accept gzipped content
-        headers.add(new Header(HttpHeaders.ACCEPT_ENCODING, acceptEncoding));
-        // set Connection
-        headers.add(new Header(HttpHeaders.CONNECTION, connection));
-
-        client.getParams().setParameter(HostParams.DEFAULT_HEADERS, headers);
-
-        List<String> patterns = new ArrayList<>(
-                Arrays.asList(DateUtil.PATTERN_RFC1123, DateUtil.PATTERN_RFC1036, DateUtil.PATTERN_ASCTIME, "EEE, dd-MMM-yyyy HH:mm:ss z",
-                        "EEE, dd-MMM-yyyy HH-mm-ss z", "EEE, dd MMM yy HH:mm:ss z", "EEE dd-MMM-yyyy HH:mm:ss z", "EEE dd MMM yyyy HH:mm:ss z",
-                        "EEE dd-MMM-yyyy HH-mm-ss z", "EEE dd-MMM-yy HH:mm:ss z", "EEE dd MMM yy HH:mm:ss z", "EEE,dd-MMM-yy HH:mm:ss z",
-                        "EEE,dd-MMM-yyyy HH:mm:ss z", "EEE, dd-MM-yyyy HH:mm:ss z", "EEE MMM dd HH:mm:ss Z yyyy"));
-
-        client.getParams().setParameter(HttpMethodParams.DATE_PATTERNS, patterns);
-        // HTTP proxy server details
-        if (useProxy) {
-            hostConf.setProxy(proxyHost, proxyPort);
-            if (proxyUsername.length() > 0) {
-                AuthScope proxyAuthScope = getAuthScope(this.proxyHost, this.proxyPort, this.proxyRealm);
-
-                NTCredentials proxyCredentials = new NTCredentials(this.proxyUsername, this.proxyPassword, agentHost, this.proxyRealm);
-                client.getState().setProxyCredentials(proxyAuthScope, proxyCredentials);
+        int contentLength = Integer.MAX_VALUE;
+        String contentLengthString = headers.get(Response.CONTENT_LENGTH);
+        if (contentLengthString != null) {
+            try {
+                contentLength = Integer.parseInt(contentLengthString.trim());
+                if (contentLength == 0) {
+                    contentLength = getMaxContent();
+                }
+            } catch (NumberFormatException ex) {
+                // ignore
             }
         }
 
+        // limit size
+        if (getMaxContent() >= 0 && contentLength > getMaxContent()) {
+            contentLength = getMaxContent();
+        }
+
+        // always read content. Sometimes content is useful to find a cause
+        // for error.
+        InputStream in = null;
+        try {
+            in = method.getResponseBodyAsStream();
+            byte[] buffer = new byte[HttpBase.BUFFER_SIZE];
+            int bufferFilled = 0;
+            int totalRead = 0;
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            while ((bufferFilled = in.read(buffer, 0, buffer.length)) != -1 && totalRead + bufferFilled <= contentLength) {
+                totalRead += bufferFilled;
+                out.write(buffer, 0, bufferFilled);
+            }
+
+            // use read length if response header doesn't content length
+            if (contentLengthString == null) {
+                headers.set(Response.CONTENT_LENGTH, String.valueOf(totalRead));
+            }
+            content = out.toByteArray();
+        } catch (Exception e) {
+            if (code == 200)
+                throw new IOException(e.toString());
+            // for codes other than 200 OK, we are fine with empty content
+        } finally {
+            IOUtils.closeQuietly(in);
+        }
+
+        // Extract gzip, x-gzip and deflate content
+        if (content != null) {
+            // check if we have to uncompress it
+            String contentEncoding = headers.get(Response.CONTENT_ENCODING);
+            if ("gzip".equals(contentEncoding) || "x-gzip".equals(contentEncoding)) {
+                content = processGzipEncoded(content, url);
+            } else if ("deflate".equals(contentEncoding)) {
+                content = processDeflateEncoded(content, url);
+            }
+        }
+        return content;
     }
 
-    /**
-     *
-     */
-    private void setRetryHandler() {
-        String retryHandlerClass = conf.get(HttpMethodParams.RETRY_HANDLER);
-        HttpMethodRetryHandler retryHandler = null;
-        if (StringUtils.isNotEmpty(retryHandlerClass)) {
+    protected HostConfiguration getHostConfiguration(String proxy) {
+        HostConfiguration configuration = new HostConfiguration();
+        ProxyHost host = null;
+        if (StringUtils.isNotEmpty(proxy)) {
+
+            if (!proxy.startsWith("http") && !proxy.startsWith("https")) {
+                proxy = "http://" + proxy;
+            }
             try {
-                retryHandler = ReflectionUtils.newInstance(retryHandlerClass);
-                LOG.debug("find customer retry handler.." + retryHandlerClass);
+                URI u = new URI(proxy);
+                proxy = u.getHost() + u.getPath();
+                int port = u.getPort();
+                host = new ProxyHost(proxy, port);
             } catch (Exception e) {
-                LOG.error("load retry handler class error!", e);
-            }
-        } else {
-            int retryCount = conf.getInt(HTTPConstants.HTTP_MAX_RETRY_COUNT, 3);
-            retryHandler = new CustomRetryHandler(retryCount);
-        }
-        if (retryHandler != null) {
-            client.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, retryHandler);
-        }
-    }
-
-    private <T extends EntityEnclosingMethod> void setPostBody(String postData, T method) throws UnsupportedEncodingException {
-        if (postData != null) {
-            try {
-                method.setRequestEntity(new StringRequestEntity(postData, null, "UTF-8"));
-            } catch (UnsupportedEncodingException e) {
-                try {
-                    method.setRequestEntity(new StringRequestEntity(postData, null, CharsetUtil.getDefaultCharsetName()));
-                } catch (UnsupportedEncodingException e1) {
-                    throw e1;
-                }
-                LOG.warn("set postbody " + postData + " error,UnsupportedEncoding.");
+                LOG.error("parse proxy server error! " + proxy, e);
             }
         }
-    }
-
-    /**
-     * @param action
-     * @return
-     * @exception UnsupportedEncodingException
-     * @exception Exception
-     */
-    private HttpMethod getMethodByAction(Action action, String url, ProtocolInput input) throws UnsupportedEncodingException {
-        HttpMethod method = null;
-        Action result = action;
-        if (url.contains(URLSPLIT)) {
-            LOG.debug("find post pattern " + url);
-            result = Action.POST;
-        }
-        switch (result) {
-            case GET:
-                try {
-                    if (!url.contains("%")) {
-                        url = new org.apache.commons.httpclient.URI(url, false, "UTF-8").toString();
-                    }
-                } catch (Exception e) {
-                    LOG.error("url escaped error", e);
-                }
-                method = new CustomGetMethod(url).setUriEscaped(input.getRedirectUriEscaped()).setCoexist(input.getCoExist())
-                        .setRetainQuote(input.getCookieScope().isRetainQuote());
-                break;
-            case POST:
-                String postUrl = StringUtils.substringBefore(url, URLSPLIT);
-                String postData = StringUtils.substringAfter(url, URLSPLIT);
-                method = new PostMethod(postUrl);
-                this.setPostBody(postData, (PostMethod) method);
-                break;
-            case POST_STRING:
-                method = new PostMethod(url);
-                this.setPostBody(input.getPostBody(), (PostMethod) method);
-                break;
-            case PUT:
-                method = new PutMethod(url);
-                this.setPostBody(input.getPostBody(), (PutMethod) method);
-                break;
-            case DELETE:
-                method = new DeleteMethod(url);
-                break;
-            default:
-                method = new CustomGetMethod(url).setUriEscaped(input.getRedirectUriEscaped());
-                break;
-        }
-        return method;
+        configuration.setProxyHost(host);
+        return configuration;
     }
 
     /**
@@ -440,6 +375,156 @@ public class WebClient extends HttpBase {
         return response;
     }
 
+    /**
+     * connectionParams Configures the HTTP client
+     */
+    private void configureClient() {
+
+        // Set up an HTTPS socket factory that accepts self-signed certs.
+        ProtocolSocketFactory factory = new EasySSLProtocolSocketFactory();
+        Protocol https = new Protocol("https", factory, 443);
+        Protocol.registerProtocol("https", https);
+
+        HttpConnectionManagerParams connectionParams = connectionManager.getParams();
+        connectionParams.setConnectionTimeout(connectionTimeout);
+        connectionParams.setSoTimeout(socketTimeout);
+        connectionParams.setSendBufferSize(BUFFER_SIZE);
+        connectionParams.setReceiveBufferSize(BUFFER_SIZE);
+        connectionParams.setMaxTotalConnections(maxThreadsTotal);
+        connectionParams.setDefaultMaxConnectionsPerHost(maxThreadsPerHost);
+        // connectionParams.setStaleCheckingEnabled(false);
+
+        // executeMethod(HttpMethod) seems to ignore the connection timeout on
+        // the connection manager.
+        // set it explicitly on the HttpClient.
+        client.getParams().setConnectionManagerTimeout(connectionManagerTimeout);
+        client.getParams().setIntParameter(HTTPConstants.MAX_REDIRECTS, maxRedirect);
+        client.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
+        // set retry handler
+        setRetryHandler();
+
+        HostConfiguration hostConf = client.getHostConfiguration();
+        ArrayList<Header> headers = new ArrayList<Header>();
+        // Set the User Agent in the header
+        // headers.add(new Header("User-Agent", userAgent));
+        // prefer English
+        headers.add(new Header(HttpHeaders.ACCEPT_LANGUAGE, acceptLanguage));
+        // prefer UTF-8
+        headers.add(new Header(HttpHeaders.ACCEPT_CHARSET, acceptCharset));
+        // prefer understandable formats
+        // headers.add(new Header("Accept", accept));
+        // accept gzipped content
+        headers.add(new Header(HttpHeaders.ACCEPT_ENCODING, acceptEncoding));
+        // set Connection
+        headers.add(new Header(HttpHeaders.CONNECTION, connection));
+
+        client.getParams().setParameter(HostParams.DEFAULT_HEADERS, headers);
+
+        List<String> patterns = new ArrayList<>(
+            Arrays.asList(DateUtil.PATTERN_RFC1123, DateUtil.PATTERN_RFC1036, DateUtil.PATTERN_ASCTIME, "EEE, dd-MMM-yyyy HH:mm:ss z", "EEE, dd-MMM-yyyy HH-mm-ss z",
+                "EEE, dd MMM yy HH:mm:ss z", "EEE dd-MMM-yyyy HH:mm:ss z", "EEE dd MMM yyyy HH:mm:ss z", "EEE dd-MMM-yyyy HH-mm-ss z", "EEE dd-MMM-yy HH:mm:ss z",
+                "EEE dd MMM yy HH:mm:ss z", "EEE,dd-MMM-yy HH:mm:ss z", "EEE,dd-MMM-yyyy HH:mm:ss z", "EEE, dd-MM-yyyy HH:mm:ss z", "EEE MMM dd HH:mm:ss Z yyyy"));
+
+        client.getParams().setParameter(HttpMethodParams.DATE_PATTERNS, patterns);
+        // HTTP proxy server details
+        if (useProxy) {
+            hostConf.setProxy(proxyHost, proxyPort);
+            if (proxyUsername.length() > 0) {
+                AuthScope proxyAuthScope = getAuthScope(this.proxyHost, this.proxyPort, this.proxyRealm);
+
+                NTCredentials proxyCredentials = new NTCredentials(this.proxyUsername, this.proxyPassword, agentHost, this.proxyRealm);
+                client.getState().setProxyCredentials(proxyAuthScope, proxyCredentials);
+            }
+        }
+
+    }
+
+    /**
+     *
+     */
+    private void setRetryHandler() {
+        String retryHandlerClass = conf.get(HttpMethodParams.RETRY_HANDLER);
+        HttpMethodRetryHandler retryHandler = null;
+        if (StringUtils.isNotEmpty(retryHandlerClass)) {
+            try {
+                retryHandler = ReflectionUtils.newInstance(retryHandlerClass);
+                LOG.debug("find customer retry handler.." + retryHandlerClass);
+            } catch (Exception e) {
+                LOG.error("load retry handler class error!", e);
+            }
+        } else {
+            int retryCount = conf.getInt(HTTPConstants.HTTP_MAX_RETRY_COUNT, 3);
+            retryHandler = new CustomRetryHandler(retryCount);
+        }
+        if (retryHandler != null) {
+            client.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, retryHandler);
+        }
+    }
+
+    private <T extends EntityEnclosingMethod> void setPostBody(String postData, T method) throws UnsupportedEncodingException {
+        if (postData != null) {
+            try {
+                method.setRequestEntity(new StringRequestEntity(postData, null, "UTF-8"));
+            } catch (UnsupportedEncodingException e) {
+                try {
+                    method.setRequestEntity(new StringRequestEntity(postData, null, CharsetUtil.getDefaultCharsetName()));
+                } catch (UnsupportedEncodingException e1) {
+                    throw e1;
+                }
+                LOG.warn("set postbody " + postData + " error,UnsupportedEncoding.");
+            }
+        }
+    }
+
+    /**
+     * @param action
+     * @return
+     * @exception UnsupportedEncodingException
+     * @exception Exception
+     */
+    private HttpMethod getMethodByAction(Action action, String url, ProtocolInput input) throws UnsupportedEncodingException {
+        HttpMethod method = null;
+        Action result = action;
+        if (url.contains(URLSPLIT)) {
+            LOG.debug("find post pattern " + url);
+            result = Action.POST;
+        }
+        switch (result) {
+            case GET:
+                try {
+                    if (!url.contains("%")) {
+                        url = new org.apache.commons.httpclient.URI(url, false, "UTF-8").toString();
+                    }
+                } catch (Exception e) {
+                    LOG.error("url escaped error", e);
+                }
+                method =
+                    new CustomGetMethod(url).setUriEscaped(input.getRedirectUriEscaped()).setCoexist(input.getCoExist()).setRetainQuote(input.getCookieScope().isRetainQuote());
+                break;
+            case POST:
+                String postUrl = StringUtils.substringBefore(url, URLSPLIT);
+                String postData = StringUtils.substringAfter(url, URLSPLIT);
+                method = new PostMethod(postUrl);
+                this.setPostBody(postData, (PostMethod)method);
+                break;
+            case POST_STRING:
+                method = new PostMethod(url);
+                this.setPostBody(input.getPostBody(), (PostMethod)method);
+                break;
+            case PUT:
+                method = new PutMethod(url);
+                this.setPostBody(input.getPostBody(), (PutMethod)method);
+                break;
+            case DELETE:
+                method = new DeleteMethod(url);
+                break;
+            default:
+                method = new CustomGetMethod(url).setUriEscaped(input.getRedirectUriEscaped());
+                break;
+        }
+        return method;
+    }
+
     private String getRedirectURLInRefreshHeader(Header refreshHeader) {
         if (refreshHeader != null) {
             List<String> textUrls = UrlExtractor.extract(refreshHeader.getValue());
@@ -482,6 +567,7 @@ public class WebClient extends HttpBase {
 
     /**
      * Tests if the {@link HttpMethod method} requires a redirect to another location.
+     *
      * @param method HTTP method
      * @return boolean <tt>true</tt> if a retry is needed, <tt>false</tt> otherwise.
      */
@@ -496,66 +582,6 @@ public class WebClient extends HttpBase {
             default:
                 return false;
         } // end of switch
-    }
-
-    protected byte[] getResponseContent(String url, HttpMethod method, Metadata headers, int code) throws IOException {
-        byte[] content = null;
-
-        int contentLength = Integer.MAX_VALUE;
-        String contentLengthString = headers.get(Response.CONTENT_LENGTH);
-        if (contentLengthString != null) {
-            try {
-                contentLength = Integer.parseInt(contentLengthString.trim());
-                if (contentLength == 0) {
-                    contentLength = getMaxContent();
-                }
-            } catch (NumberFormatException ex) {
-                // ignore
-            }
-        }
-
-        // limit size
-        if (getMaxContent() >= 0 && contentLength > getMaxContent()) {
-            contentLength = getMaxContent();
-        }
-
-        // always read content. Sometimes content is useful to find a cause
-        // for error.
-        InputStream in = null;
-        try {
-            in = method.getResponseBodyAsStream();
-            byte[] buffer = new byte[HttpBase.BUFFER_SIZE];
-            int bufferFilled = 0;
-            int totalRead = 0;
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            while ((bufferFilled = in.read(buffer, 0, buffer.length)) != -1 && totalRead + bufferFilled <= contentLength) {
-                totalRead += bufferFilled;
-                out.write(buffer, 0, bufferFilled);
-            }
-
-            // use read length if response header doesn't content length
-            if (contentLengthString == null) {
-                headers.set(Response.CONTENT_LENGTH, String.valueOf(totalRead));
-            }
-            content = out.toByteArray();
-        } catch (Exception e) {
-            if (code == 200) throw new IOException(e.toString());
-            // for codes other than 200 OK, we are fine with empty content
-        } finally {
-            IOUtils.closeQuietly(in);
-        }
-
-        // Extract gzip, x-gzip and deflate content
-        if (content != null) {
-            // check if we have to uncompress it
-            String contentEncoding = headers.get(Response.CONTENT_ENCODING);
-            if ("gzip".equals(contentEncoding) || "x-gzip".equals(contentEncoding)) {
-                content = processGzipEncoded(content, url);
-            } else if ("deflate".equals(contentEncoding)) {
-                content = processDeflateEncoded(content, url);
-            }
-        }
-        return content;
     }
 
     /**
@@ -632,6 +658,7 @@ public class WebClient extends HttpBase {
 
     /**
      * create httpstate to hold cookie info
+     *
      * @param scope
      * @return
      */
@@ -650,27 +677,6 @@ public class WebClient extends HttpBase {
             // input.setState(state);
         }
         return state;
-    }
-
-    protected HostConfiguration getHostConfiguration(String proxy) {
-        HostConfiguration configuration = new HostConfiguration();
-        ProxyHost host = null;
-        if (StringUtils.isNotEmpty(proxy)) {
-
-            if (!proxy.startsWith("http") && !proxy.startsWith("https")) {
-                proxy = "http://" + proxy;
-            }
-            try {
-                URI u = new URI(proxy);
-                proxy = u.getHost() + u.getPath();
-                int port = u.getPort();
-                host = new ProxyHost(proxy, port);
-            } catch (Exception e) {
-                LOG.error("parse proxy server error! " + proxy, e);
-            }
-        }
-        configuration.setProxyHost(host);
-        return configuration;
     }
 
 }

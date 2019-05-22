@@ -1,27 +1,17 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.process.fields;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 
 import com.datatrees.common.conf.Configuration;
 import com.google.common.collect.ImmutableList;
@@ -47,12 +37,24 @@ import com.treefinance.crawler.framework.format.Formatter;
 import com.treefinance.crawler.framework.process.ProcessorFactory;
 import com.treefinance.crawler.framework.process.operation.OperationPipeline;
 import com.treefinance.crawler.framework.protocol.util.UrlUtils;
-import com.treefinance.crawler.framework.util.*;
+import com.treefinance.crawler.framework.util.CharsetUtil;
+import com.treefinance.crawler.framework.util.FieldUtils;
+import com.treefinance.crawler.framework.util.LogUtils;
+import com.treefinance.crawler.framework.util.ObjectUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
 /**
  * field extractor should be parallel
+ * 
  * @author <A HREF="">Cheng Wang</A>
  * @version 1.0
  * @since Feb 18, 2014 1:45:17 PM
@@ -65,53 +67,9 @@ public class FieldExtractorImpl extends SingletonProcessorValve {
         this.fieldExtractor = Objects.requireNonNull(fieldExtractor);
     }
 
-    @Override
-    protected void initial(@Nonnull SpiderRequest request, @Nonnull SpiderResponse response) {
-        // reset input content with source id.
-        String sourceId = fieldExtractor.getSourceId();
-        if (StringUtils.isNotEmpty(sourceId)) {
-            Object result = FieldUtils.getSourceFieldValue(sourceId, request, response);
-            logger.info("Will use source input instead of stdin for field extractor. fieldId: {}, sourceId: {}, input: {}", fieldExtractor.getId(), sourceId, LogUtils.abbreviate(result));
-            // TODO: 2018/8/21 由于历史配置不严谨暂时采用兼容做法，解析结果不可控
-            if (result != null) {
-                logger.info("Field source input is available! fieldId: {}, sourceId: {}", fieldExtractor.getId(), sourceId);
-                request.setInput(result.toString());
-            }
-        }
-
-        // encode input content
-        String input = (String) request.getInput();
-        if (StringUtils.isNotEmpty(input)) {
-            String encoding = fieldExtractor.getEncoding();
-            logger.debug("input content encoding: {}", encoding);
-
-            Charset charset = CharsetUtil.getCharset(encoding, null);
-            if (charset != null) {
-                request.setInput(new String(input.getBytes(), charset));
-            }
-        }
-    }
-
-    @Override
-    protected boolean isSkipped(@Nonnull SpiderRequest request, @Nonnull SpiderResponse response) {
-        boolean skipped = super.isSkipped(request, response);
-
-        if (!skipped) {
-            FieldExtractResultSet fieldExtractResultSet;
-            // if to skip with the stand-by field.
-            if (Boolean.TRUE.equals(fieldExtractor.getStandBy()) && (fieldExtractResultSet = ResponseUtil.getFieldExtractResultSet(response)) != null && fieldExtractResultSet.isNotEmptyResult(fieldExtractor.getId())) {
-                logger.debug("Skip field extractor with flag 'stand-by'. fieldId: {} field: {}", fieldExtractor.getId(), fieldExtractor.getField());
-                return true;
-            }
-        }
-
-        return skipped;
-    }
-
     /**
-     * process field extractor field extractor can have multi operation the order of operation is
-     * serial field extractor it's self is parallel need PLUGIN_RESULT_MAP for plugin implement and
-     * FIELDS_RESULT_MAP for field result map
+     * process field extractor field extractor can have multi operation the order of operation is serial field extractor
+     * it's self is parallel need PLUGIN_RESULT_MAP for plugin implement and FIELDS_RESULT_MAP for field result map
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -158,6 +116,51 @@ public class FieldExtractorImpl extends SingletonProcessorValve {
         }
     }
 
+    @Override
+    protected void initial(@Nonnull SpiderRequest request, @Nonnull SpiderResponse response) {
+        // reset input content with source id.
+        String sourceId = fieldExtractor.getSourceId();
+        if (StringUtils.isNotEmpty(sourceId)) {
+            Object result = FieldUtils.getSourceFieldValue(sourceId, request, response);
+            logger.info("Will use source input instead of stdin for field extractor. fieldId: {}, sourceId: {}, input: {}", fieldExtractor.getId(), sourceId,
+                LogUtils.abbreviate(result));
+            // TODO: 2018/8/21 由于历史配置不严谨暂时采用兼容做法，解析结果不可控
+            if (result != null) {
+                logger.info("Field source input is available! fieldId: {}, sourceId: {}", fieldExtractor.getId(), sourceId);
+                request.setInput(result.toString());
+            }
+        }
+
+        // encode input content
+        String input = (String)request.getInput();
+        if (StringUtils.isNotEmpty(input)) {
+            String encoding = fieldExtractor.getEncoding();
+            logger.debug("input content encoding: {}", encoding);
+
+            Charset charset = CharsetUtil.getCharset(encoding, null);
+            if (charset != null) {
+                request.setInput(new String(input.getBytes(), charset));
+            }
+        }
+    }
+
+    @Override
+    protected boolean isSkipped(@Nonnull SpiderRequest request, @Nonnull SpiderResponse response) {
+        boolean skipped = super.isSkipped(request, response);
+
+        if (!skipped) {
+            FieldExtractResultSet fieldExtractResultSet;
+            // if to skip with the stand-by field.
+            if (Boolean.TRUE.equals(fieldExtractor.getStandBy()) && (fieldExtractResultSet = ResponseUtil.getFieldExtractResultSet(response)) != null
+                && fieldExtractResultSet.isNotEmptyResult(fieldExtractor.getId())) {
+                logger.debug("Skip field extractor with flag 'stand-by'. fieldId: {} field: {}", fieldExtractor.getId(), fieldExtractor.getField());
+                return true;
+            }
+        }
+
+        return skipped;
+    }
+
     @Nullable
     private Object tryResolveUrl(Object fieldValue, @Nonnull SpiderRequest request) {
         try {
@@ -166,7 +169,7 @@ public class FieldExtractorImpl extends SingletonProcessorValve {
                 if (current != null) {
                     String baseURL = (StringUtils.isNotEmpty(current.getBaseUrl()) ? current.getBaseUrl() : current.getUrl());
                     logger.debug("resolve url: {}, base-url: {}", fieldValue, baseURL);
-                    return UrlUtils.resolveUrl(baseURL, (String) fieldValue);
+                    return UrlUtils.resolveUrl(baseURL, (String)fieldValue);
                 }
             }
             return fieldValue;
@@ -179,7 +182,7 @@ public class FieldExtractorImpl extends SingletonProcessorValve {
     @Nullable
     private Object extract(@Nonnull SpiderRequest request, @Nonnull SpiderResponse response, FieldExtractResultSet fieldExtractResultSet) throws ResultEmptyException {
         try {
-            if (StringUtils.isEmpty((String) request.getInput())) {
+            if (StringUtils.isEmpty((String)request.getInput())) {
                 logger.warn("Skip field extract processing with the empty input. fieldExtractor: {}", fieldExtractor);
                 return null;
             }
@@ -209,7 +212,7 @@ public class FieldExtractorImpl extends SingletonProcessorValve {
         Object fieldResult = PluginCaller.call(pluginDesc, context, () -> {
             Map<String, String> params = new HashMap<>();
 
-            params.put(PluginConstants.PAGE_CONTENT, (String) request.getInput());
+            params.put(PluginConstants.PAGE_CONTENT, (String)request.getInput());
             LinkNode requestLinkNode = RequestUtil.getCurrentUrl(request);
             if (requestLinkNode != null) {
                 params.put(PluginConstants.CURRENT_URL, requestLinkNode.getUrl());
@@ -221,7 +224,7 @@ public class FieldExtractorImpl extends SingletonProcessorValve {
         });
 
         // get pluginDesc json result
-        Map<String, Object> pluginResultMap = PluginUtil.checkPluginResult((String) fieldResult);
+        Map<String, Object> pluginResultMap = PluginUtil.checkPluginResult((String)fieldResult);
 
         return pluginResultMap.get(PluginConstants.FIELD);
     }
@@ -230,7 +233,7 @@ public class FieldExtractorImpl extends SingletonProcessorValve {
         if (fieldValue instanceof String && type != null) {
             Configuration conf = request.getConfiguration();
             Formatter formatter = ProcessorFactory.getFormatter(type, conf);
-            return formatter.format((String) fieldValue, formatPattern, request, response);
+            return formatter.format((String)fieldValue, formatPattern, request, response);
         }
         return fieldValue;
     }

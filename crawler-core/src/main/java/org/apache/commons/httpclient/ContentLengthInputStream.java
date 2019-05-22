@@ -1,17 +1,14 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package org.apache.commons.httpclient;
@@ -21,20 +18,23 @@ import java.io.InputStream;
 
 /**
  * Cuts the wrapped InputStream off after a specified number of bytes.
- * <p>Implementation note: Choices abound. One approach would pass
- * through the {@link InputStream#mark} and {@link InputStream#reset} calls to
- * the underlying stream.  That's tricky, though, because you then have to
- * start duplicating the work of keeping track of how much a reset rewinds.
- * Further, you have to watch out for the "readLimit", and since the semantics
- * for the readLimit leave room for differing implementations, you might get
- * into a lot of trouble.</p>
- * <p>Alternatively, you could make this class extend {@link java.io.BufferedInputStream}
- * and then use the protected members of that class to avoid duplicated effort.
- * That solution has the side effect of adding yet another possible layer of
- * buffering.</p>
- * <p>Then, there is the simple choice, which this takes - simply don't
- * support {@link InputStream#mark} and {@link InputStream#reset}.  That choice
- * has the added benefit of keeping this class very simple.</p>
+ * <p>
+ * Implementation note: Choices abound. One approach would pass through the {@link InputStream#mark} and
+ * {@link InputStream#reset} calls to the underlying stream. That's tricky, though, because you then have to start
+ * duplicating the work of keeping track of how much a reset rewinds. Further, you have to watch out for the
+ * "readLimit", and since the semantics for the readLimit leave room for differing implementations, you might get into a
+ * lot of trouble.
+ * </p>
+ * <p>
+ * Alternatively, you could make this class extend {@link java.io.BufferedInputStream} and then use the protected
+ * members of that class to avoid duplicated effort. That solution has the side effect of adding yet another possible
+ * layer of buffering.
+ * </p>
+ * <p>
+ * Then, there is the simple choice, which this takes - simply don't support {@link InputStream#mark} and
+ * {@link InputStream#reset}. That choice has the added benefit of keeping this class very simple.
+ * </p>
+ * 
  * @author Ortwin Glueck
  * @author Eric Johnson
  * @author <a href="mailto:mbowler@GargoyleSoftware.com">Mike Bowler</a>
@@ -43,16 +43,15 @@ import java.io.InputStream;
 public class ContentLengthInputStream extends InputStream {
 
     /**
-     * The maximum number of bytes that can be read from the stream. Subsequent
-     * read operations will return -1.
+     * The maximum number of bytes that can be read from the stream. Subsequent read operations will return -1.
      */
-    private long        contentLength;
+    private long contentLength;
 
     /** The current position */
-    private long        pos           = 0;
+    private long pos = 0;
 
     /** True if the stream is closed. */
-    private boolean     closed        = false;
+    private boolean closed = false;
 
     /**
      * Wrapped input stream that all calls are delegated to.
@@ -60,21 +59,21 @@ public class ContentLengthInputStream extends InputStream {
     private InputStream wrappedStream = null;
 
     /**
-     * @param in            The stream to wrap
-     * @param contentLength The maximum number of bytes that can be read from
-     *                      the stream. Subsequent read operations will return -1.
-     * @deprecated use {@link #ContentLengthInputStream(InputStream, long)}
-     * Creates a new length limited stream
+     * @param in The stream to wrap
+     * @param contentLength The maximum number of bytes that can be read from the stream. Subsequent read operations
+     *        will return -1.
+     * @deprecated use {@link #ContentLengthInputStream(InputStream, long)} Creates a new length limited stream
      */
     public ContentLengthInputStream(InputStream in, int contentLength) {
-        this(in, (long) contentLength);
+        this(in, (long)contentLength);
     }
 
     /**
      * Creates a new length limited stream
-     * @param in            The stream to wrap
-     * @param contentLength The maximum number of bytes that can be read from
-     *                      the stream. Subsequent read operations will return -1.
+     * 
+     * @param in The stream to wrap
+     * @param contentLength The maximum number of bytes that can be read from the stream. Subsequent read operations
+     *        will return -1.
      * @since 3.0
      */
     public ContentLengthInputStream(InputStream in, long contentLength) {
@@ -84,9 +83,13 @@ public class ContentLengthInputStream extends InputStream {
     }
 
     /**
-     * <p>Reads until the end of the known length of content.</p>
-     * <p>Does not close the underlying socket input, but instead leaves it
-     * primed to parse the next response.</p>
+     * <p>
+     * Reads until the end of the known length of content.
+     * </p>
+     * <p>
+     * Does not close the underlying socket input, but instead leaves it primed to parse the next response.
+     * </p>
+     * 
      * @exception IOException If an IO problem occurs.
      */
     public void close() throws IOException {
@@ -105,6 +108,7 @@ public class ContentLengthInputStream extends InputStream {
 
     /**
      * Read the next byte from the stream
+     * 
      * @return The next byte or -1 if the end of stream has been reached.
      * @exception IOException If an IO problem occurs
      * @see InputStream#read()
@@ -122,13 +126,13 @@ public class ContentLengthInputStream extends InputStream {
     }
 
     /**
-     * Does standard {@link InputStream#read(byte[], int, int)} behavior, but
-     * also notifies the watcher when the contents have been consumed.
-     * @param b   The byte array to fill.
+     * Does standard {@link InputStream#read(byte[], int, int)} behavior, but also notifies the watcher when the
+     * contents have been consumed.
+     * 
+     * @param b The byte array to fill.
      * @param off Start filling at this position.
      * @param len The number of bytes to attempt to read.
-     * @return The number of bytes read, or -1 if the end of content has been
-     * reached.
+     * @return The number of bytes read, or -1 if the end of content has been reached.
      * @exception IOException Should an error occur on the wrapped stream.
      */
     public int read(byte[] b, int off, int len) throws IOException {
@@ -141,7 +145,7 @@ public class ContentLengthInputStream extends InputStream {
         }
 
         if (pos + len > contentLength) {
-            len = (int) (contentLength - pos);
+            len = (int)(contentLength - pos);
         }
         int count = this.wrappedStream.read(b, off, len);
         pos += count;
@@ -150,6 +154,7 @@ public class ContentLengthInputStream extends InputStream {
 
     /**
      * Read more bytes from the stream.
+     * 
      * @param b The byte array to put the new data in.
      * @return The number of bytes read into the buffer.
      * @exception IOException If an IO problem occurs
@@ -161,14 +166,14 @@ public class ContentLengthInputStream extends InputStream {
 
     /**
      * Skips and discards a number of bytes from the input stream.
+     * 
      * @param n The number of bytes to skip.
-     * @return The actual number of bytes skipped. <= 0 if no bytes
-     * are skipped.
+     * @return The actual number of bytes skipped. <= 0 if no bytes are skipped.
      * @exception IOException If an error occurs while skipping bytes.
      * @see InputStream#skip(long)
      */
     public long skip(long n) throws IOException {
-        // make sure we don't skip more bytes than are 
+        // make sure we don't skip more bytes than are
         // still available
         long length = Math.min(n, contentLength - pos);
         // skip and keep track of the bytes actually skipped
@@ -187,7 +192,7 @@ public class ContentLengthInputStream extends InputStream {
         }
         int avail = this.wrappedStream.available();
         if (this.pos + avail > this.contentLength) {
-            avail = (int) (this.contentLength - this.pos);
+            avail = (int)(this.contentLength - this.pos);
         }
         return avail;
     }

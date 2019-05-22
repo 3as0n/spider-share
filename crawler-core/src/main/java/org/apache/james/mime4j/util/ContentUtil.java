@@ -1,17 +1,14 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package org.apache.james.mime4j.util;
@@ -29,6 +26,7 @@ public class ContentUtil {
 
     /**
      * Encodes the specified string into an immutable sequence of bytes using the US-ASCII charset.
+     * 
      * @param string string to encode.
      * @return encoded string as an immutable sequence of bytes.
      */
@@ -38,8 +36,9 @@ public class ContentUtil {
 
     /**
      * Encodes the specified string into an immutable sequence of bytes using the specified charset.
+     * 
      * @param charset Java charset to be used for the conversion.
-     * @param string  string to encode.
+     * @param string string to encode.
      * @return encoded string as an immutable sequence of bytes.
      */
     public static ByteSequence encode(Charset charset, String string) {
@@ -51,6 +50,7 @@ public class ContentUtil {
 
     /**
      * Decodes the specified sequence of bytes into a string using the US-ASCII charset.
+     * 
      * @param byteSequence sequence of bytes to decode.
      * @return decoded string.
      */
@@ -60,7 +60,8 @@ public class ContentUtil {
 
     /**
      * Decodes the specified sequence of bytes into a string using the specified charset.
-     * @param charset      Java charset to be used for the conversion.
+     * 
+     * @param charset Java charset to be used for the conversion.
      * @param byteSequence sequence of bytes to decode.
      * @return decoded string.
      */
@@ -69,11 +70,11 @@ public class ContentUtil {
     }
 
     /**
-     * Decodes a sub-sequence of the specified sequence of bytes into a string using the US-ASCII
-     * charset.
+     * Decodes a sub-sequence of the specified sequence of bytes into a string using the US-ASCII charset.
+     * 
      * @param byteSequence sequence of bytes to decode.
-     * @param offset       offset into the byte sequence.
-     * @param length       number of bytes.
+     * @param offset offset into the byte sequence.
+     * @param length number of bytes.
      * @return decoded string.
      */
     public static String decode(ByteSequence byteSequence, int offset, int length) {
@@ -81,17 +82,17 @@ public class ContentUtil {
     }
 
     /**
-     * Decodes a sub-sequence of the specified sequence of bytes into a string using the specified
-     * charset.
-     * @param charset      Java charset to be used for the conversion.
+     * Decodes a sub-sequence of the specified sequence of bytes into a string using the specified charset.
+     * 
+     * @param charset Java charset to be used for the conversion.
      * @param byteSequence sequence of bytes to decode.
-     * @param offset       offset into the byte sequence.
-     * @param length       number of bytes.
+     * @param offset offset into the byte sequence.
+     * @param length number of bytes.
      * @return decoded string.
      */
     public static String decode(Charset charset, ByteSequence byteSequence, int offset, int length) {
         if (byteSequence instanceof ByteArrayBuffer) {
-            ByteArrayBuffer bab = (ByteArrayBuffer) byteSequence;
+            ByteArrayBuffer bab = (ByteArrayBuffer)byteSequence;
             return decode(charset, bab.buffer(), offset, length);
         } else {
             byte[] bytes = byteSequence.toByteArray();

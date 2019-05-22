@@ -2,9 +2,12 @@ package com.treefinance.crawler.framework.process.operation.impl;
 
 import com.treefinance.crawler.framework.config.xml.extractor.FieldExtractor;
 import com.treefinance.crawler.framework.config.xml.operation.DateTimeOperation;
-import com.treefinance.crawler.framework.exception.ResultEmptyException;
-import com.treefinance.crawler.framework.context.function.*;
+import com.treefinance.crawler.framework.context.function.SpiderRequest;
+import com.treefinance.crawler.framework.context.function.SpiderRequestFactory;
+import com.treefinance.crawler.framework.context.function.SpiderResponse;
+import com.treefinance.crawler.framework.context.function.SpiderResponseFactory;
 import com.treefinance.crawler.framework.context.pipeline.InvokeException;
+import com.treefinance.crawler.framework.exception.ResultEmptyException;
 import org.junit.Test;
 
 /**

@@ -1,27 +1,17 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.context;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import com.treefinance.crawler.framework.config.xml.plugin.AbstractPlugin;
 import com.treefinance.crawler.framework.config.xml.properties.Properties;
@@ -37,15 +27,23 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * @author Jerry
  * @since 13:54 25/01/2018
  */
 public abstract class ProcessContext extends DefaultCookieStore implements SpiderContext {
 
-    protected final Logger                      logger = LoggerFactory.getLogger(getClass());
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final   Website                     website;
+    private final Website website;
 
     private final Map<String, AbstractPlugin> pluginMetadataMap;
 
@@ -137,11 +135,6 @@ public abstract class ProcessContext extends DefaultCookieStore implements Spide
         updateCookiesInAttributes();
     }
 
-    private void updateCookiesInAttributes() {
-        setAttribute(Constants.COOKIE, this.getCookiesAsMap());
-        setAttribute(Constants.COOKIE_STRING, this.getCookiesAsString());
-    }
-
     /**
      * @return the context
      */
@@ -152,23 +145,12 @@ public abstract class ProcessContext extends DefaultCookieStore implements Spide
 
     /**
      * the shared fields map with the global context scope.
+     *
      * @return the unmodifiable map.
      * @see #getAttributes()
      */
     public Map<String, Object> getVisibleScope() {
         return Collections.unmodifiableMap(attributes);
-    }
-
-    protected Map<String, Object> getAttributes() {
-        return attributes;
-    }
-
-    public void setAttributes(Map<String, Object> attributes) {
-        if (attributes == null) {
-            getAttributes().clear();
-        } else {
-            this.attributes = new SynchronizedMap<>(attributes);
-        }
     }
 
     public Object getAttribute(String name) {
@@ -209,6 +191,23 @@ public abstract class ProcessContext extends DefaultCookieStore implements Spide
             }
         }
         return service;
+    }
+
+    protected Map<String, Object> getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(Map<String, Object> attributes) {
+        if (attributes == null) {
+            getAttributes().clear();
+        } else {
+            this.attributes = new SynchronizedMap<>(attributes);
+        }
+    }
+
+    private void updateCookiesInAttributes() {
+        setAttribute(Constants.COOKIE, this.getCookiesAsMap());
+        setAttribute(Constants.COOKIE_STRING, this.getCookiesAsString());
     }
 
 }

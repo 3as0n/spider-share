@@ -33,7 +33,8 @@ public class CookiesFormatterTest {
 
     @Test
     public void parseAsMap() {
-        String cookies = "JSESSIONID=F3C3D4171369AC00D47452388811BFF3; Secure=; _ga=GA1.3.279016222.1555298836; _ga=GA1.4.279016222.1555298836; __utmz=39553075.1556597495.3.3.utmcsr=my.chsi.com.cn|utmccn=(referral)|utmcmd=referral|utmcct=/archive/index.jsp; acw_tc=2760822115584227030634571e99dfeda1d0d9a5401829931572409dd194ec; _gid=GA1.4.886904566.1558422708; aliyungf_tc=AQAAAHCRhjOtnQQA0mPgeuB0Rwfj+1QD; __utmc=39553075; _gid=GA1.3.2006206494.1558508867; __utma=39553075.279016222.1555298836.1558511541.1558516470.14; Secure=;HttpOnly;";
+        String cookies =
+            "JSESSIONID=F3C3D4171369AC00D47452388811BFF3; Secure=; _ga=GA1.3.279016222.1555298836; _ga=GA1.4.279016222.1555298836; __utmz=39553075.1556597495.3.3.utmcsr=my.chsi.com.cn|utmccn=(referral)|utmcmd=referral|utmcct=/archive/index.jsp; acw_tc=2760822115584227030634571e99dfeda1d0d9a5401829931572409dd194ec; _gid=GA1.4.886904566.1558422708; aliyungf_tc=AQAAAHCRhjOtnQQA0mPgeuB0Rwfj+1QD; __utmc=39553075; _gid=GA1.3.2006206494.1558508867; __utma=39553075.279016222.1555298836.1558511541.1558516470.14; Secure=;HttpOnly;";
 
         Map<String, String> cookieMap = CookiesFormatter.parseAsMap(cookies);
 

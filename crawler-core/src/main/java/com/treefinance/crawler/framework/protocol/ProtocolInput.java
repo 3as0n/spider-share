@@ -1,23 +1,17 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.protocol;
-
-import java.net.URLDecoder;
-import java.util.*;
 
 import com.treefinance.crawler.framework.protocol.util.HeaderParser;
 import org.apache.commons.collections.MapUtils;
@@ -27,6 +21,13 @@ import org.apache.commons.httpclient.HttpState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author <A HREF="">Cheng Wang</A>
  * @version 1.0
@@ -34,39 +35,39 @@ import org.slf4j.LoggerFactory;
  */
 public class ProtocolInput {
 
-    public static final    Logger              log                      = LoggerFactory.getLogger(ProtocolInput.class);
+    public static final Logger log = LoggerFactory.getLogger(ProtocolInput.class);
 
-    protected static final String              URL                      = "ProtocolInput.URL";
+    protected static final String URL = "ProtocolInput.URL";
 
-    protected static final String              PROXY                    = "ProtocolInput.PROXY";
+    protected static final String PROXY = "ProtocolInput.PROXY";
 
-    protected static final String              HEADER                   = "ProtocolInput.HEADER";
+    protected static final String HEADER = "ProtocolInput.HEADER";
 
-    protected static final String              COOKIE                   = "ProtocolInput.COOKIE";
+    protected static final String COOKIE = "ProtocolInput.COOKIE";
 
-    protected static final String              LAST_MODIFY              = "ProtocolInput.LAST_MODIFY";
+    protected static final String LAST_MODIFY = "ProtocolInput.LAST_MODIFY";
 
-    protected static final String              FOLLOW_REDIRECT          = "ProtocolInput.FOLLOW_REDIRECT";
+    protected static final String FOLLOW_REDIRECT = "ProtocolInput.FOLLOW_REDIRECT";
 
-    protected static final String              REDIRECT_URI_ESCAPED     = "ProtocolInput.REDIRECT_URI_ESCAPED";
+    protected static final String REDIRECT_URI_ESCAPED = "ProtocolInput.REDIRECT_URI_ESCAPED";
 
-    protected static final String              COOKIE_CO_EXIST          = "ProtocolInput.COOKIE_CO_EXIST";
+    protected static final String COOKIE_CO_EXIST = "ProtocolInput.COOKIE_CO_EXIST";
 
-    protected static final String              ALLOW_CIRCULAR_REDIRECTS = "ProtocolInput.ALLOW_CIRCULAR_REDIRECTS";
+    protected static final String ALLOW_CIRCULAR_REDIRECTS = "ProtocolInput.ALLOW_CIRCULAR_REDIRECTS";
 
-    protected static final String              STATES                   = "ProtocolInput.STATES";
+    protected static final String STATES = "ProtocolInput.STATES";
 
-    protected static final String              POST_BODY                = "ProtocolInput.POST_BODY";
+    protected static final String POST_BODY = "ProtocolInput.POST_BODY";
 
-    protected static final String              POST_STRING_BODY         = "ProtocolInput.POST_STRING_BODY";
+    protected static final String POST_STRING_BODY = "ProtocolInput.POST_STRING_BODY";
 
-    protected static final String              REQUEST_HEADERS          = "ProtocolInput.REQUEST_HEADER";
+    protected static final String REQUEST_HEADERS = "ProtocolInput.REQUEST_HEADER";
 
-    private final          Map<String, Object> context                  = new HashMap<String, Object>();
+    private final Map<String, Object> context = new HashMap<String, Object>();
 
-    private                Action              action                   = Action.GET;
+    private Action action = Action.GET;
 
-    private                CookieScope         scope                    = CookieScope.REQUEST;
+    private CookieScope scope = CookieScope.REQUEST;
 
     public CookieScope getCookieScope() {
         return scope;
@@ -90,35 +91,6 @@ public class ProtocolInput {
         return this;
     }
 
-    protected ProtocolInput put(String key, Object val) {
-        context.put(key, val);
-        return this;
-    }
-
-    protected Object get(String key) {
-        return context.get(key);
-    }
-
-    protected String getString(String key) {
-        return (String) (context.get(key));
-    }
-
-    protected String getString(String key, String defaultS) {
-        String actual = (String) (context.get(key));
-        if (actual == null) {
-            actual = defaultS;
-        }
-        return actual;
-    }
-
-    protected Long getLong(String key, long defaultS) {
-        Long actual = (Long) (context.get(key));
-        if (actual == null) {
-            actual = defaultS;
-        }
-        return actual;
-    }
-
     public String getProxy() {
         return getString(PROXY);
     }
@@ -135,6 +107,7 @@ public class ProtocolInput {
 
     /**
      * add request headers the json list is key value pairs of headers
+     *
      * @param jsonHeaderList
      * @return
      */
@@ -147,6 +120,7 @@ public class ProtocolInput {
 
     /**
      * add request header
+     *
      * @param key
      * @param value
      * @return
@@ -159,6 +133,7 @@ public class ProtocolInput {
 
     /**
      * add request header
+     *
      * @param key
      * @param value
      * @return
@@ -175,21 +150,8 @@ public class ProtocolInput {
     }
 
     /**
-     * @param headers
-     * @return
-     */
-    private Collection<? extends NameValuePair> mapToList(Map<String, String> headers) {
-        List<NameValuePair> pairs = new ArrayList<NameValuePair>();
-        if (MapUtils.isNotEmpty(headers)) {
-            for (Map.Entry<String, String> next : headers.entrySet()) {
-                pairs.add(new NameValuePair(next.getKey(), next.getValue()));
-            }
-        }
-        return pairs;
-    }
-
-    /**
      * add post parameters
+     *
      * @param key
      * @param value
      * @return
@@ -202,6 +164,7 @@ public class ProtocolInput {
 
     /**
      * get string entity as post content body
+     *
      * @return
      */
     public String getPostBody() {
@@ -210,6 +173,7 @@ public class ProtocolInput {
 
     /**
      * set raw string as post body this will ignore url parameters
+     *
      * @param content
      * @return
      */
@@ -222,17 +186,7 @@ public class ProtocolInput {
         return getListWithNew(POST_BODY);
     }
 
-    @SuppressWarnings("unchecked")
-    private List getListWithNew(String key) {
-        List orginalHeaders = (List) get(key);
-        if (orginalHeaders == null) {
-            orginalHeaders = new ArrayList<Header>();
-            put(key, orginalHeaders);
-        }
-        return orginalHeaders;
-    }
-
-    //增加cookie path 的sate
+    // 增加cookie path 的sate
     public String getCookie() {
         return getString(COOKIE);
     }
@@ -243,7 +197,7 @@ public class ProtocolInput {
     }
 
     public Map<String, Cookie> getCookies() {
-        return (Map) get(COOKIE);
+        return (Map)get(COOKIE);
     }
 
     public Action getAction() {
@@ -267,7 +221,7 @@ public class ProtocolInput {
 
     // default true
     public boolean getRedirectUriEscaped() {
-        Boolean bol = (Boolean) context.get(REDIRECT_URI_ESCAPED);
+        Boolean bol = (Boolean)context.get(REDIRECT_URI_ESCAPED);
         if (bol == null) {
             bol = true;
         }
@@ -281,7 +235,7 @@ public class ProtocolInput {
 
     // default true
     public boolean getCoExist() {
-        Boolean bol = (Boolean) context.get(COOKIE_CO_EXIST);
+        Boolean bol = (Boolean)context.get(COOKIE_CO_EXIST);
         if (bol == null) {
             bol = true;
         }
@@ -294,7 +248,7 @@ public class ProtocolInput {
     }
 
     public boolean getAllowCircularRedirects() {
-        Boolean bol = (Boolean) context.get(ALLOW_CIRCULAR_REDIRECTS);
+        Boolean bol = (Boolean)context.get(ALLOW_CIRCULAR_REDIRECTS);
         if (bol == null) {
             bol = false;
         }
@@ -307,7 +261,7 @@ public class ProtocolInput {
     }
 
     public boolean getFollowRedirect() {
-        Boolean bol = (Boolean) context.get(FOLLOW_REDIRECT);
+        Boolean bol = (Boolean)context.get(FOLLOW_REDIRECT);
         if (bol == null) {
             bol = true;
         }
@@ -320,7 +274,7 @@ public class ProtocolInput {
     }
 
     public HttpState getState() {
-        return (HttpState) get(STATES);
+        return (HttpState)get(STATES);
     }
 
     public ProtocolInput setState(HttpState state) {
@@ -329,11 +283,64 @@ public class ProtocolInput {
     }
 
     public Header[] getRequestHeaders() {
-        return (Header[]) get(REQUEST_HEADERS);
+        return (Header[])get(REQUEST_HEADERS);
     }
 
     public void setRequestHeaders(Header[] headers) {
         put(REQUEST_HEADERS, headers);
+    }
+
+    protected ProtocolInput put(String key, Object val) {
+        context.put(key, val);
+        return this;
+    }
+
+    protected Object get(String key) {
+        return context.get(key);
+    }
+
+    protected String getString(String key) {
+        return (String)(context.get(key));
+    }
+
+    protected String getString(String key, String defaultS) {
+        String actual = (String)(context.get(key));
+        if (actual == null) {
+            actual = defaultS;
+        }
+        return actual;
+    }
+
+    protected Long getLong(String key, long defaultS) {
+        Long actual = (Long)(context.get(key));
+        if (actual == null) {
+            actual = defaultS;
+        }
+        return actual;
+    }
+
+    /**
+     * @param headers
+     * @return
+     */
+    private Collection<? extends NameValuePair> mapToList(Map<String, String> headers) {
+        List<NameValuePair> pairs = new ArrayList<NameValuePair>();
+        if (MapUtils.isNotEmpty(headers)) {
+            for (Map.Entry<String, String> next : headers.entrySet()) {
+                pairs.add(new NameValuePair(next.getKey(), next.getValue()));
+            }
+        }
+        return pairs;
+    }
+
+    @SuppressWarnings("unchecked")
+    private List getListWithNew(String key) {
+        List orginalHeaders = (List)get(key);
+        if (orginalHeaders == null) {
+            orginalHeaders = new ArrayList<Header>();
+            put(key, orginalHeaders);
+        }
+        return orginalHeaders;
     }
 
     public enum Action {

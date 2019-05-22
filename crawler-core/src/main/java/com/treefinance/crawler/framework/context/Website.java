@@ -1,25 +1,22 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.context;
 
-import java.io.Serializable;
-
 import com.treefinance.crawler.framework.config.xml.ExtractorConfig;
 import com.treefinance.crawler.framework.config.xml.SearchConfig;
+
+import java.io.Serializable;
 
 /**
  * @author <A HREF="mailto:wangcheng@datatrees.com.cn">Cheng Wang</A>
@@ -28,34 +25,34 @@ import com.treefinance.crawler.framework.config.xml.SearchConfig;
  */
 public class Website implements Serializable {
 
-    private           Integer         id;
+    private Integer id;
 
-    private           String          websiteName;
+    private String websiteName;
 
-    private           String          websiteDomain;
+    private String websiteDomain;
 
-    private           String          websiteType;
+    private String websiteType;
 
-    private           Boolean         isEnabled;
+    private Boolean isEnabled;
 
-    private transient SearchConfig    searchConfig;
+    private transient SearchConfig searchConfig;
 
-    private           String          searchConfigSource;
+    private String searchConfigSource;
 
     private transient ExtractorConfig extractorConfig;
 
-    private           String          extractorConfigSource;
+    private String extractorConfigSource;
 
-    private           String          taskRegion;
+    private String taskRegion;
 
     /** 配置标题 */
-    private           String          websiteTitle;
+    private String websiteTitle;
 
     /** 分组 */
-    private           String          groupCode;
+    private String groupCode;
 
     /** 分组 */
-    private           String          groupName;
+    private String groupName;
 
     public String getWebsiteTitle() {
         return websiteTitle;

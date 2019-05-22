@@ -1,25 +1,22 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.context.function;
 
+import org.apache.commons.collections.MapUtils;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.commons.collections.MapUtils;
 
 /**
  * @author <A HREF="">Cheng Wang</A>
@@ -28,40 +25,40 @@ import org.apache.commons.collections.MapUtils;
  */
 public class LinkNode {
 
-    private int                 depth;
+    private int depth;
 
-    private String              url;
+    private String url;
 
-    private String              referer;
+    private String referer;
 
-    private String              baseUrl;
+    private String baseUrl;
 
-    private String              pageTitle;
+    private String pageTitle;
 
-    private String              redirectUrl;
+    private String redirectUrl;
 
     /** page id */
-    private String              pId        = "";
+    private String pId = "";
 
-    private int                 retryCount = 0;
+    private int retryCount = 0;
 
-    private Map<String, Object> property   = new HashMap<String, Object>();
+    private Map<String, Object> property = new HashMap<String, Object>();
 
-    private Map<String, String> headers    = new HashMap<String, String>();
+    private Map<String, String> headers = new HashMap<String, String>();
 
     /** page number */
-    private int                 pNum       = -1;
+    private int pNum = -1;
 
-    private boolean             isRemoved  = false;
+    private boolean isRemoved = false;
 
-    private boolean             isHosting  = false;
+    private boolean isHosting = false;
 
-    private String              anchorText;
+    private String anchorText;
 
     /* get from parser */
-    private boolean             isFromParser;
+    private boolean isFromParser;
 
-    private boolean             needRequeue;
+    private boolean needRequeue;
 
     public LinkNode(String url) {
         this(0, url, null);
@@ -287,17 +284,25 @@ public class LinkNode {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
-        LinkNode other = (LinkNode) obj;
-        if (depth != other.depth) return false;
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        LinkNode other = (LinkNode)obj;
+        if (depth != other.depth)
+            return false;
         if (referer == null) {
-            if (other.referer != null) return false;
-        } else if (!referer.equals(other.referer)) return false;
+            if (other.referer != null)
+                return false;
+        } else if (!referer.equals(other.referer))
+            return false;
         if (url == null) {
-            if (other.url != null) return false;
-        } else if (!url.equals(other.url)) return false;
+            if (other.url != null)
+                return false;
+        } else if (!url.equals(other.url))
+            return false;
         return true;
     }
 

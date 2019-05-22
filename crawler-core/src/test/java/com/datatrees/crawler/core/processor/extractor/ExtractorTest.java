@@ -1,19 +1,19 @@
 package com.datatrees.crawler.core.processor.extractor;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.ProcessorContextFactory;
 import com.TestHelper;
+import com.treefinance.crawler.framework.boot.Extractor;
 import com.treefinance.crawler.framework.context.ExtractorProcessorContext;
 import com.treefinance.crawler.framework.context.function.ExtractRequest;
-import com.treefinance.crawler.framework.boot.Extractor;
 import com.treefinance.crawler.framework.context.function.SpiderResponse;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Jerry
@@ -30,8 +30,8 @@ public class ExtractorTest {
     @Test
     public void extract() {
         Map<String, Object> map = new HashMap<>();
-        map.put("url","billInfo");
-        map.put("pageContent",TestHelper.getFileContent("example/operator/10086_app/PageContent.json"));
+        map.put("url", "billInfo");
+        map.put("pageContent", TestHelper.getFileContent("example/operator/10086_app/PageContent.json"));
         map.put("billPhone", "123");
         map.put("realname", "test");
 

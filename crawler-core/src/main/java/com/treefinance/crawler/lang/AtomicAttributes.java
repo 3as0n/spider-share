@@ -1,23 +1,21 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.lang;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;
@@ -36,35 +34,20 @@ public class AtomicAttributes implements Attributes {
 
     private final AtomicReference<ConcurrentMap<String, Object>> _map = new AtomicReference<>();
 
-    public AtomicAttributes() {
-    }
+    public AtomicAttributes() {}
 
     public AtomicAttributes(AtomicAttributes attributes) {
         ConcurrentMap<String, Object> map = Objects.requireNonNull(attributes).map();
-        if (map != null) _map.set(new ConcurrentHashMap<>(map));
-    }
-
-    private ConcurrentMap<String, Object> map() {
-        return _map.get();
-    }
-
-    private ConcurrentMap<String, Object> ensureMap() {
-        while (true) {
-            ConcurrentMap<String, Object> map = map();
-            if (map != null) return map;
-            map = new ConcurrentHashMap<>();
-            if (_map.compareAndSet(null, map)) return map;
-        }
-    }
-
-    protected Map<String, Object> attributes() {
-        return ensureMap();
+        if (map != null)
+            _map.set(new ConcurrentHashMap<>(map));
     }
 
     @Override
     public void setAttribute(@Nonnull String name, @Nullable Object attribute) {
-        if (attribute == null) removeAttribute(name);
-        else ensureMap().put(name, attribute);
+        if (attribute == null)
+            removeAttribute(name);
+        else
+            ensureMap().put(name, attribute);
     }
 
     @Override
@@ -93,7 +76,8 @@ public class AtomicAttributes implements Attributes {
     @Override
     public Object removeAttribute(@Nonnull String name) {
         Map<String, Object> map = map();
-        if (map != null) return map.remove(name);
+        if (map != null)
+            return map.remove(name);
         return null;
     }
 
@@ -114,12 +98,14 @@ public class AtomicAttributes implements Attributes {
     @Override
     public void clearAttributes() {
         Map<String, Object> map = map();
-        if (map != null) map.clear();
+        if (map != null)
+            map.clear();
     }
 
     @Override
     public void addAttributes(@Nullable Map<String, Object> attributes) {
-        if (attributes != null) ensureMap().putAll(attributes);
+        if (attributes != null)
+            ensureMap().putAll(attributes);
     }
 
     public int size() {
@@ -131,6 +117,25 @@ public class AtomicAttributes implements Attributes {
     public String toString() {
         Map<String, Object> map = map();
         return map == null ? "{}" : map.toString();
+    }
+
+    protected Map<String, Object> attributes() {
+        return ensureMap();
+    }
+
+    private ConcurrentMap<String, Object> map() {
+        return _map.get();
+    }
+
+    private ConcurrentMap<String, Object> ensureMap() {
+        while (true) {
+            ConcurrentMap<String, Object> map = map();
+            if (map != null)
+                return map;
+            map = new ConcurrentHashMap<>();
+            if (_map.compareAndSet(null, map))
+                return map;
+        }
     }
 
 }

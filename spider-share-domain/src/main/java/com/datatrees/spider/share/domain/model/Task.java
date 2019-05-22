@@ -1,98 +1,95 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.domain.model;
+
+import com.datatrees.spider.share.domain.AbstractTask;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.datatrees.spider.share.domain.AbstractTask;
-
 /** create by system from table t_tasklog(task log info) */
 public class Task extends AbstractTask implements Serializable {
 
-    private static final long          serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     /** mail Id */
-    private              Integer       id;
+    private Integer id;
 
     /** user Id */
-    private              Long          taskId;
+    private Long taskId;
 
     /** mail website id */
-    private              Integer       websiteId;
+    private Integer websiteId;
 
     /**  */
-    private              String        nodeName;
+    private String nodeName;
 
     /**  */
-    private              AtomicInteger openUrlCount;
+    private AtomicInteger openUrlCount;
 
     /**  */
-    private              AtomicInteger openPageCount;
+    private AtomicInteger openPageCount;
 
     /**  */
-    private              AtomicInteger requestFailedCount;
+    private AtomicInteger requestFailedCount;
 
     /**  */
-    private              AtomicInteger retryCount;
+    private AtomicInteger retryCount;
 
     /**  */
-    private              AtomicInteger filteredCount;
+    private AtomicInteger filteredCount;
 
     /** 0:init;200:success;101:cookie Invalid，102：block 103：no result */
-    private              int       status;
+    private int status;
 
     /**  */
-    private              String        remark;
+    private String remark;
 
     /**  */
-    private              String        resultMessage;
+    private String resultMessage;
 
     /** Task duration, in seconds */
-    private              Long          duration;
+    private Long duration;
 
     /**  */
-    private              Integer       extractedCount;
+    private Integer extractedCount;
 
     /**  */
-    private              Integer       extractSucceedCount;
+    private Integer extractSucceedCount;
 
     /**  */
-    private              Integer       extractFailedCount;
+    private Integer extractFailedCount;
 
     /**  */
-    private              Integer       storeFailedCount;
+    private Integer storeFailedCount;
 
     /**  */
-    private              Integer       notExtractCount;
+    private Integer notExtractCount;
 
     /**  */
-    private              AtomicLong    networkTraffic;
+    private AtomicLong networkTraffic;
 
     /**  */
-    private              Date          startedAt;
+    private Date startedAt;
 
     /**  */
-    private              Date          finishedAt;
+    private Date finishedAt;
 
     /**  */
-    private              Date          createdAt;
+    private Date createdAt;
 
     public Integer getId() {
         return id;

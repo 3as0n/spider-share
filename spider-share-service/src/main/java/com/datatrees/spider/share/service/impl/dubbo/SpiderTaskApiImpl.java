@@ -1,26 +1,17 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.service.impl.dubbo;
-
-import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import com.alibaba.fastjson.JSON;
 import com.datatrees.common.zookeeper.ZooKeeperClient;
@@ -30,7 +21,12 @@ import com.datatrees.spider.share.common.share.service.RedisService;
 import com.datatrees.spider.share.common.utils.ProcessResultUtils;
 import com.datatrees.spider.share.common.utils.RedisUtils;
 import com.datatrees.spider.share.common.utils.TaskUtils;
-import com.datatrees.spider.share.domain.*;
+import com.datatrees.spider.share.domain.AttributeKey;
+import com.datatrees.spider.share.domain.ErrorCode;
+import com.datatrees.spider.share.domain.ProcessResult;
+import com.datatrees.spider.share.domain.ProcessStatus;
+import com.datatrees.spider.share.domain.QRStatus;
+import com.datatrees.spider.share.domain.RedisKeyPrefixEnum;
 import com.datatrees.spider.share.domain.directive.DirectiveRedisCode;
 import com.datatrees.spider.share.domain.directive.DirectiveResult;
 import com.datatrees.spider.share.domain.directive.DirectiveType;
@@ -46,28 +42,35 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 @Service
 public class SpiderTaskApiImpl implements SpiderTaskApi {
 
-    private static final Logger               logger = LoggerFactory.getLogger(SpiderTaskApiImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(SpiderTaskApiImpl.class);
 
     @Resource
-    private              TaskService          taskService;
+    private TaskService taskService;
 
     @Resource
-    private              RedisService         redisService;
+    private RedisService redisService;
 
     @Resource
-    private              ProxyService         proxyService;
+    private ProxyService proxyService;
 
     @Resource
-    private              ZooKeeperClient      zooKeeperClient;
+    private ZooKeeperClient zooKeeperClient;
 
     @Resource
-    private              MonitorService       monitorService;
+    private MonitorService monitorService;
 
     @Resource
-    private              WebsiteConfigService websiteConfigService;
+    private WebsiteConfigService websiteConfigService;
 
     @Override
     public Task getByTaskId(Long taskId) {
@@ -102,8 +105,7 @@ public class SpiderTaskApiImpl implements SpiderTaskApi {
                 extra = new HashMap<>();
             }
             if (taskId <= 0 || type < 0 || StringUtils.isAnyBlank(directiveId, code)) {
-                logger.warn("invalid param taskId={},type={},directiveId={},code={},extra={}", taskId, type, directiveId, code,
-                        JSON.toJSONString(extra));
+                logger.warn("invalid param taskId={},type={},directiveId={},code={},extra={}", taskId, type, directiveId, code, JSON.toJSONString(extra));
                 return result.failure("参数为空或者参数不完整");
             }
             String status = DirectiveRedisCode.WAIT_SERVER_PROCESS;
@@ -132,7 +134,7 @@ public class SpiderTaskApiImpl implements SpiderTaskApi {
 
             extra.put(AttributeKey.CODE, code);
             DirectiveResult<Map<String, String>> sendDirective = new DirectiveResult<>(directiveType, taskId);
-            //保存交互指令到redis
+            // 保存交互指令到redis
             sendDirective.fill(status, extra);
             redisService.saveDirectiveResult(directiveId, sendDirective);
             logger.info("import success taskId={},directiveId={},code={},extra={}", taskId, directiveId, code, JSON.toJSONString(extra));
@@ -147,8 +149,7 @@ public class SpiderTaskApiImpl implements SpiderTaskApi {
     public HttpResult<Boolean> cancel(long taskId, Map<String, String> extra) {
         HttpResult<Boolean> result = new HttpResult<Boolean>();
         String websiteName = TaskUtils.getTaskShare(taskId, AttributeKey.WEBSITE_NAME);
-        if (StringUtils.equals(websiteName, "alipay.com") || StringUtils.equals(websiteName, "taobao.com") ||
-                StringUtils.equals(websiteName, "taobao.com.h5")) {
+        if (StringUtils.equals(websiteName, "alipay.com") || StringUtils.equals(websiteName, "taobao.com") || StringUtils.equals(websiteName, "taobao.com.h5")) {
             logger.info("电商拒绝取消,哈哈.......taskId={},websiteName={}", taskId, websiteName);
             return result.success();
         }
@@ -203,7 +204,7 @@ public class SpiderTaskApiImpl implements SpiderTaskApi {
                 logger.warn("verifyQr timeout taskId={},directiveId={}", taskId, directiveId);
                 return result.success(DirectiveRedisCode.FAILED);
             }
-            TimeUnit.MILLISECONDS.sleep(500);//不能让前端一直轮询
+            TimeUnit.MILLISECONDS.sleep(500);// 不能让前端一直轮询
             logger.info("verifyQr result taskId={},directiveId={},qrStatus={}", taskId, directiveId, directiveResult.getStatus());
             return result.success(directiveResult.getStatus());
         } catch (Exception e) {

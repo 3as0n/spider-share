@@ -1,34 +1,31 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.config.xml;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import com.treefinance.crawler.framework.config.xml.plugin.AbstractPlugin;
-import com.treefinance.crawler.framework.config.xml.plugin.JavaPlugin;
-import com.treefinance.crawler.framework.config.xml.plugin.PythonPlugin;
-import com.treefinance.crawler.framework.config.xml.plugin.ShellPlugin;
 import com.treefinance.crawler.framework.config.SpiderConfig;
 import com.treefinance.crawler.framework.config.annotation.Attr;
 import com.treefinance.crawler.framework.config.annotation.Node;
 import com.treefinance.crawler.framework.config.annotation.Tag;
+import com.treefinance.crawler.framework.config.xml.plugin.AbstractPlugin;
+import com.treefinance.crawler.framework.config.xml.plugin.JavaPlugin;
+import com.treefinance.crawler.framework.config.xml.plugin.PythonPlugin;
+import com.treefinance.crawler.framework.config.xml.plugin.ShellPlugin;
 import org.apache.commons.collections.CollectionUtils;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author <A HREF="mailto:wangcheng@datatrees.com.cn">Cheng Wang</A>
@@ -40,11 +37,11 @@ public abstract class AbstractWebsiteConfig implements SpiderConfig {
     /**
      *
      */
-    private static final long                 serialVersionUID = 2850518517814023140L;
+    private static final long serialVersionUID = 2850518517814023140L;
 
-    private              List<AbstractPlugin> pluginList       = new ArrayList<>();
+    private List<AbstractPlugin> pluginList = new ArrayList<>();
 
-    private              String               parentWebsiteName;
+    private String parentWebsiteName;
 
     public AbstractWebsiteConfig() {
         super();

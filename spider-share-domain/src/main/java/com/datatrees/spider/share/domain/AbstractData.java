@@ -1,17 +1,14 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.domain;
@@ -27,19 +24,19 @@ import java.util.Map;
 @SuppressWarnings({"rawtypes", "serial", "unchecked"})
 public abstract class AbstractData extends HashMap<String, Object> {
 
-    public static final String UNIQUESIGN  = "uniqueSign";
+    public static final String UNIQUESIGN = "uniqueSign";
 
-    public static final String URL         = "url";
+    public static final String URL = "url";
 
     // maybe collection
     public static final String PAGECONTENT = "pageContent";
 
-    public static final String RESULTTYPE  = "resultType";
+    public static final String RESULTTYPE = "resultType";
 
-    public static final String EXTRAINFO   = "extraInfo";
+    public static final String EXTRAINFO = "extraInfo";
 
     public String getResultType() {
-        return (String) this.get(RESULTTYPE);
+        return (String)this.get(RESULTTYPE);
     }
 
     public void setResultType(String resultType) {
@@ -55,7 +52,7 @@ public abstract class AbstractData extends HashMap<String, Object> {
     }
 
     public String getUniqueSign() {
-        return (String) this.get(UNIQUESIGN);
+        return (String)this.get(UNIQUESIGN);
     }
 
     public void setUniqueSign(String uniqueSign) {
@@ -63,7 +60,7 @@ public abstract class AbstractData extends HashMap<String, Object> {
     }
 
     public String getUrl() {
-        return (String) this.get(URL);
+        return (String)this.get(URL);
     }
 
     public void setUrl(String url) {
@@ -72,7 +69,7 @@ public abstract class AbstractData extends HashMap<String, Object> {
 
     public Map<String, Object> getExtraInfo() {
         if (this.get(EXTRAINFO) != null && this.get(EXTRAINFO) instanceof Map) {
-            return (Map<String, Object>) this.get(EXTRAINFO);
+            return (Map<String, Object>)this.get(EXTRAINFO);
         } else {
             return null;
         }

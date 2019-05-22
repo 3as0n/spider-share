@@ -1,22 +1,17 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.process.operation.impl;
-
-import javax.annotation.Nonnull;
 
 import com.jayway.jsonpath.InvalidJsonException;
 import com.jayway.jsonpath.InvalidPathException;
@@ -32,6 +27,8 @@ import com.treefinance.crawler.framework.process.operation.Operation;
 import com.treefinance.crawler.framework.util.json.JsonPathUtil;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+
+import javax.annotation.Nonnull;
 
 /**
  * @author Jerry
@@ -53,7 +50,8 @@ public class JsonPathOperationImpl extends Operation<JsonPathOperation> {
     }
 
     @Override
-    protected Object doOperation(@Nonnull JsonPathOperation operation, @Nonnull Object operatingData, @Nonnull SpiderRequest request, @Nonnull SpiderResponse response) throws Exception {
+    protected Object doOperation(@Nonnull JsonPathOperation operation, @Nonnull Object operatingData, @Nonnull SpiderRequest request, @Nonnull SpiderResponse response)
+        throws Exception {
         String jsonpath = operation.getJsonpath();
 
         jsonpath = StandardExpression.eval(jsonpath, request, response);
@@ -64,17 +62,19 @@ public class JsonPathOperationImpl extends Operation<JsonPathOperation> {
             throw new InvalidOperationException("Incorrect jsonpath! \nOriginal Jsonpath: " + operation.getJsonpath() + "\nActual Jsonpath: " + jsonpath);
         }
 
-        String input = (String) operatingData;
+        String input = (String)operatingData;
 
         String result;
         try {
             result = JsonPathUtil.readAsString(input, jsonpath);
         } catch (InvalidJsonException | PathNotFoundException e) {
-            throw new InvalidDataException("Incorrect json data! >> " + e.getMessage() + "\nOriginal Jsonpath: " + operation.getJsonpath() + "\nActual Jsonpath: " + jsonpath + "\nInput:\n" + input);
+            throw new InvalidDataException(
+                "Incorrect json data! >> " + e.getMessage() + "\nOriginal Jsonpath: " + operation.getJsonpath() + "\nActual Jsonpath: " + jsonpath + "\nInput:\n" + input);
         } catch (InvalidPathException e) {
             throw new InvalidOperationException("Incorrect jsonpath! >> " + e.getMessage() + "\nOriginal Jsonpath: " + operation.getJsonpath() + "\nActual Jsonpath: " + jsonpath);
         } catch (Exception e) {
-            throw new InvalidOperationException("Error parsing with jsonpath! >> " + e.getMessage() + "\nOriginal Jsonpath: " + operation.getJsonpath() + "\nActual Jsonpath: " + jsonpath + "\nInput:\n" + input);
+            throw new InvalidOperationException(
+                "Error parsing with jsonpath! >> " + e.getMessage() + "\nOriginal Jsonpath: " + operation.getJsonpath() + "\nActual Jsonpath: " + jsonpath + "\nInput:\n" + input);
         }
 
         if (result.isEmpty() && BooleanUtils.isTrue(operation.getEmptyToNull())) {

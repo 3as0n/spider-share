@@ -1,24 +1,17 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.process.segment;
-
-import javax.annotation.Nonnull;
-import java.lang.reflect.Field;
-import java.util.*;
 
 import com.treefinance.crawler.framework.config.enums.fields.ResultType;
 import com.treefinance.crawler.framework.config.xml.extractor.FieldExtractor;
@@ -57,6 +50,17 @@ import org.apache.commons.collections4.functors.UniquePredicate;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.Nonnull;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
 /**
  * @param <>
  * @author <A HREF="">Cheng Wang</A>
@@ -65,43 +69,12 @@ import org.apache.commons.lang3.StringUtils;
  */
 public abstract class SegmentBase<T extends AbstractSegment> extends FailureSkipProcessorValve {
 
-    private final T                        segment;
-    private       List<String>             splits = null;
-    private       AbstractProcessorContext context;
+    private final T segment;
+    private List<String> splits = null;
+    private AbstractProcessorContext context;
 
     public SegmentBase(@Nonnull T segment) {
         this.segment = Objects.requireNonNull(segment);
-    }
-
-    @Override
-    protected void initial(@Nonnull SpiderRequest request, @Nonnull SpiderResponse response) {
-        this.context = Objects.requireNonNull(request.getProcessorContext());
-        String sourceId = segment.getSourceId();
-        if (StringUtils.isNotEmpty(sourceId)) {
-            Object result = FieldUtils.getSourceFieldValue(sourceId, request, response);
-            logger.info("Will use source input instead of stdin for segment processor. segment: {}, sourceId: {}, input: {}", segment.getName(), sourceId, LogUtils.abbreviate(result));
-            // TODO: 2018/8/21 由于历史配置不严谨暂时采用兼容做法，解析结果不可控
-            if (result != null) {
-                logger.info("Segment source input is available! segment: {}, sourceId: {}", segment.getName(), sourceId);
-                request.setInput(result.toString());
-            }
-        }
-    }
-
-    @Override
-    protected boolean isSkipped(@Nonnull SpiderRequest request, @Nonnull SpiderResponse response) {
-        if (ObjectUtils.isNullOrEmptyString(request.getInput())) {
-            logger.warn("Empty input content used for segment processing and skip. segment: {}, taskId: {}", segment.getName(), context.getTaskId());
-            return true;
-        }
-
-        String businessType = segment.getBusinessType();
-        if (!BusinessTypeDecider.support(businessType, context)) {
-            logger.warn("Business forbidden in segment processing and skip. segment: {}, businessType: {}, taskId: {}", segment.getName(), businessType, context.getTaskId());
-            return true;
-        }
-
-        return false;
     }
 
     @Override
@@ -131,6 +104,44 @@ public abstract class SegmentBase<T extends AbstractSegment> extends FailureSkip
             SpiderResponseHelper.setSegmentProcessingData(response, splits);
         }
     }
+
+    public T getSegment() {
+        return segment;
+    }
+
+    @Override
+    protected void initial(@Nonnull SpiderRequest request, @Nonnull SpiderResponse response) {
+        this.context = Objects.requireNonNull(request.getProcessorContext());
+        String sourceId = segment.getSourceId();
+        if (StringUtils.isNotEmpty(sourceId)) {
+            Object result = FieldUtils.getSourceFieldValue(sourceId, request, response);
+            logger.info("Will use source input instead of stdin for segment processor. segment: {}, sourceId: {}, input: {}", segment.getName(), sourceId,
+                LogUtils.abbreviate(result));
+            // TODO: 2018/8/21 由于历史配置不严谨暂时采用兼容做法，解析结果不可控
+            if (result != null) {
+                logger.info("Segment source input is available! segment: {}, sourceId: {}", segment.getName(), sourceId);
+                request.setInput(result.toString());
+            }
+        }
+    }
+
+    @Override
+    protected boolean isSkipped(@Nonnull SpiderRequest request, @Nonnull SpiderResponse response) {
+        if (ObjectUtils.isNullOrEmptyString(request.getInput())) {
+            logger.warn("Empty input content used for segment processing and skip. segment: {}, taskId: {}", segment.getName(), context.getTaskId());
+            return true;
+        }
+
+        String businessType = segment.getBusinessType();
+        if (!BusinessTypeDecider.support(businessType, context)) {
+            logger.warn("Business forbidden in segment processing and skip. segment: {}, businessType: {}, taskId: {}", segment.getName(), businessType, context.getTaskId());
+            return true;
+        }
+
+        return false;
+    }
+
+    protected abstract List<String> splitInputContent(String content, T segment, SpiderRequest request, SpiderResponse response);
 
     private Object adaptResult(List<ExtractObject> resultList) {
         if (CollectionUtils.isNotEmpty(resultList)) {
@@ -278,7 +289,7 @@ public abstract class SegmentBase<T extends AbstractSegment> extends FailureSkip
                         Object instance = clazz.newInstance();
 
                         if (instance instanceof Map) {
-                            ((Map) instance).putAll(object);
+                            ((Map)instance).putAll(object);
                         } else {
                             Field[] fields = clazz.getDeclaredFields();
                             for (Field field : fields) {
@@ -310,7 +321,7 @@ public abstract class SegmentBase<T extends AbstractSegment> extends FailureSkip
         Object urlObj = map.remove(Constants.CRAWLER_URL_FIELD);
         if (urlObj instanceof String) {
             logger.debug("normal string url {}", urlObj);
-            String url = (String) urlObj;
+            String url = (String)urlObj;
             String resolvedUrl = UrlUtils.resolveUrl(baseURL, url);
             if (!resolvedUrl.isEmpty()) {
                 logger.debug("parse url to link node: {}", resolvedUrl);
@@ -322,7 +333,7 @@ public abstract class SegmentBase<T extends AbstractSegment> extends FailureSkip
             }
         } else if (urlObj instanceof List) {
             Map<String, ExtractObject> linkNodes = new HashMap<>();
-            List<String> urlsList = (List<String>) urlObj;
+            List<String> urlsList = (List<String>)urlObj;
             logger.debug("segment url size... {} {}", urlsList.size(), baseURL);
             for (String url : urlsList) {
                 String[] pairs = ParserURLCombiner.decodeParserUrl(url);
@@ -362,7 +373,7 @@ public abstract class SegmentBase<T extends AbstractSegment> extends FailureSkip
                     return extractObject.withFlatField(value);
                 } else if (value instanceof String) {
                     try {
-                        value = formatter.format((String) value, null, request, response);
+                        value = formatter.format((String)value, null, request, response);
                         if (value != null) {
                             return extractObject.withFlatField(value);
                         }
@@ -383,7 +394,7 @@ public abstract class SegmentBase<T extends AbstractSegment> extends FailureSkip
     @Nonnull
     private List<String> getSplits(SpiderRequest request, SpiderResponse response) {
         if (splits == null) {
-            splits = splitInputContent((String) request.getInput(), segment, request, response);
+            splits = splitInputContent((String)request.getInput(), segment, request, response);
             if (splits == null) {
                 splits = Collections.emptyList();
             }
@@ -391,18 +402,12 @@ public abstract class SegmentBase<T extends AbstractSegment> extends FailureSkip
         return splits;
     }
 
-    protected abstract List<String> splitInputContent(String content, T segment, SpiderRequest request, SpiderResponse response);
-
     private boolean matches(String content, String pattern, Integer patternFlag, boolean reverse) {
         if (StringUtils.isBlank(pattern)) {
             return false;
         }
 
         return reverse ^ RegExp.find(content, pattern, patternFlag != null ? patternFlag : 0);
-    }
-
-    public T getSegment() {
-        return segment;
     }
 
 }

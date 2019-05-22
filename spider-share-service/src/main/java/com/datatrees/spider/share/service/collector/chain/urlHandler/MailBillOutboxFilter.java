@@ -1,30 +1,27 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.service.collector.chain.urlHandler;
 
 import com.datatrees.common.conf.PropertiesConfiguration;
 import com.datatrees.common.util.PatternUtils;
-import com.treefinance.crawler.framework.config.enums.SearchType;
-import com.treefinance.crawler.framework.context.function.LinkNode;
-import com.treefinance.crawler.framework.context.ProcessorResult;
+import com.datatrees.spider.share.domain.website.WebsiteType;
 import com.datatrees.spider.share.service.collector.chain.Context;
 import com.datatrees.spider.share.service.collector.search.SearchProcessor;
 import com.datatrees.spider.share.service.domain.data.MailBillData;
-import com.datatrees.spider.share.domain.website.WebsiteType;
+import com.treefinance.crawler.framework.config.enums.SearchType;
+import com.treefinance.crawler.framework.context.ProcessorResult;
+import com.treefinance.crawler.framework.context.function.LinkNode;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -34,10 +31,9 @@ import org.apache.commons.lang.StringUtils;
  */
 public class MailBillOutboxFilter extends RemovedFetchLinkNodeFilter {
 
-    private static String[] recipientPatternKeys = PropertiesConfiguration.getInstance().get("mail.recipient.pattern.key", "emailAccount,qqAccount")
-            .split(",");
+    private static String[] recipientPatternKeys = PropertiesConfiguration.getInstance().get("mail.recipient.pattern.key", "emailAccount,qqAccount").split(",");
 
-    private static String   outBoxFolderName     = PropertiesConfiguration.getInstance().get("mail.outbox.folder.name", "已发送");
+    private static String outBoxFolderName = PropertiesConfiguration.getInstance().get("mail.outbox.folder.name", "已发送");
 
     @Override
     protected void doProcess(LinkNode fetchLinkNode, SearchProcessor searchProcessor, Context context) {

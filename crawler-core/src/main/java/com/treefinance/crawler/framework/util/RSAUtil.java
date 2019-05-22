@@ -1,35 +1,38 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.util;
 
+import org.apache.commons.codec.binary.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.crypto.Cipher;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.security.*;
+import java.security.Key;
+import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.commons.codec.binary.Base64;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author <A HREF="">Cheng Wang</A>
@@ -43,6 +46,7 @@ public class RSAUtil {
 
     /**
      * 生成密钥对
+     * 
      * @param filePath 生成密钥的路径
      * @return
      */
@@ -64,14 +68,12 @@ public class RSAUtil {
             // 得到私钥字符串
             String privateKeyString = getKeyString(privateKey);
 
-            try (FileWriter out = new FileWriter("publicKey.keystore");
-                 BufferedWriter pubbw = new BufferedWriter(out)) {
+            try (FileWriter out = new FileWriter("publicKey.keystore"); BufferedWriter pubbw = new BufferedWriter(out)) {
                 pubbw.write(publicKeyString);
                 pubbw.flush();
             }
 
-            try (FileWriter out = new FileWriter("privateKey.keystore");
-                 BufferedWriter pribw = new BufferedWriter(out)) {
+            try (FileWriter out = new FileWriter("privateKey.keystore"); BufferedWriter pribw = new BufferedWriter(out)) {
                 pribw.write(privateKeyString);
                 pribw.flush();
             }
@@ -89,6 +91,7 @@ public class RSAUtil {
 
     /**
      * 得到公钥
+     * 
      * @param key 密钥字符串（经过base64编码）
      * @exception Exception
      */
@@ -103,6 +106,7 @@ public class RSAUtil {
 
     /**
      * 得到私钥
+     * 
      * @param key 密钥字符串（经过base64编码）
      * @exception Exception
      */
@@ -117,6 +121,7 @@ public class RSAUtil {
 
     /**
      * 得到密钥字符串（经过base64编码）
+     * 
      * @return
      */
     public static String getKeyString(Key key) throws Exception {
@@ -127,6 +132,7 @@ public class RSAUtil {
 
     /**
      * 使用公钥对明文进行加密，返回BASE64编码的字符串
+     * 
      * @param publicKey
      * @param plainText
      * @return
@@ -182,6 +188,7 @@ public class RSAUtil {
 
     /**
      * 使用私钥对明文密文进行解密
+     * 
      * @param privateKey
      * @param enStr
      * @return
@@ -200,8 +207,9 @@ public class RSAUtil {
 
     /**
      * 使用keystore对密文进行解密
+     * 
      * @param privateKeystore 私钥路径
-     * @param enStr           密文
+     * @param enStr 密文
      * @return
      */
     public static String decryptWithKeystore(String privateKeystore, String enStr) {

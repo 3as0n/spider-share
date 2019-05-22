@@ -1,30 +1,31 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.util;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
-import org.jdom2.*;
+import org.jdom2.Attribute;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.Text;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.List;
 
 /**
  * @author Jerry
@@ -32,8 +33,7 @@ import org.jdom2.xpath.XPathFactory;
  */
 public final class XmlDocumentHelper {
 
-    private XmlDocumentHelper() {
-    }
+    private XmlDocumentHelper() {}
 
     public static Document createDocument(String xml) throws JDOMException, IOException {
         try (StringReader reader = new StringReader(xml)) {
@@ -57,7 +57,7 @@ public final class XmlDocumentHelper {
     }
 
     public static Element getElementByXPath(Element context, String path) {
-        return (Element) evaluateFirst(context, path);
+        return (Element)evaluateFirst(context, path);
     }
 
     public static List<Object> getElementsByXPath(Element context, String path) {
@@ -69,9 +69,9 @@ public final class XmlDocumentHelper {
             return StringUtils.EMPTY;
         }
         if (obj instanceof Attribute) {
-            return ((Attribute) obj).getValue();
+            return ((Attribute)obj).getValue();
         } else if (obj instanceof Text) {
-            return ((Text) obj).getText();
+            return ((Text)obj).getText();
         } else {
             return obj.toString();
         }

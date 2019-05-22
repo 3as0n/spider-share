@@ -1,137 +1,133 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.domain;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.alibaba.fastjson.annotation.JSONField;
 
 public class CommonPluginParam implements Serializable {
 
     /**
      * 表单类型
      */
-    private String              formType;
+    private String formType;
 
     /**
      * 任务id 必填
      */
-    private Long                taskId;
+    private Long taskId;
 
     /**
      * website name 必填
      */
-    private String              websiteName;
+    private String websiteName;
 
     /**
      * 手机号
      */
-    private Long                mobile;
+    private Long mobile;
 
     /**
      * 用户名
      */
-    private String              username;
+    private String username;
 
     /**
      * 登陆密码或者服务密码
      */
     @JSONField(serialize = false)
-    private String              password;
+    private String password;
 
     /**
      * 图片验证码
      */
-    private String              picCode;
+    private String picCode;
 
     /**
      * 短信验证码
      */
-    private String              smsCode;
+    private String smsCode;
 
     /**
      * 真实姓名
      */
-    private String              realName;
+    private String realName;
 
     /**
      * 身份证号码
      */
-    private String              idCard;
+    private String idCard;
 
     /**
      * 身份证类型
      */
-    private String              idCardType;
+    private String idCardType;
 
     /**
      * 分组代码
      */
-    private String              groupCode;
+    private String groupCode;
 
     /**
      * 分组名称
      */
-    private String              groupName;
+    private String groupName;
 
     /**
      * 扩展属性
      */
-    private Map<String, Object> extral                  = new HashMap<>();
+    private Map<String, Object> extral = new HashMap<>();
 
     /**
      * 给自定义plugin方法用
      */
-    private String[]            args;
+    private String[] args;
 
     /**
      * 插件名称
      */
-    private String              pluginName;
+    private String pluginName;
 
     /**
      * 插件服务名称
      */
-    private String              pluginClassName;
+    private String pluginClassName;
 
     /**
      * 指令id
      */
-    private String              directiveId;
+    private String directiveId;
 
     /**
      * 用使用代理,初始化有
      */
-    private boolean             proxyEnable             = false;
+    private boolean proxyEnable = false;
 
     /**
      * 自动发送登陆成功消息
      */
-    private boolean             autoSendLoginSuccessMsg = true;
+    private boolean autoSendLoginSuccessMsg = true;
 
     /**
      * 用户IP
      */
-    private String              userIp;
+    private String userIp;
 
-    public CommonPluginParam() {
-    }
+    public CommonPluginParam() {}
 
     public CommonPluginParam(String formType, Long taskId, String websiteName) {
         this.formType = formType;

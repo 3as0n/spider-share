@@ -1,26 +1,17 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.process.search;
-
-import javax.annotation.Nonnull;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.datatrees.common.conf.Configuration;
 import com.datatrees.common.conf.PropertiesConfiguration;
@@ -63,6 +54,18 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.Nonnull;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * @author <A HREF="">Cheng Wang</A>
  * @version 1.0
@@ -70,10 +73,10 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class PageImpl extends ProcessorInvokerAdapter {
 
-    private static final String titleRegex         = PropertiesConfiguration.getInstance().get("page.title.regex", "<title>([^<]*)</title>");
-    private static final int    URL_MAX_LENGTH     = PropertiesConfiguration.getInstance().getInt("url.max.length", 1024);
-    private static final int    TITLE_LENGTH_LIMIT = 2048;
-    private final        Page   page;
+    private static final String titleRegex = PropertiesConfiguration.getInstance().get("page.title.regex", "<title>([^<]*)</title>");
+    private static final int URL_MAX_LENGTH = PropertiesConfiguration.getInstance().getInt("url.max.length", 1024);
+    private static final int TITLE_LENGTH_LIMIT = 2048;
+    private final Page page;
 
     public PageImpl(@Nonnull Page page) {
         this.page = Objects.requireNonNull(page);
@@ -139,7 +142,7 @@ public class PageImpl extends ProcessorInvokerAdapter {
     private List<LinkNode> filterUrls(Map<String, LinkNode> urlLists, LinkNode current, SpiderRequest request) {
         List<LinkNode> nodes = new ArrayList<>();
         if (MapUtils.isNotEmpty(urlLists)) {
-            SearchProcessorContext processorContext = (SearchProcessorContext) request.getProcessorContext();
+            SearchProcessorContext processorContext = (SearchProcessorContext)request.getProcessorContext();
 
             String templateId = RequestUtil.getCurrentTemplateId(request);
             SearchTemplateConfig searchTemplateConfig = processorContext.getSearchTemplateConfig(templateId);
@@ -300,11 +303,11 @@ public class PageImpl extends ProcessorInvokerAdapter {
     }
 
     /**
-     * get url list need too steps first extract field urls second extract page by regex finally
-     * resolve url by base url
+     * get url list need too steps first extract field urls second extract page by regex finally resolve url by base url
      */
     @Nonnull
-    private Map<String, LinkNode> extractObjectsWithSegments(String pageContent, List<AbstractSegment> segments, SpiderRequest request, SpiderResponse response) throws ResultEmptyException {
+    private Map<String, LinkNode> extractObjectsWithSegments(String pageContent, List<AbstractSegment> segments, SpiderRequest request, SpiderResponse response)
+        throws ResultEmptyException {
         StringBuilder mergedContent = null;
 
         if (BooleanUtils.isTrue(page.getUrlExtract())) {

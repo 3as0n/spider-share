@@ -1,25 +1,17 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.service.collector.actor;
-
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 
 import com.datatrees.spider.share.domain.CollectorMessage;
 import com.datatrees.spider.share.domain.ErrorCode;
@@ -30,6 +22,11 @@ import com.datatrees.spider.share.service.domain.SubTaskAble;
 import com.datatrees.spider.share.service.util.UnifiedSysTime;
 import com.treefinance.crawler.framework.context.SearchProcessorContext;
 import org.apache.commons.collections.CollectionUtils;
+
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author <A HREF="">Cheng Wang</A>
@@ -94,10 +91,10 @@ public class TaskMessage {
 
         // set subtask parameter
         if (message instanceof SubTaskAble) {
-            //标记子任务
+            // 标记子任务
             task.setSubTask(true);
 
-            SubTaskAble sub = (SubTaskAble) message;
+            SubTaskAble sub = (SubTaskAble)message;
             this.parentTaskId = sub.getParentTaskId();
             context.setAttribute("parentTaskLogId", this.parentTaskId);
             this.templateId = sub.getTemplateId();
@@ -162,7 +159,7 @@ public class TaskMessage {
         task.setFinishedAt(UnifiedSysTime.INSTANCE.getSystemTime());
         task.setDuration((task.getFinishedAt().getTime() - task.getStartedAt().getTime()) / 1000);
         if (searchResult.getResponseCode() != ErrorCode.TASK_INTERRUPTED_ERROR.getErrorCode()) {
-            //释放代理
+            // 释放代理
             getContext().release();
         }
     }

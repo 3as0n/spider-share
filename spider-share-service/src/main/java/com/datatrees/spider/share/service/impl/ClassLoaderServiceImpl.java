@@ -102,38 +102,6 @@ public class ClassLoaderServiceImpl implements ClassLoaderService, InitializingB
         return getCommonPluginService(pluginName, className, taskId);
     }
 
-    private Class getClassFromCache(String pluginName, String version, String className, Long taskId) throws ExecutionException {
-        String key = buildCacheKeyForClass(pluginName, version, className);
-        logger.info("get class from cache key:{},taskId:{},cacheSize:{}", key, taskId, classCache.size());
-        return classCache.get(key);
-    }
-
-    private ClassLoader getClassLoaderFromCache(String pluginName, String version) throws ExecutionException {
-        String key = buildCacheKeyForClassLoader(pluginName, version);
-        logger.info("get classloader from cache key:{},,cacheSize:{}", key, classLoaderCache.size());
-        return classLoaderCache.get(key);
-    }
-
-    private String buildCacheKeyForClassLoader(String pluginName, String version) {
-        return new StringBuilder(pluginName).append(":").append(version).toString();
-    }
-
-    private String buildCacheKeyForClass(String pluginName, String version, String className) {
-        return new StringBuilder(pluginName).append(":").append(version).append(":").append(className).toString();
-    }
-
-    private String getDefaultPluginFile(String websiteName, Long taskId) {
-        String pluginName = configApi.getProperty("plugin.file", websiteName);
-        logger.info("get default plugin file,webisteName={},taskId={},pluginFile={}", websiteName, taskId, pluginName);
-        return pluginName;
-    }
-
-    private String getDefaultPluginClass(String websiteName, Long taskId) {
-        String pluginClass = configApi.getProperty("plugin.class", websiteName);
-        logger.info("get default plugin class,webisteName={},taskId={},pluginClass={}", websiteName, taskId, pluginClass);
-        return pluginClass;
-    }
-
     @Override
     public void afterPropertiesSet() throws Exception {
         // 默认1小时更新缓存
@@ -173,5 +141,37 @@ public class ClassLoaderServiceImpl implements ClassLoaderService, InitializingB
                 return classLoader.loadClass(className);
             }
         });
+    }
+
+    private Class getClassFromCache(String pluginName, String version, String className, Long taskId) throws ExecutionException {
+        String key = buildCacheKeyForClass(pluginName, version, className);
+        logger.info("get class from cache key:{},taskId:{},cacheSize:{}", key, taskId, classCache.size());
+        return classCache.get(key);
+    }
+
+    private ClassLoader getClassLoaderFromCache(String pluginName, String version) throws ExecutionException {
+        String key = buildCacheKeyForClassLoader(pluginName, version);
+        logger.info("get classloader from cache key:{},,cacheSize:{}", key, classLoaderCache.size());
+        return classLoaderCache.get(key);
+    }
+
+    private String buildCacheKeyForClassLoader(String pluginName, String version) {
+        return new StringBuilder(pluginName).append(":").append(version).toString();
+    }
+
+    private String buildCacheKeyForClass(String pluginName, String version, String className) {
+        return new StringBuilder(pluginName).append(":").append(version).append(":").append(className).toString();
+    }
+
+    private String getDefaultPluginFile(String websiteName, Long taskId) {
+        String pluginName = configApi.getProperty("plugin.file", websiteName);
+        logger.info("get default plugin file,webisteName={},taskId={},pluginFile={}", websiteName, taskId, pluginName);
+        return pluginName;
+    }
+
+    private String getDefaultPluginClass(String websiteName, Long taskId) {
+        String pluginClass = configApi.getProperty("plugin.class", websiteName);
+        logger.info("get default plugin class,webisteName={},taskId={},pluginClass={}", websiteName, taskId, pluginClass);
+        return pluginClass;
     }
 }

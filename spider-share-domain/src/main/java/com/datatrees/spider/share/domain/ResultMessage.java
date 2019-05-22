@@ -1,17 +1,14 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.domain;
@@ -25,17 +22,17 @@ import java.util.HashMap;
  */
 public class ResultMessage extends HashMap<String, Object> {
 
-    public final static String TASK_ID        = "taskId";
+    public final static String TASK_ID = "taskId";
 
-    public final static String WEBSITE_NAME   = "websiteName";
+    public final static String WEBSITE_NAME = "websiteName";
 
-    public final static String STATUS         = "status";// "status":SUCCESS/FAIL/WAITING_FOR_SMS_VERIFY/WAITING_FOR_PICTURE_VERIFY,
+    public final static String STATUS = "status";// "status":SUCCESS/FAIL/WAITING_FOR_SMS_VERIFY/WAITING_FOR_PICTURE_VERIFY,
 
     public final static String ISRESULT_EMPTY = "isResultEmpty";
 
-    public final static String REMARK         = "remark";
+    public final static String REMARK = "remark";
 
-    public final static String WEBSITE_TYPE   = "websiteType";
+    public final static String WEBSITE_TYPE = "websiteType";
 
     public final static String LEVAL_1_STATUS = "level1Status";
 
@@ -43,7 +40,7 @@ public class ResultMessage extends HashMap<String, Object> {
      * @return the level1Status
      */
     public boolean isLevel1Status() {
-        return (boolean) this.get(LEVAL_1_STATUS);
+        return (boolean)this.get(LEVAL_1_STATUS);
     }
 
     /**
@@ -54,7 +51,7 @@ public class ResultMessage extends HashMap<String, Object> {
     }
 
     public Long getTaskId() {
-        return (Long) this.get(TASK_ID);
+        return (Long)this.get(TASK_ID);
     }
 
     public void setTaskId(long taskId) {
@@ -65,7 +62,7 @@ public class ResultMessage extends HashMap<String, Object> {
      * @return the websiteName
      */
     public String getWebsiteName() {
-        return (String) this.get(WEBSITE_NAME);
+        return (String)this.get(WEBSITE_NAME);
     }
 
     /**
@@ -79,7 +76,7 @@ public class ResultMessage extends HashMap<String, Object> {
      * @return the status
      */
     public String getStatus() {
-        return (String) this.get(STATUS);
+        return (String)this.get(STATUS);
     }
 
     /**
@@ -93,7 +90,7 @@ public class ResultMessage extends HashMap<String, Object> {
      * @return the isResultEmpty
      */
     public boolean isResultEmpty() {
-        return (boolean) this.get(ISRESULT_EMPTY);
+        return (boolean)this.get(ISRESULT_EMPTY);
     }
 
     /**

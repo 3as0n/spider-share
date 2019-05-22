@@ -1,24 +1,17 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.service.impl;
-
-import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.rocketmq.client.producer.DefaultMQProducer;
@@ -36,24 +29,29 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by zhouxinghai on 2017/5/11.
  */
 @Service
 public class MessageServiceImpl implements MessageService {
 
-    private static final Logger            logger               = LoggerFactory.getLogger(MessageServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(MessageServiceImpl.class);
 
     /**
      * 默认格式格式化成JSON后发送的字符编码
      */
-    private static final String            DEFAULT_CHARSET_NAME = "UTF-8";
+    private static final String DEFAULT_CHARSET_NAME = "UTF-8";
 
     @Resource
-    private              DefaultMQProducer defaultMQProducer;
+    private DefaultMQProducer defaultMQProducer;
 
     @Resource
-    private              RedisService      redisService;
+    private RedisService redisService;
 
     @Override
     public boolean sendTaskLog(Long taskId, String msg, String errorDetail) {
@@ -138,8 +136,8 @@ public class MessageServiceImpl implements MessageService {
             }
             SendResult sendResult = defaultMQProducer.send(mqMessage);
             if (sendResult != null && SendStatus.SEND_OK.equals(sendResult.getSendStatus())) {
-                logger.info("send message success topic={},tags={},content={},charsetName={},msgId={}", topic, tags,
-                        content.length() > 100 ? content.substring(0, 100) : content, charsetName, sendResult.getMsgId());
+                logger.info("send message success topic={},tags={},content={},charsetName={},msgId={}", topic, tags, content.length() > 100 ? content.substring(0, 100) : content,
+                    charsetName, sendResult.getMsgId());
                 return true;
             }
         } catch (Exception e) {

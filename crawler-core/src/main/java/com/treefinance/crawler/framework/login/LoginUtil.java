@@ -1,17 +1,14 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.login;
@@ -55,11 +52,10 @@ import java.util.Map;
  */
 public class LoginUtil {
 
-    private static final Logger    logger    = LoggerFactory.getLogger(LoginUtil.class);
-    private static       LoginUtil loginUtil = new LoginUtil();
+    private static final Logger logger = LoggerFactory.getLogger(LoginUtil.class);
+    private static LoginUtil loginUtil = new LoginUtil();
 
-    private LoginUtil() {
-    }
+    private LoginUtil() {}
 
     /**
      *
@@ -79,7 +75,7 @@ public class LoginUtil {
             LinkNode linkNode = new LinkNode(loginUrl);
             // // add json headers
             if (StringUtils.isNotEmpty(jsonHeader)) {
-                Map<String, String> headersMap = (Map<String, String>) GsonUtils.fromJson(jsonHeader, Map.class);
+                Map<String, String> headersMap = (Map<String, String>)GsonUtils.fromJson(jsonHeader, Map.class);
                 linkNode.addHeaders(headersMap);
             }
             // get retainQuote
@@ -99,20 +95,13 @@ public class LoginUtil {
         return StringUtils.EMPTY;
     }
 
-    private ProtocolOutput getProtocolOutput(LinkNode linkNode, SearchProcessorContext context) throws InvokeException, ResultEmptyException {
-        AbstractService service = context.getDefaultService();
-
-        SpiderResponse response = ServiceUtils.invoke(service, linkNode, context, null, null);
-
-        return ResponseUtil.getProtocolResponse(response);
-    }
-
     /**
      * do login action with the given cookie.
      * <p>
      * Note: The cookie string is contained in {@link SearchProcessorContext}
      * </p>
-     * @param config  the login config
+     *
+     * @param config the login config
      * @param context the search context
      * @return true if it is login successfully, otherwise false.
      */
@@ -137,7 +126,7 @@ public class LoginUtil {
             // // add json headers
             String jsonHeader = loginCheckConfig.getHeaders();
             if (StringUtils.isNotEmpty(jsonHeader)) {
-                Map<String, String> headersMap = (Map<String, String>) GsonUtils.fromJson(jsonHeader, Map.class);
+                Map<String, String> headersMap = (Map<String, String>)GsonUtils.fromJson(jsonHeader, Map.class);
                 linkNode.addHeaders(headersMap);
             }
 
@@ -150,6 +139,14 @@ public class LoginUtil {
             logger.error("LoginUtil doLoginByCookies throw exception, error message:[" + ex.getMessage() + "]", ex);
         }
         return false;
+    }
+
+    private ProtocolOutput getProtocolOutput(LinkNode linkNode, SearchProcessorContext context) throws InvokeException, ResultEmptyException {
+        AbstractService service = context.getDefaultService();
+
+        SpiderResponse response = ServiceUtils.invoke(service, linkNode, context, null, null);
+
+        return ResponseUtil.getProtocolResponse(response);
     }
 
     private boolean checkLoginResult(ProtocolOutput out, LoginCheckConfig loginCheckConfig, SearchProcessorContext context) throws ResultEmptyException {

@@ -1,36 +1,37 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.common.utils;
-
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * 格式化工具
  */
 public class FormatUtils {
 
-    private static final Logger  logger  = LoggerFactory.getLogger(FormatUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(FormatUtils.class);
 
     /**
      * 匹配${**}
@@ -39,6 +40,7 @@ public class FormatUtils {
 
     /**
      * 查找占位字段
+     * 
      * @param template 模板
      * @return
      */
@@ -53,8 +55,9 @@ public class FormatUtils {
 
     /**
      * 格式化
-     * @param template    模板
-     * @param param       填充参数
+     * 
+     * @param template 模板
+     * @param param 填充参数
      * @param datePattern 时间格式化格式,
      * @return
      */
@@ -80,8 +83,7 @@ public class FormatUtils {
         }
         for (String field : fields) {
             if (!param.containsKey(field)) {
-                logger.warn("param is not containsKey field={},template={},param={}", field, template,
-                        JSON.toJSONStringWithDateFormat(param, DateUtils.YMDHMS));
+                logger.warn("param is not containsKey field={},template={},param={}", field, template, JSON.toJSONStringWithDateFormat(param, DateUtils.YMDHMS));
             }
             String replace = "\\$\\{(" + field + ")}";
             Object value = param.get(field);
@@ -91,7 +93,7 @@ public class FormatUtils {
                 continue;
             }
             if (value instanceof Date) {
-                template = template.replaceAll(replace, DateUtils.format((Date) value, datePattern));
+                template = template.replaceAll(replace, DateUtils.format((Date)value, datePattern));
                 continue;
             }
 
@@ -102,8 +104,9 @@ public class FormatUtils {
 
     /**
      * 格式化
+     * 
      * @param template 模板
-     * @param param    填充参数
+     * @param param 填充参数
      * @return
      */
     public static String format(String template, Map<String, Object> param) {
@@ -114,8 +117,8 @@ public class FormatUtils {
         String successTemplate = "【${status}-${websiteTitle}-${env}】\n配置:${websiteName}\n成功:${lastSuccessTime}";
         String titleTmeplate = "【${status}-${websiteTitle}-${env}】";
 
-        String smsWarnTemplate = "【${status}-${websiteTitle}-${env}】\n配置:${websiteName}\n阈值:人数${maxUser},间隔${resendTime}分钟" +
-                "\n成功:${lastSuccessTime}\n失败:${firstFailTime" + "}至$" + "{lastFailTime" + "}\n任务:${failTaskCount},用户:${failUserCount}";
+        String smsWarnTemplate = "【${status}-${websiteTitle}-${env}】\n配置:${websiteName}\n阈值:人数${maxUser},间隔${resendTime}分钟" + "\n成功:${lastSuccessTime}\n失败:${firstFailTime" + "}至$"
+            + "{lastFailTime" + "}\n任务:${failTaskCount},用户:${failUserCount}";
 
         String template = "【${status}-${websiteTitle}-${env}】\n配置:${websiteName}成功:${lastSuccessTime}";
         Map<String, Object> map = new HashMap<>();

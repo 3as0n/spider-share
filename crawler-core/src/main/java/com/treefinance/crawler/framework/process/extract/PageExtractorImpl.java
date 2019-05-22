@@ -1,38 +1,36 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.process.extract;
 
-import javax.annotation.Nonnull;
-import java.util.List;
-import java.util.Objects;
-
 import com.treefinance.crawler.framework.config.xml.page.PageExtractor;
 import com.treefinance.crawler.framework.config.xml.segment.AbstractSegment;
-import com.treefinance.crawler.framework.exception.ResultEmptyException;
 import com.treefinance.crawler.framework.context.function.SpiderRequest;
 import com.treefinance.crawler.framework.context.function.SpiderResponse;
 import com.treefinance.crawler.framework.context.function.SpiderResponseFactory;
 import com.treefinance.crawler.framework.context.pipeline.ProcessorInvokerAdapter;
+import com.treefinance.crawler.framework.exception.ResultEmptyException;
 import com.treefinance.crawler.framework.process.ProcessorFactory;
 import com.treefinance.crawler.framework.process.domain.PageExtractObject;
 import com.treefinance.crawler.framework.process.segment.SegmentBase;
 import com.treefinance.toolkit.util.Preconditions;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
+
+import javax.annotation.Nonnull;
+
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author <A HREF="">Cheng Wang</A>
@@ -61,7 +59,7 @@ public class PageExtractorImpl extends ProcessorInvokerAdapter {
         PageSourceImpl pageSourceImpl = new PageSourceImpl(pageExtractor.getPageSourceList());
         pageSourceImpl.invoke(request, response);
         // the result of page-source handler.
-        String pageContent = (String) response.getOutPut();
+        String pageContent = (String)response.getOutPut();
 
         logger.info("processing segment for page-extractor: {}, segment-size: {}", pageExtractor.getId(), segments.size());
         PageExtractObject extractObject = new PageExtractObject();

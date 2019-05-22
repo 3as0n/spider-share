@@ -1,17 +1,14 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.domain;
@@ -69,27 +66,27 @@ public enum RedisKeyPrefixEnum {
     /**
      * 备注
      */
-    private final String   remark;
+    private final String remark;
 
     /**
      * 分隔符
      */
-    private final String   separator = ".";
+    private final String separator = ".";
 
     /**
      * 前缀
      */
-    private       String   prefix;
+    private String prefix;
 
     /**
      * 超时时间
      */
-    private       int      timeout;
+    private int timeout;
 
     /**
      * 时间单位
      */
-    private       TimeUnit timeUnit;
+    private TimeUnit timeUnit;
 
     RedisKeyPrefixEnum(String prefix, int timeout, TimeUnit timeUnit, String remark) {
         this.prefix = prefix;
@@ -140,6 +137,6 @@ public enum RedisKeyPrefixEnum {
 
     public int toSeconds() {
         long l = timeUnit.toSeconds(timeout);
-        return l == 0 ? 1 : (int) l;
+        return l == 0 ? 1 : (int)l;
     }
 }

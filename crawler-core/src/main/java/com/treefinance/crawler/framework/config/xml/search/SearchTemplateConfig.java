@@ -1,34 +1,31 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.config.xml.search;
+
+import com.treefinance.crawler.framework.config.annotation.Attr;
+import com.treefinance.crawler.framework.config.annotation.ChildTag;
+import com.treefinance.crawler.framework.config.annotation.Node;
+import com.treefinance.crawler.framework.config.annotation.Tag;
+import com.treefinance.crawler.framework.config.enums.BusinessType;
+import com.treefinance.crawler.framework.config.enums.SearchType;
+import com.treefinance.crawler.framework.config.xml.AbstractBeanDefinition;
+import com.treefinance.crawler.framework.config.xml.plugin.AbstractPlugin;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import com.treefinance.crawler.framework.config.enums.BusinessType;
-import com.treefinance.crawler.framework.config.enums.SearchType;
-import com.treefinance.crawler.framework.config.xml.plugin.AbstractPlugin;
-import com.treefinance.crawler.framework.config.annotation.Attr;
-import com.treefinance.crawler.framework.config.annotation.ChildTag;
-import com.treefinance.crawler.framework.config.annotation.Node;
-import com.treefinance.crawler.framework.config.annotation.Tag;
-import com.treefinance.crawler.framework.config.xml.AbstractBeanDefinition;
 
 /**
  * @author <A HREF="mailto:wangcheng@datatrees.com.cn">Cheng Wang</A>
@@ -41,32 +38,32 @@ public class SearchTemplateConfig extends AbstractBeanDefinition implements Seri
     /**
      *
      */
-    private static final long                     serialVersionUID = -7796504114576595157L;
+    private static final long serialVersionUID = -7796504114576595157L;
 
     // attribute
     private SearchType type;
 
-    private              Boolean                  autoStart;
+    private Boolean autoStart;
 
-    private              Integer                  maxDepth;
+    private Integer maxDepth;
 
-    private              Integer                  threadCount;
+    private Integer threadCount;
 
-    private              Integer                  waitIntervalMillis;
+    private Integer waitIntervalMillis;
 
-    private              AbstractPlugin           plugin;
+    private AbstractPlugin plugin;
 
-    private              Float                    weight;
+    private Float weight;
 
-    //爬取业务标识
+    // 爬取业务标识
     private BusinessType businessType;
 
     // child nodes
-    private              Request                  request;
+    private Request request;
 
-    private              List<SearchSequenceUnit> searchSequence   = new ArrayList<>();
+    private List<SearchSequenceUnit> searchSequence = new ArrayList<>();
 
-    private              List<String>             resultTagList    = new ArrayList<>();
+    private List<String> resultTagList = new ArrayList<>();
 
     public SearchTemplateConfig() {
         super();

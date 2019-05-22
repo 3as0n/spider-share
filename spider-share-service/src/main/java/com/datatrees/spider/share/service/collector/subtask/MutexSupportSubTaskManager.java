@@ -1,25 +1,17 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.service.collector.subtask;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import java.util.*;
-import java.util.concurrent.*;
 
 import com.datatrees.common.conf.PropertiesConfiguration;
 import com.datatrees.spider.share.service.collector.subtask.container.Container;
@@ -36,6 +28,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 /**
  * @author <A HREF="">Cheng Wang</A>
  * @version 1.0
@@ -45,16 +52,11 @@ import org.springframework.stereotype.Service;
 public class MutexSupportSubTaskManager implements SubTaskManager {
 
     private static final Logger logger = LoggerFactory.getLogger(MutexSupportSubTaskManager.class);
-
+    private final Map<Integer, Queue<SubTaskFuture>> syncSubTaskFutureMap = new ConcurrentHashMap<>();
+    private final Map<String, SubTaskFuture> mutexSubTaskFutureMap = new ConcurrentHashMap<String, SubTaskFuture>();
+    private final int maxSubTaskWaitSecond = PropertiesConfiguration.getInstance().getInt("max.subTask.wait.second", 60 * 2);
     // asyncSubTask has no mutex
     private LinkedBlockingQueue<SubTask> asyncSubTaskManagerList = new LinkedBlockingQueue<>();
-
-    private final Map<Integer, Queue<SubTaskFuture>> syncSubTaskFutureMap = new ConcurrentHashMap<>();
-
-    private final Map<String, SubTaskFuture> mutexSubTaskFutureMap = new ConcurrentHashMap<String, SubTaskFuture>();
-
-    private final int maxSubTaskWaitSecond = PropertiesConfiguration.getInstance().getInt("max.subTask.wait.second", 60 * 2);
-
     private Map<String, SubTask> syncMutexSubTaskMap = new ConcurrentHashMap<>();
 
     @Resource
@@ -80,7 +82,7 @@ public class MutexSupportSubTaskManager implements SubTaskManager {
                 try {
                     Container container = future.container;
                     if (container instanceof Mutex) {
-                        ((Mutex) container).stopWaiting();
+                        ((Mutex)container).stopWaiting();
                         mutexSubTaskFutureMap.remove(future.mutexKey);
                     }
                     Map result;
@@ -201,31 +203,6 @@ public class MutexSupportSubTaskManager implements SubTaskManager {
             this.shutdown = true;
         }
 
-        private boolean subTaskWaitingOnCondition(SubTask subTask) {
-            String waiting = subTask.getSeed().getWaiting();
-            if (waiting.equals(waitingOnParentTask)) {
-                if (subTask.getSubmitAt() + maxSubtaskWaitingMillis > System.currentTimeMillis()) {
-                    if (!subTask.getParentTask().getCollectorMessage().isFinish()) {
-                        logger.debug(subTask + " should still waiting for ParentTask finish");
-                        return false;
-                    }
-                } else {
-                    logger.warn(subTask + " waiting for ParentTask timeout in " + maxSubtaskWaitingMillis / 1000 + "s");
-                }
-            } else {
-                try {
-                    long waitingMillis = Long.parseLong(waiting);
-                    if (waitingMillis + subTask.getSubmitAt() > System.currentTimeMillis()) {
-                        logger.debug(subTask + " should witing for " + waitingMillis / 1000 + " s");
-                        return false;
-                    }
-                } catch (Exception e) {
-                    logger.info(e.getMessage(), e);
-                }
-            }
-            return true;
-        }
-
         /**
          * Start execution.
          */
@@ -256,12 +233,38 @@ public class MutexSupportSubTaskManager implements SubTaskManager {
                             submitCount++;
                         }
                     }
-                    //logger.info("active thread count " + activeCount + ", asyncSubTask need wait sleep " + scheduleInterval + "毫秒");
+                    // logger.info("active thread count " + activeCount + ", asyncSubTask need wait sleep " +
+                    // scheduleInterval + "毫秒");
                     Thread.sleep(scheduleInterval);
                 } catch (Exception e) {
                     logger.warn("AsyncSubTaskScheduleThread interrupted", e);
                 }
             }
+        }
+
+        private boolean subTaskWaitingOnCondition(SubTask subTask) {
+            String waiting = subTask.getSeed().getWaiting();
+            if (waiting.equals(waitingOnParentTask)) {
+                if (subTask.getSubmitAt() + maxSubtaskWaitingMillis > System.currentTimeMillis()) {
+                    if (!subTask.getParentTask().getCollectorMessage().isFinish()) {
+                        logger.debug(subTask + " should still waiting for ParentTask finish");
+                        return false;
+                    }
+                } else {
+                    logger.warn(subTask + " waiting for ParentTask timeout in " + maxSubtaskWaitingMillis / 1000 + "s");
+                }
+            } else {
+                try {
+                    long waitingMillis = Long.parseLong(waiting);
+                    if (waitingMillis + subTask.getSubmitAt() > System.currentTimeMillis()) {
+                        logger.debug(subTask + " should witing for " + waitingMillis / 1000 + " s");
+                        return false;
+                    }
+                } catch (Exception e) {
+                    logger.info(e.getMessage(), e);
+                }
+            }
+            return true;
         }
     }
 }

@@ -1,17 +1,14 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.common.http;
@@ -80,7 +77,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class TaskHttpClient {
 
-    private static final Logger                     logger     = LoggerFactory.getLogger(TaskHttpClient.class);
+    private static final Logger logger = LoggerFactory.getLogger(TaskHttpClient.class);
     private static final int MAX_FAILURES = 3;
 
     /**
@@ -93,27 +90,26 @@ public class TaskHttpClient {
             SSLContextBuilder builder = new SSLContextBuilder();
             // 全部信任 不做身份鉴定
             builder.loadTrustMaterial(null, (x509Certificates, s) -> true);
-            sslsf = new SSLConnectionSocketFactory(builder.build(), new String[]{"SSLv2Hello", "SSLv3", "TLSv1", "TLSv1.1", "TLSv1.2"}, null,
-                    NoopHostnameVerifier.INSTANCE);
+            sslsf = new SSLConnectionSocketFactory(builder.build(), new String[] {"SSLv2Hello", "SSLv3", "TLSv1", "TLSv1.1", "TLSv1.2"}, null, NoopHostnameVerifier.INSTANCE);
         } catch (Exception e) {
             logger.error("init SSLConnectionSocketFactory error", e);
         }
     }
 
-    private Request                 request;
+    private Request request;
 
-    private Response                response;
+    private Response response;
 
-    private ContentType             requestContentType;
+    private ContentType requestContentType;
 
-    private CredentialsProvider     credsProvider;
+    private CredentialsProvider credsProvider;
 
     /**
      * 自定义的cookie
      */
     private List<BasicClientCookie> extraCookies = new ArrayList<>();
 
-    private AtomicInteger           connectFailures = new AtomicInteger(0);
+    private AtomicInteger connectFailures = new AtomicInteger(0);
 
     private TaskHttpClient(Request request) {
         this.request = request;
@@ -325,7 +321,7 @@ public class TaskHttpClient {
         int statusCode = 0;
         String url = request.getUrl();
         try {
-            //参数处理
+            // 参数处理
             if (CollectionUtils.isNotEmpty(request.getParams())) {
                 List<NameValuePair> pairs = new ArrayList<>(request.getParams().size());
                 for (Map.Entry<String, Object> entry : request.getParams().entrySet()) {
@@ -381,15 +377,15 @@ public class TaskHttpClient {
                 }
             }
 
-            RequestConfig config = RequestConfig.custom().setRedirectsEnabled(false).setConnectTimeout(request.getConnectTimeout())
-                    .setSocketTimeout(request.getSocketTimeout()).setCookieSpec(CookieSpecs.DEFAULT).build();
+            RequestConfig config = RequestConfig.custom().setRedirectsEnabled(false).setConnectTimeout(request.getConnectTimeout()).setSocketTimeout(request.getSocketTimeout())
+                .setCookieSpec(CookieSpecs.DEFAULT).build();
             // 默认socket设置。注意：正常HTTP建立连接过程中，socket超时会采用{@link RequestConfig#connectTimeout}。
             // 但是SSL在连接建立成功的基础上多了分层协议处理阶段，其中涉及到的socket交互会采用默认设置，不会采用{@link RequestConfig#connectTimeout}
             // 和{@link RequestConfig#socketTimeout}。
             // SO_TIMEOUT:单位毫秒，默认设置5秒。
             SocketConfig socketConfig = SocketConfig.custom().setSoTimeout(5000).build();
-            HttpClientBuilder httpClientBuilder = HttpClients.custom().setDefaultRequestConfig(config).setProxy(proxy)
-                .setDefaultCookieStore(cookieStore).setSSLSocketFactory(sslsf).setDefaultSocketConfig(socketConfig).setUserAgent(Request.USER_AGENT);
+            HttpClientBuilder httpClientBuilder = HttpClients.custom().setDefaultRequestConfig(config).setProxy(proxy).setDefaultCookieStore(cookieStore).setSSLSocketFactory(sslsf)
+                .setDefaultSocketConfig(socketConfig).setUserAgent(Request.USER_AGENT);
             if (null != credsProvider) {
                 httpClientBuilder.setDefaultCredentialsProvider(credsProvider);
             }
@@ -431,12 +427,12 @@ public class TaskHttpClient {
                 String redirectUrl = httpResponse.getFirstHeader(HttpHeadKey.LOCATION).getValue();
                 response.setRedirectUrl(redirectUrl);
                 response.setRedirect(true);
-                logger.warn("HttpClient has redirect,taskId={},websiteName={},proxy={},url={},statusCode={},redirectUrl={}", taskId,
-                        request.getWebsiteName(), request.getProxy(), url, statusCode, redirectUrl);
+                logger.warn("HttpClient has redirect,taskId={},websiteName={},proxy={},url={},statusCode={},redirectUrl={}", taskId, request.getWebsiteName(), request.getProxy(),
+                    url, statusCode, redirectUrl);
             } else {
                 client.abort();
-                logger.error("HttpClient status error,taskId={},websiteName={},proxy={},url={},statusCode={}", taskId, request.getWebsiteName(),
-                        request.getProxy(), url, statusCode);
+                logger.error("HttpClient status error,taskId={},websiteName={},proxy={},url={},statusCode={}", taskId, request.getWebsiteName(), request.getProxy(), url,
+                    statusCode);
             }
         } catch (HttpHostConnectException e) {
             if (request.getProxyEnable()) {
@@ -446,13 +442,11 @@ public class TaskHttpClient {
             }
 
             if (connectFailures.incrementAndGet() < MAX_FAILURES) {
-                logger.warn("connect host failure ,will retry ,taskId={},websiteName={},proxy={},url={}", taskId, request.getWebsiteName(),
-                        request.getProxy(), url);
+                logger.warn("connect host failure ,will retry ,taskId={},websiteName={},proxy={},url={}", taskId, request.getWebsiteName(), request.getProxy(), url);
                 return invoke();
             }
 
-            logger.error("connect failure,retry={},taskId={},websiteName={},proxy={},url={}", connectFailures.get(), taskId, request.getWebsiteName(),
-                    request.getProxy(), url, e);
+            logger.error("connect failure,retry={},taskId={},websiteName={},proxy={},url={}", connectFailures.get(), taskId, request.getWebsiteName(), request.getProxy(), url, e);
             throw new RuntimeException("connect host failure, times=" + connectFailures.get() + ", request=" + request, e);
         } catch (SocketTimeoutException e) {
             if (request.getProxyEnable()) {
@@ -462,16 +456,15 @@ public class TaskHttpClient {
             }
 
             if (request.getRetry().getAndIncrement() < request.getMaxRetry()) {
-                logger.warn("http timeout ,will retry ,taskId={},websiteName={},proxy={},url={}", taskId, request.getWebsiteName(),
-                        request.getProxy(), url);
+                logger.warn("http timeout ,will retry ,taskId={},websiteName={},proxy={},url={}", taskId, request.getWebsiteName(), request.getProxy(), url);
                 return invoke();
             }
-            logger.error("http timeout,retry={},maxRetry={},taskId={},websiteName={},proxy={},url={}", request.getRetry(), request.getMaxRetry(),
-                    taskId, request.getWebsiteName(), request.getProxy(), url, e);
+            logger.error("http timeout,retry={},maxRetry={},taskId={},websiteName={},proxy={},url={}", request.getRetry(), request.getMaxRetry(), taskId, request.getWebsiteName(),
+                request.getProxy(), url, e);
             throw new RuntimeException("http timeout,request=" + request, e);
         } catch (Throwable e) {
-            logger.error("http error ,retry={},maxRetry={},taskId={},websiteName={},proxy={},url={}", request.getRetry(), request.getMaxRetry(),
-                    taskId, request.getWebsiteName(), request.getProxy(), url, e);
+            logger.error("http error ,retry={},maxRetry={},taskId={},websiteName={},proxy={},url={}", request.getRetry(), request.getMaxRetry(), taskId, request.getWebsiteName(),
+                request.getProxy(), url, e);
             throw new RuntimeException("http error request=" + request, e);
         } finally {
             if (httpResponse != null) {
@@ -485,18 +478,17 @@ public class TaskHttpClient {
             try {
                 String sassEnv = TaskUtils.getSassEnv();
 
-                //保存请求
+                // 保存请求
                 BackRedisUtils.rpush(RedisKeyPrefixEnum.TASK_REQUEST.getRedisKey(request.getTaskId()), JSON.toJSONString(response));
                 BackRedisUtils.expire(RedisKeyPrefixEnum.TASK_REQUEST.getRedisKey(request.getTaskId()), RedisKeyPrefixEnum.TASK_REQUEST.toSeconds());
-                //测试或者开发环境保存
+                // 测试或者开发环境保存
                 if (StringUtils.equals(sassEnv, "dev") || StringUtils.equals(sassEnv, "test")) {
-                    //保存请求内容
-                    StringBuilder pc = new StringBuilder("url-->").append(request.getFullUrl()).append("\nrequest_id-->")
-                            .append(request.getRequestId()).append("\nstatus_code-->").append(response.getStatusCode()).append("\nreques_time-->")
-                            .append(DateUtils.formatYmdhms(new Date(request.getRequestTimestamp()))).append("\n").append(response.getPageContent());
+                    // 保存请求内容
+                    StringBuilder pc = new StringBuilder("url-->").append(request.getFullUrl()).append("\nrequest_id-->").append(request.getRequestId()).append("\nstatus_code-->")
+                        .append(response.getStatusCode()).append("\nreques_time-->").append(DateUtils.formatYmdhms(new Date(request.getRequestTimestamp()))).append("\n")
+                        .append(response.getPageContent());
                     BackRedisUtils.rpush(RedisKeyPrefixEnum.TASK_PAGE_CONTENT.getRedisKey(request.getTaskId()), pc.toString());
-                    BackRedisUtils.expire(RedisKeyPrefixEnum.TASK_PAGE_CONTENT.getRedisKey(request.getTaskId()),
-                            RedisKeyPrefixEnum.TASK_PAGE_CONTENT.toSeconds());
+                    BackRedisUtils.expire(RedisKeyPrefixEnum.TASK_PAGE_CONTENT.getRedisKey(request.getTaskId()), RedisKeyPrefixEnum.TASK_PAGE_CONTENT.toSeconds());
 
                 }
             } catch (Throwable e) {
@@ -514,10 +506,10 @@ public class TaskHttpClient {
                 }
 
             }
-            logger.info("http has redirect,taskId={},websiteName={},type={},from={} to redirectUrl={}", taskId, request.getWebsiteName(),
-                    request.getType(), request.getUrl(), redirectUrl);
-            response = create(request.getTaskId(), request.getWebsiteName(), RequestType.GET, true).setRedirectCount(request.getRedirectCount() + 1)
-                    .setUrl(redirectUrl).setAutoRedirect(request.getAutoRedirect()).invoke();
+            logger.info("http has redirect,taskId={},websiteName={},type={},from={} to redirectUrl={}", taskId, request.getWebsiteName(), request.getType(), request.getUrl(),
+                redirectUrl);
+            response = create(request.getTaskId(), request.getWebsiteName(), RequestType.GET, true).setRedirectCount(request.getRedirectCount() + 1).setUrl(redirectUrl)
+                .setAutoRedirect(request.getAutoRedirect()).invoke();
             return response;
         }
         return response;

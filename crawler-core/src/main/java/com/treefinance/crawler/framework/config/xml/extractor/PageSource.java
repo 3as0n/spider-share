@@ -1,31 +1,28 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.config.xml.extractor;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import com.treefinance.crawler.framework.config.xml.page.Regexp;
-import com.treefinance.crawler.framework.config.xml.page.Replacement;
-import com.treefinance.crawler.framework.config.xml.plugin.AbstractPlugin;
 import com.treefinance.crawler.framework.config.annotation.Attr;
 import com.treefinance.crawler.framework.config.annotation.Node;
 import com.treefinance.crawler.framework.config.annotation.Tag;
+import com.treefinance.crawler.framework.config.xml.page.Regexp;
+import com.treefinance.crawler.framework.config.xml.page.Replacement;
+import com.treefinance.crawler.framework.config.xml.plugin.AbstractPlugin;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author <A HREF="mailto:wangcheng@datatrees.com.cn">Cheng Wang</A>
@@ -35,15 +32,15 @@ import com.treefinance.crawler.framework.config.annotation.Tag;
 @Tag("source")
 public class PageSource {
 
-    private String            field;
+    private String field;
 
-    private AbstractPlugin    plugin;
+    private AbstractPlugin plugin;
 
     private List<Replacement> replacements = new ArrayList<>();
 
-    private Regexp            regexp;
+    private Regexp regexp;
 
-    private String            separator;
+    private String separator;
 
     public PageSource() {
         super();

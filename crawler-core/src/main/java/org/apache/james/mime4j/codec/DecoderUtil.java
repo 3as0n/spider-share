@@ -1,20 +1,22 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package org.apache.james.mime4j.codec;
+
+import com.datatrees.common.conf.PropertiesConfiguration;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.james.mime4j.util.CharsetUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -23,11 +25,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.datatrees.common.conf.PropertiesConfiguration;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.james.mime4j.util.CharsetUtil;
-
 /**
  * Static methods for decoding strings, byte arrays and encoded words.
  */
@@ -35,10 +32,11 @@ public class DecoderUtil {
 
     private static final Pattern PATTERN_ENCODED_WORD = Pattern.compile("(.*?)=\\?([^\\?]+?)\\?(\\w)\\?([^\\?]+?)\\?=", Pattern.DOTALL);
 
-    private static       Log     log                  = LogFactory.getLog(DecoderUtil.class);
+    private static Log log = LogFactory.getLog(DecoderUtil.class);
 
     /**
      * Decodes a string containing quoted-printable encoded data.
+     * 
      * @param s the string to decode.
      * @return the decoded bytes.
      */
@@ -65,6 +63,7 @@ public class DecoderUtil {
 
     /**
      * Decodes a string containing base64 encoded data.
+     * 
      * @param s the string to decode.
      * @return the decoded bytes.
      */
@@ -90,10 +89,10 @@ public class DecoderUtil {
     }
 
     /**
-     * Decodes an encoded text encoded with the 'B' encoding (described in RFC 2047) found in a
-     * header field body.
+     * Decodes an encoded text encoded with the 'B' encoding (described in RFC 2047) found in a header field body.
+     * 
      * @param encodedText the encoded text to decode.
-     * @param charset     the Java charset to use.
+     * @param charset the Java charset to use.
      * @return the decoded string.
      * @exception UnsupportedEncodingException if the given Java charset isn't supported.
      */
@@ -103,10 +102,10 @@ public class DecoderUtil {
     }
 
     /**
-     * Decodes an encoded text encoded with the 'Q' encoding (described in RFC 2047) found in a
-     * header field body.
+     * Decodes an encoded text encoded with the 'Q' encoding (described in RFC 2047) found in a header field body.
+     * 
      * @param encodedText the encoded text to decode.
-     * @param charset     the Java charset to use.
+     * @param charset the Java charset to use.
      * @return the decoded string.
      * @exception UnsupportedEncodingException if the given Java charset isn't supported.
      */
@@ -119,8 +118,8 @@ public class DecoderUtil {
 
     /**
      * Decodes a string containing encoded words as defined by RFC 2047. Encoded words have the form
-     * =?charset?enc?encoded-text?= where enc is either 'Q' or 'q' for quoted-printable and 'B' or
-     * 'b' for base64.
+     * =?charset?enc?encoded-text?= where enc is either 'Q' or 'q' for quoted-printable and 'B' or 'b' for base64.
+     * 
      * @param body the string to decode.
      * @return the decoded string.
      */
@@ -130,7 +129,7 @@ public class DecoderUtil {
 
         StringBuilder sb = new StringBuilder();
         body = body.replaceAll(PropertiesConfiguration.getInstance().get("decoded.words.replace.pattern", "\\?=\\s*=\\?[^\\?]+\\?\\w+\\?"), "");
-        for (Matcher matcher = PATTERN_ENCODED_WORD.matcher(body); matcher.find(); ) {
+        for (Matcher matcher = PATTERN_ENCODED_WORD.matcher(body); matcher.find();) {
             String separator = matcher.group(1);
             String mimeCharset = matcher.group(2);
             String encoding = matcher.group(3);
@@ -164,14 +163,13 @@ public class DecoderUtil {
         if (charset == null) {
             if (log.isWarnEnabled()) {
                 log.warn(
-                        "MIME charset '" + mimeCharset + "' in encoded word '" + recombine(mimeCharset, encoding, encodedText) + "' doesn't have a " +
-                                "corresponding Java charset");
+                    "MIME charset '" + mimeCharset + "' in encoded word '" + recombine(mimeCharset, encoding, encodedText) + "' doesn't have a " + "corresponding Java charset");
             }
             return null;
         } else if (!CharsetUtil.isDecodingSupported(charset)) {
             if (log.isWarnEnabled()) {
-                log.warn("Current JDK doesn't support decoding of charset '" + charset + "' (MIME charset '" + mimeCharset + "' in encoded word '" +
-                        recombine(mimeCharset, encoding, encodedText) + "')");
+                log.warn("Current JDK doesn't support decoding of charset '" + charset + "' (MIME charset '" + mimeCharset + "' in encoded word '"
+                    + recombine(mimeCharset, encoding, encodedText) + "')");
             }
             return null;
         }

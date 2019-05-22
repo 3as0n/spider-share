@@ -1,35 +1,55 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.config.xml.extractor;
+
+import com.treefinance.crawler.framework.config.annotation.Attr;
+import com.treefinance.crawler.framework.config.annotation.Node;
+import com.treefinance.crawler.framework.config.annotation.Tag;
+import com.treefinance.crawler.framework.config.enums.fields.FieldVisibleType;
+import com.treefinance.crawler.framework.config.enums.fields.ResultType;
+import com.treefinance.crawler.framework.config.xml.AbstractBeanDefinition;
+import com.treefinance.crawler.framework.config.xml.operation.AbstractOperation;
+import com.treefinance.crawler.framework.config.xml.operation.AppendOperation;
+import com.treefinance.crawler.framework.config.xml.operation.CalculateOperation;
+import com.treefinance.crawler.framework.config.xml.operation.CodecOperation;
+import com.treefinance.crawler.framework.config.xml.operation.DateTimeOperation;
+import com.treefinance.crawler.framework.config.xml.operation.DecodeOperation;
+import com.treefinance.crawler.framework.config.xml.operation.EscapeOperation;
+import com.treefinance.crawler.framework.config.xml.operation.ExtractOperation;
+import com.treefinance.crawler.framework.config.xml.operation.JsonPathOperation;
+import com.treefinance.crawler.framework.config.xml.operation.MailParserOperation;
+import com.treefinance.crawler.framework.config.xml.operation.MappingOperation;
+import com.treefinance.crawler.framework.config.xml.operation.MatchGroupOperation;
+import com.treefinance.crawler.framework.config.xml.operation.ParserOperation;
+import com.treefinance.crawler.framework.config.xml.operation.ProxySetOperation;
+import com.treefinance.crawler.framework.config.xml.operation.RegexOperation;
+import com.treefinance.crawler.framework.config.xml.operation.ReplaceOperation;
+import com.treefinance.crawler.framework.config.xml.operation.ReturnMatchOperation;
+import com.treefinance.crawler.framework.config.xml.operation.ReturnOperation;
+import com.treefinance.crawler.framework.config.xml.operation.SetOperation;
+import com.treefinance.crawler.framework.config.xml.operation.SleepOperation;
+import com.treefinance.crawler.framework.config.xml.operation.TemplateOperation;
+import com.treefinance.crawler.framework.config.xml.operation.TrimOperation;
+import com.treefinance.crawler.framework.config.xml.operation.TripleOperation;
+import com.treefinance.crawler.framework.config.xml.operation.XpathOperation;
+import com.treefinance.crawler.framework.config.xml.plugin.AbstractPlugin;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import com.treefinance.crawler.framework.config.xml.operation.*;
-import com.treefinance.crawler.framework.config.xml.plugin.AbstractPlugin;
-import com.treefinance.crawler.framework.config.annotation.Attr;
-import com.treefinance.crawler.framework.config.annotation.Node;
-import com.treefinance.crawler.framework.config.annotation.Tag;
-import com.treefinance.crawler.framework.config.xml.AbstractBeanDefinition;
-import com.treefinance.crawler.framework.config.enums.fields.FieldVisibleType;
-import com.treefinance.crawler.framework.config.enums.fields.ResultType;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author <A HREF="mailto:wangcheng@datatrees.com.cn">Cheng Wang</A>
@@ -42,31 +62,31 @@ public class FieldExtractor extends AbstractBeanDefinition implements Serializab
     /**
      *
      */
-    private static final long                    serialVersionUID = 169636932735670442L;
+    private static final long serialVersionUID = 169636932735670442L;
 
-    private              String                  field;
+    private String field;
 
-    private              String                  sourceId;
+    private String sourceId;
 
-    private              String                  encoding;
+    private String encoding;
 
     private ResultType resultType;
 
-    private              String                  format;
+    private String format;
 
-    private              AbstractPlugin          plugin;
+    private AbstractPlugin plugin;
 
-    private              List<AbstractOperation> operationList;
+    private List<AbstractOperation> operationList;
 
-    private              Boolean                 notEmpty;
+    private Boolean notEmpty;
 
     private FieldVisibleType fieldVisibleType;
 
-    private              Boolean                 standBy;
+    private Boolean standBy;
 
-    private              String                  defaultValue;
+    private String defaultValue;
 
-    private              String                  businessType;
+    private String businessType;
 
     public FieldExtractor() {
         super();
@@ -158,7 +178,11 @@ public class FieldExtractor extends AbstractBeanDefinition implements Serializab
         return Collections.unmodifiableList(operationList);
     }
 
-    @Node(value = "operation", types = {ParserOperation.class, RegexOperation.class, ReplaceOperation.class, TemplateOperation.class, XpathOperation.class, JsonPathOperation.class, CodecOperation.class, TrimOperation.class, ReturnOperation.class, SetOperation.class, ExtractOperation.class, AppendOperation.class, MatchGroupOperation.class, DateTimeOperation.class, TripleOperation.class, MailParserOperation.class, CalculateOperation.class, EscapeOperation.class, DecodeOperation.class, ProxySetOperation.class, MappingOperation.class, SleepOperation.class, ReturnMatchOperation.class})
+    @Node(value = "operation",
+        types = {ParserOperation.class, RegexOperation.class, ReplaceOperation.class, TemplateOperation.class, XpathOperation.class, JsonPathOperation.class, CodecOperation.class,
+            TrimOperation.class, ReturnOperation.class, SetOperation.class, ExtractOperation.class, AppendOperation.class, MatchGroupOperation.class, DateTimeOperation.class,
+            TripleOperation.class, MailParserOperation.class, CalculateOperation.class, EscapeOperation.class, DecodeOperation.class, ProxySetOperation.class,
+            MappingOperation.class, SleepOperation.class, ReturnMatchOperation.class})
     public void setOperationList(AbstractOperation operation) {
         this.operationList.add(operation);
     }

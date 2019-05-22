@@ -1,24 +1,17 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.service.impl;
-
-import javax.annotation.Resource;
-import java.util.Arrays;
-import java.util.List;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.rocketmq.client.producer.DefaultMQProducer;
@@ -43,26 +36,31 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+
+import java.util.Arrays;
+import java.util.List;
+
 @Service
 public class NotifyServiceImpl implements NotifyService {
 
-    private static final Logger            logger       = LoggerFactory.getLogger(NotifyServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(NotifyServiceImpl.class);
 
     /**
      * 预警业务类型
      */
-    private static final String            BUSINESS     = "monitor";
+    private static final String BUSINESS = "monitor";
 
     /**
      * 预警topic
      */
-    private static final String            TOPIC_NOTIFY = "mq_topic_notify";
+    private static final String TOPIC_NOTIFY = "mq_topic_notify";
 
     @Resource
-    private              SmsNewService     smsNewService;
+    private SmsNewService smsNewService;
 
     @Resource
-    private              DefaultMQProducer defaultMQProducer;
+    private DefaultMQProducer defaultMQProducer;
 
     @Override
     public Boolean sendMonitorEmail(String subject, String body) {
@@ -124,8 +122,7 @@ public class NotifyServiceImpl implements NotifyService {
             SmsMessage message = buildSmsMessage(Arrays.asList(smsReceiver.trim().split(",")), body);
             result = smsNewService.sendMessage(message);
             if (null == result || 1 != result.getCode()) {
-                logger.error("sendSms fail,mobile={},sms={},result={},message={}", smsReceiver, body, JSON.toJSONString(result),
-                        JSON.toJSONString(message));
+                logger.error("sendSms fail,mobile={},sms={},result={},message={}", smsReceiver, body, JSON.toJSONString(result), JSON.toJSONString(message));
                 return false;
             }
             logger.info("resu sms success mobile={},sms={},result={}", smsReceiver, body, JSON.toJSONString(result));
@@ -166,7 +163,7 @@ public class NotifyServiceImpl implements NotifyService {
         TXTMessage message = new TXTMessage();
         message.setMessage(body);
         WeChatBody weChatBody = new WeChatBody();
-        //爬虫:1000007 nginx监控:60
+        // 爬虫:1000007 nginx监控:60
         weChatBody.setAgentId("1000007");
         weChatBody.setWeChatEnum(WeChatEnum.DASHU_AN_APP_TXT);
         weChatBody.setMessage(message);

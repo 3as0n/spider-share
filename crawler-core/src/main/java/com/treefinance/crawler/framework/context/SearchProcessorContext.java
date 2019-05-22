@@ -1,22 +1,17 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.context;
-
-import java.util.*;
 
 import com.datatrees.spider.share.common.http.ProxyUtils;
 import com.google.common.collect.ImmutableList;
@@ -46,6 +41,12 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author <A HREF="">Cheng Wang</A>
  * @version 1.0
@@ -53,30 +54,30 @@ import org.apache.commons.lang.StringUtils;
  */
 public class SearchProcessorContext extends AbstractProcessorContext {
 
-    private final Map<SearchTemplateConfig, Map<Integer, List<SearchSequenceUnit>>> depthPageMap                = new HashMap<>();
+    private final Map<SearchTemplateConfig, Map<Integer, List<SearchSequenceUnit>>> depthPageMap = new HashMap<>();
 
-    private final Map<SearchTemplateConfig, Map<String, SearchSequenceUnit>>        pathPageMap                 = new HashMap<>();
+    private final Map<SearchTemplateConfig, Map<String, SearchSequenceUnit>> pathPageMap = new HashMap<>();
 
-    private final Map<String, SearchTemplateConfig>                                 searchTemplateConfigMap     = new HashMap<>();
+    private final Map<String, SearchTemplateConfig> searchTemplateConfigMap = new HashMap<>();
 
-    private final Map<SearchType, List<SearchTemplateConfig>>                       searchTemplateConfigListMap = new HashMap<>();
+    private final Map<SearchType, List<SearchTemplateConfig>> searchTemplateConfigListMap = new HashMap<>();
 
     // page id ===> page
-    private final Map<String, Page>                                                 pageMap                     = new HashMap<>();
+    private final Map<String, Page> pageMap = new HashMap<>();
 
-    private       ProxyManager                                                      proxyManager;
+    private ProxyManager proxyManager;
 
-    private       LoginResource                                                     loginResource;
+    private LoginResource loginResource;
 
-    private       Proxy                                                             proxyConf;
+    private Proxy proxyConf;
 
-    private       AbstractCookie                                                    cookieConf;
+    private AbstractCookie cookieConf;
 
-    private       Map<String, String>                                               defaultHeader               = new HashMap<>();
+    private Map<String, String> defaultHeader = new HashMap<>();
 
-    private       Map<Page, Integer>                                                pageVisitCountMap           = new HashMap<>();
+    private Map<Page, Integer> pageVisitCountMap = new HashMap<>();
 
-    private       boolean                                                           loginCheckIgnore;
+    private boolean loginCheckIgnore;
 
     public SearchProcessorContext(Website website, Long taskId) {
         super(website, taskId);
@@ -150,7 +151,7 @@ public class SearchProcessorContext extends AbstractProcessorContext {
             } catch (Exception e) {
                 // ignore
             }
-            //init proxy
+            // init proxy
             proxyConf = searchProperties.getProxy();
         }
     }
@@ -165,6 +166,7 @@ public class SearchProcessorContext extends AbstractProcessorContext {
 
     /**
      * wrapper for proxy manager with scope states
+     * 
      * @param proxyManager
      */
     public void setProxyManager(ProxyManager proxyManager) {
@@ -209,21 +211,6 @@ public class SearchProcessorContext extends AbstractProcessorContext {
         return this.pageVisitCountCheck(page);
     }
 
-    private Page pageVisitCountCheck(Page page) {
-        Integer count = pageVisitCountMap.get(page);
-        if (count == null) {
-            count = 1;
-            pageVisitCountMap.put(page, count);
-        } else {
-            pageVisitCountMap.put(page, ++count);
-        }
-        if (page.getMaxPageCount() != null && page.getMaxPageCount() < count - 1) {
-            logger.info("page " + page + " reach the max visitCount " + page.getMaxPageCount() + ", return empty");
-            return null;
-        }
-        return page;
-    }
-
     public void adjustUrlDepth(LinkNode curr, String templateId, int parent) {
         String url = curr.getUrl();
         int result = parent + 1;
@@ -256,10 +243,6 @@ public class SearchProcessorContext extends AbstractProcessorContext {
 
     public boolean needProxy() {
         return proxyConf != null || supportProxy();
-    }
-
-    private boolean supportProxy() {
-        return taskId != null && ProxyUtils.getProxyEnable(taskId);
     }
 
     public boolean needProxyByUrl(String url) {
@@ -297,7 +280,8 @@ public class SearchProcessorContext extends AbstractProcessorContext {
             com.treefinance.crawler.framework.proxy.Proxy proxy = getProxy();
 
             if (proxy == null) {
-                if (strict) throw new NoProxyException("Not found available proxy in remote server! >>> " + url);
+                if (strict)
+                    throw new NoProxyException("Not found available proxy in remote server! >>> " + url);
 
                 logger.warn("Not found available proxy in remote server! >>> " + url);
             }
@@ -341,6 +325,7 @@ public class SearchProcessorContext extends AbstractProcessorContext {
 
     /**
      * 目前当LoginType为plugin时，一般都需要前后端交互
+     *
      * @return
      */
     public boolean needInteractive() {
@@ -445,7 +430,6 @@ public class SearchProcessorContext extends AbstractProcessorContext {
         return loginResource.getCookie(getLoginAccountKey());
     }
 
-
     public Decoder getUnicodeDecoder() {
         UnicodeMode unicodeMode = this.getUnicodeMode();
         if (unicodeMode != null) {
@@ -461,5 +445,24 @@ public class SearchProcessorContext extends AbstractProcessorContext {
         } else {
             super.setCookies(cookies);
         }
+    }
+
+    private Page pageVisitCountCheck(Page page) {
+        Integer count = pageVisitCountMap.get(page);
+        if (count == null) {
+            count = 1;
+            pageVisitCountMap.put(page, count);
+        } else {
+            pageVisitCountMap.put(page, ++count);
+        }
+        if (page.getMaxPageCount() != null && page.getMaxPageCount() < count - 1) {
+            logger.info("page " + page + " reach the max visitCount " + page.getMaxPageCount() + ", return empty");
+            return null;
+        }
+        return page;
+    }
+
+    private boolean supportProxy() {
+        return taskId != null && ProxyUtils.getProxyEnable(taskId);
     }
 }

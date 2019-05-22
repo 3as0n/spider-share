@@ -1,30 +1,27 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.service.collector.chain;
 
-import java.util.List;
-
-import com.treefinance.crawler.framework.context.function.CrawlRequest;
-import com.treefinance.crawler.framework.context.function.CrawlResponse;
-import com.treefinance.crawler.framework.context.function.LinkNode;
 import com.datatrees.spider.share.service.collector.search.SearchProcessor;
 import com.datatrees.spider.share.service.collector.search.URLHandlerImpl;
 import com.datatrees.spider.share.service.collector.worker.deduplicate.DuplicateChecker;
+import com.treefinance.crawler.framework.context.function.CrawlRequest;
+import com.treefinance.crawler.framework.context.function.CrawlResponse;
+import com.treefinance.crawler.framework.context.function.LinkNode;
 import com.treefinance.crawler.lang.AtomicAttributes;
+
+import java.util.List;
 
 /**
  * @author <A HREF="">Cheng Wang</A>
@@ -35,25 +32,25 @@ public class Context extends AtomicAttributes {
 
     private final static String FETCHED_LINK_NODE_LIST = "FETCHED_LINK_NODE_LIST";
 
-    private final static String CURRENT_REQUEST        = "CURRENT_REQUEST";
+    private final static String CURRENT_REQUEST = "CURRENT_REQUEST";
 
-    private final static String CURRENT_RESPONSE       = "CURRENT_RESPONSE";
+    private final static String CURRENT_RESPONSE = "CURRENT_RESPONSE";
 
     // search processor filter
-    private final static String SEARCH_PROCESSOR       = "SEARCH_PROCESSOR";
+    private final static String SEARCH_PROCESSOR = "SEARCH_PROCESSOR";
 
-    private final static String DUPLICATE_CHECKER      = "DUPLICATE_CHECKER";
+    private final static String DUPLICATE_CHECKER = "DUPLICATE_CHECKER";
 
-    private final static String FECHED_LINK_NODE       = "FECHED_LINK_NODE";
+    private final static String FECHED_LINK_NODE = "FECHED_LINK_NODE";
 
     // hosting site & redlist filter
-    private final static String URL_HANDLER            = "URL_HANDLER";
+    private final static String URL_HANDLER = "URL_HANDLER";
 
     // common proerites
-    private final static String CURRENT_LINK_NODE      = "CURRENT_LINK_NODE";
+    private final static String CURRENT_LINK_NODE = "CURRENT_LINK_NODE";
 
     public LinkNode getCurrentLinkNode() {
-        return (LinkNode) getAttribute(CURRENT_LINK_NODE);
+        return (LinkNode)getAttribute(CURRENT_LINK_NODE);
     }
 
     public void setCurrentLinkNode(LinkNode node) {
@@ -61,7 +58,7 @@ public class Context extends AtomicAttributes {
     }
 
     public SearchProcessor getSearchProcessor() {
-        return (SearchProcessor) getAttribute(SEARCH_PROCESSOR);
+        return (SearchProcessor)getAttribute(SEARCH_PROCESSOR);
     }
 
     public void setSearchProcessor(SearchProcessor searchProcessor) {
@@ -69,7 +66,7 @@ public class Context extends AtomicAttributes {
     }
 
     public CrawlRequest getCrawlRequest() {
-        return (CrawlRequest) getAttribute(CURRENT_REQUEST);
+        return (CrawlRequest)getAttribute(CURRENT_REQUEST);
     }
 
     public void setCrawlRequest(CrawlRequest request) {
@@ -77,7 +74,7 @@ public class Context extends AtomicAttributes {
     }
 
     public CrawlResponse getCrawlResponse() {
-        return (CrawlResponse) getAttribute(CURRENT_RESPONSE);
+        return (CrawlResponse)getAttribute(CURRENT_RESPONSE);
     }
 
     public void setCrawlResponse(CrawlResponse response) {
@@ -85,7 +82,7 @@ public class Context extends AtomicAttributes {
     }
 
     public LinkNode getFetchLinkNode() {
-        return (LinkNode) getAttribute(FECHED_LINK_NODE);
+        return (LinkNode)getAttribute(FECHED_LINK_NODE);
     }
 
     public void setFetchLinkNode(LinkNode fetchLinkNode) {
@@ -93,7 +90,7 @@ public class Context extends AtomicAttributes {
     }
 
     public URLHandlerImpl getURLHandlerImpl() {
-        return (URLHandlerImpl) getAttribute(URL_HANDLER);
+        return (URLHandlerImpl)getAttribute(URL_HANDLER);
     }
 
     public void setURLHandlerImpl(URLHandlerImpl handler) {
@@ -101,7 +98,7 @@ public class Context extends AtomicAttributes {
     }
 
     public List<LinkNode> getFetchedLinkNodeList() {
-        return (List<LinkNode>) getAttribute(FETCHED_LINK_NODE_LIST);
+        return (List<LinkNode>)getAttribute(FETCHED_LINK_NODE_LIST);
     }
 
     public void setFetchedLinkNodeList(List<LinkNode> linkNodeList) {
@@ -109,7 +106,7 @@ public class Context extends AtomicAttributes {
     }
 
     public DuplicateChecker getDuplicateChecker() {
-        return (DuplicateChecker) getAttribute(DUPLICATE_CHECKER);
+        return (DuplicateChecker)getAttribute(DUPLICATE_CHECKER);
     }
 
     public void setDuplicateChecker(DuplicateChecker handler) {

@@ -1,25 +1,17 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.config.factory.xml;
-
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
 
 import com.datatrees.common.util.ReflectionUtils;
 import com.treefinance.crawler.framework.config.SpiderConfig;
@@ -36,6 +28,11 @@ import org.jdom2.Parent;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * @author <A HREF="mailto:wangcheng@datatrees.com.cn">Cheng Wang</A>
  * @version 1.0
@@ -43,20 +40,19 @@ import org.jdom2.output.XMLOutputter;
  */
 public class XmlConfigBuilder implements ConfigBuilder {
 
-    private static final XmlConfigBuilder INSTANCE    = new XmlConfigBuilder();
+    private static final XmlConfigBuilder INSTANCE = new XmlConfigBuilder();
 
-    private static final String           splitRegex  = "/";
+    private static final String splitRegex = "/";
 
-    private static final List<Class>      boxingTypes = Arrays.asList(new Class[]{String.class, Long.class, Integer.class, Short.class, Double.class, Float.class, Boolean.class});
+    private static final List<Class> boxingTypes = Arrays.asList(new Class[] {String.class, Long.class, Integer.class, Short.class, Double.class, Float.class, Boolean.class});
 
-    private XmlConfigBuilder() {
-    }
+    private XmlConfigBuilder() {}
 
     public static XmlConfigBuilder newBuilder() {
         return INSTANCE;
     }
-    
-  /*  
+
+    /*  
     private static final class MyXMLProcessor extends AbstractXMLOutputProcessor {
         @Override
         public void process(final Writer out, final Format format, final Element element) throws IOException {
@@ -81,7 +77,7 @@ public class XmlConfigBuilder implements ConfigBuilder {
     private String outputDocument(Document document) {
         XMLOutputter fmt = new XMLOutputter();
         Format f = Format.getPrettyFormat();
-        //  fmt.setXMLOutputProcessor(new MyXMLProcessor());
+        // fmt.setXMLOutputProcessor(new MyXMLProcessor());
         f.setExpandEmptyElements(true);
         fmt.setFormat(f);
         return fmt.outputString(document);
@@ -99,14 +95,15 @@ public class XmlConfigBuilder implements ConfigBuilder {
             }
 
             if (parent instanceof Element) {
-                this.processObjectWithAttr((Element) parent, obj);
+                this.processObjectWithAttr((Element)parent, obj);
             }
         }
         processObjectForTagMethods(parent, obj);
     }
 
     private void processObjectForTagMethods(Parent parent, Object obj) {
-        @SuppressWarnings("unchecked") List<Method> tagMethods = ReflectionUtils.listGetMethodWithAnnotations(obj.getClass(), Tag.class, ChildTag.class);
+        @SuppressWarnings("unchecked")
+        List<Method> tagMethods = ReflectionUtils.listGetMethodWithAnnotations(obj.getClass(), Tag.class, ChildTag.class);
         for (Method tagMethod : tagMethods) {
             if (tagMethod.isAnnotationPresent(Tag.class)) {
                 this.processTagMethod(parent, obj, tagMethod);
@@ -122,16 +119,16 @@ public class XmlConfigBuilder implements ConfigBuilder {
             Tag tag = tagMethod.getAnnotation(Tag.class);
             String[] splitList = tag.value().split(splitRegex);
             String lastPath = splitList.length > 0 ? splitList[splitList.length - 1] : "";
-            Element lastParentElement = (Element) (splitList.length > 1 ? createElement(splitList[splitList.length - 2]) : parent);
+            Element lastParentElement = (Element)(splitList.length > 1 ? createElement(splitList[splitList.length - 2]) : parent);
             Element element = this.createElementWithTag(lastPath);
             if (element == null && parent instanceof Element) {
-                element = (Element) parent;
+                element = (Element)parent;
             } else if (element != null) {
                 lastParentElement.addContent(element);
             }
 
             if (ReflectionUtils.isColleciton(child)) {
-                for (Iterator<?> iterator = ReflectionUtils.iteratorColleciton(child); iterator.hasNext(); ) {
+                for (Iterator<?> iterator = ReflectionUtils.iteratorColleciton(child); iterator.hasNext();) {
                     Object item = iterator.next();
                     this.processObjectWithTag(element, item);
                 }
@@ -148,9 +145,9 @@ public class XmlConfigBuilder implements ConfigBuilder {
             ChildTag tag = tagMethod.getAnnotation(ChildTag.class);
             String[] splitList = tag.value().split(splitRegex);
             String lastPath = splitList.length > 0 ? splitList[splitList.length - 1] : "";
-            Element lastParentElement = (Element) (splitList.length > 1 ? createElement(splitList[splitList.length - 2]) : parent);
+            Element lastParentElement = (Element)(splitList.length > 1 ? createElement(splitList[splitList.length - 2]) : parent);
             if (StringUtils.isNotBlank(lastPath)) {
-                for (Iterator<?> iterator = ReflectionUtils.iteratorColleciton(child); iterator.hasNext(); ) {
+                for (Iterator<?> iterator = ReflectionUtils.iteratorColleciton(child); iterator.hasNext();) {
                     Object item = iterator.next();
                     Element element = createElement(lastPath);
                     if (tag.referenced()) {// ref bean
@@ -172,11 +169,13 @@ public class XmlConfigBuilder implements ConfigBuilder {
             element.addContent(lastParentElement);
             lastParentElement = element;
         }
-        if (!lastParentElement.equals(parent)) parent.addContent(lastParentElement);
+        if (!lastParentElement.equals(parent))
+            parent.addContent(lastParentElement);
     }
 
     private void processObjectWithAttr(Element parent, Object obj) {
-        @SuppressWarnings("unchecked") List<Method> attrMethods = ReflectionUtils.listGetMethodWithAnnotations(obj.getClass(), Attr.class);
+        @SuppressWarnings("unchecked")
+        List<Method> attrMethods = ReflectionUtils.listGetMethodWithAnnotations(obj.getClass(), Attr.class);
         for (Method method : attrMethods) {
             Object attrObj = ReflectionUtils.invokeMethod(method, obj);
             if (attrObj != null) {

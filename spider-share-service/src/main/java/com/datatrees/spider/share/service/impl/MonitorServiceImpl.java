@@ -1,25 +1,17 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.service.impl;
-
-import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.rocketmq.client.producer.DefaultMQProducer;
@@ -27,32 +19,38 @@ import com.alibaba.rocketmq.client.producer.SendResult;
 import com.alibaba.rocketmq.client.producer.SendStatus;
 import com.alibaba.rocketmq.common.message.Message;
 import com.datatrees.spider.share.api.SpiderTaskApi;
-import com.datatrees.spider.share.service.MonitorService;
-import com.datatrees.spider.share.common.utils.TaskUtils;
 import com.datatrees.spider.share.common.utils.DateUtils;
+import com.datatrees.spider.share.common.utils.TaskUtils;
 import com.datatrees.spider.share.common.utils.TemplateUtils;
 import com.datatrees.spider.share.domain.AttributeKey;
+import com.datatrees.spider.share.domain.ErrorCode;
 import com.datatrees.spider.share.domain.TopicEnum;
 import com.datatrees.spider.share.domain.TopicTag;
-import com.datatrees.spider.share.domain.ErrorCode;
 import com.datatrees.spider.share.domain.http.HttpResult;
+import com.datatrees.spider.share.service.MonitorService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Service
 public class MonitorServiceImpl implements MonitorService {
 
-    private static final Logger            logger               = LoggerFactory.getLogger(MonitorServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(MonitorServiceImpl.class);
 
-    private static final String            DEFAULT_CHARSET_NAME = "UTF-8";
-
-    @Resource
-    private              SpiderTaskApi     crawlerTaskService;
+    private static final String DEFAULT_CHARSET_NAME = "UTF-8";
 
     @Resource
-    private              DefaultMQProducer defaultMQProducer;
+    private SpiderTaskApi crawlerTaskService;
+
+    @Resource
+    private DefaultMQProducer defaultMQProducer;
 
     @Override
     public void initTask(Long taskId, String websiteName, Object userName) {
@@ -136,8 +134,8 @@ public class MonitorServiceImpl implements MonitorService {
     }
 
     @Override
-    public void sendMethodUseTime(Long taskId, String websiteName, String key, String className, String methodName, List<Object> param, Object result,
-            long startTime, long endTime) {
+    public void sendMethodUseTime(Long taskId, String websiteName, String key, String className, String methodName, List<Object> param, Object result, long startTime,
+        long endTime) {
         Map<String, Object> map = new HashMap<>();
         map.put(AttributeKey.TIMESTAMP, System.currentTimeMillis());
         map.put(AttributeKey.TASK_ID, taskId);
@@ -173,8 +171,8 @@ public class MonitorServiceImpl implements MonitorService {
             }
             SendResult sendResult = defaultMQProducer.send(mqMessage);
             if (sendResult != null && SendStatus.SEND_OK.equals(sendResult.getSendStatus())) {
-                logger.info("send message success topic={},tags={},content={},charsetName={},msgId={}", topic, tags,
-                        content.length() > 100 ? content.substring(0, 100) : content, DEFAULT_CHARSET_NAME, sendResult.getMsgId());
+                logger.info("send message success topic={},tags={},content={},charsetName={},msgId={}", topic, tags, content.length() > 100 ? content.substring(0, 100) : content,
+                    DEFAULT_CHARSET_NAME, sendResult.getMsgId());
                 return true;
             }
         } catch (Exception e) {

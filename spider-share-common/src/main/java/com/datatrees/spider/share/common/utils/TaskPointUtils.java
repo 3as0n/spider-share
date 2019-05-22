@@ -23,8 +23,7 @@ public final class TaskPointUtils {
 
     private static TaskPointManager taskPointManager;
 
-    private TaskPointUtils() {
-    }
+    private TaskPointUtils() {}
 
     private static TaskPointManager getTaskPointManager() {
         if (taskPointManager == null) {

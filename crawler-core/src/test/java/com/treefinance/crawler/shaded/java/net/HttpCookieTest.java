@@ -17,8 +17,6 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
-
 /**
  * @author Jerry
  * @date 2019-05-22 20:09

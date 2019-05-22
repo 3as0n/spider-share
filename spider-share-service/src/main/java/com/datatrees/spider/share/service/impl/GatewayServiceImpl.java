@@ -1,24 +1,17 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.service.impl;
-
-import javax.annotation.Resource;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import com.alibaba.rocketmq.client.producer.DefaultMQProducer;
 import com.alibaba.rocketmq.client.producer.SendResult;
@@ -26,33 +19,32 @@ import com.alibaba.rocketmq.client.producer.SendStatus;
 import com.alibaba.rocketmq.common.message.Message;
 import com.datatrees.common.util.GsonUtils;
 import com.datatrees.crawler.core.processor.common.resource.DataResource;
+import com.datatrees.spider.share.domain.ResultMessage;
 import com.datatrees.spider.share.service.dao.RedisDao;
 import com.datatrees.spider.share.service.message.MessageFactory;
-import com.datatrees.spider.share.domain.ResultMessage;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 @Service
 public class GatewayServiceImpl implements DataResource {
 
-    private static final Logger            logger = LoggerFactory.getLogger(GatewayServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(GatewayServiceImpl.class);
 
     @Resource
-    private              RedisDao          redisDao;
+    private RedisDao redisDao;
 
     @Resource
-    private              MessageFactory    messageFactory;
+    private MessageFactory messageFactory;
 
     @Resource
-    private              DefaultMQProducer defaultMQProducer;
-
-    private String genRedisKey(Map<String, Object> parameters) {
-        StringBuilder sb = new StringBuilder();
-        String taskId = String.valueOf(parameters.get("taskId"));
-        return sb.append("verify_result_").append(taskId).toString();
-    }
+    private DefaultMQProducer defaultMQProducer;
 
     @Override
     public Object getData(Map<String, Object> parameters) {
@@ -135,6 +127,12 @@ public class GatewayServiceImpl implements DataResource {
             logger.error(e.getMessage(), e);
             return false;
         }
+    }
+
+    private String genRedisKey(Map<String, Object> parameters) {
+        StringBuilder sb = new StringBuilder();
+        String taskId = String.valueOf(parameters.get("taskId"));
+        return sb.append("verify_result_").append(taskId).toString();
     }
 
 }

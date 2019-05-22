@@ -1,30 +1,20 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.service.plugin.qrcode;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
 import com.datatrees.common.conf.PropertiesConfiguration;
 import com.datatrees.common.util.GsonUtils;
-import com.treefinance.crawler.framework.context.AbstractProcessorContext;
-import com.treefinance.crawler.framework.extension.plugin.PluginConstants;
-import com.treefinance.crawler.framework.extension.plugin.PluginFactory;
 import com.datatrees.spider.share.common.utils.BeanFactoryUtils;
 import com.datatrees.spider.share.domain.AttributeKey;
 import com.datatrees.spider.share.domain.directive.DirectiveEnum;
@@ -34,22 +24,28 @@ import com.datatrees.spider.share.domain.directive.DirectiveType;
 import com.datatrees.spider.share.service.MonitorService;
 import com.datatrees.spider.share.service.plugin.AbstractRawdataPlugin;
 import com.google.gson.reflect.TypeToken;
+import com.treefinance.crawler.framework.context.AbstractProcessorContext;
+import com.treefinance.crawler.framework.extension.plugin.PluginConstants;
+import com.treefinance.crawler.framework.extension.plugin.PluginFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractQRCodePlugin extends AbstractRawdataPlugin implements QRCodeVerification {
 
     int verifyQRCodeCount = 0;
 
-    private Logger         logger         = LoggerFactory.getLogger(AbstractQRCodePlugin.class);
+    private Logger logger = LoggerFactory.getLogger(AbstractQRCodePlugin.class);
 
     private MonitorService monitorService = BeanFactoryUtils.getBean(MonitorService.class);
 
     @Override
     public String process(String... args) throws Exception {
-        Map<String, String> paramMap = (LinkedHashMap<String, String>) GsonUtils
-                .fromJson(args[0], new TypeToken<LinkedHashMap<String, String>>() {}.getType());
+        Map<String, String> paramMap = (LinkedHashMap<String, String>)GsonUtils.fromJson(args[0], new TypeToken<LinkedHashMap<String, String>>() {}.getType());
         return GsonUtils.toJson(doProcess(paramMap));
     }
 
@@ -61,7 +57,7 @@ public abstract class AbstractQRCodePlugin extends AbstractRawdataPlugin impleme
         Map<String, String> resultMap = new LinkedHashMap<String, String>();
         Map paramsMap = perpareParam(paramMap);
 
-        //Map<String, Object> redisMap = new HashMap<String, Object>();
+        // Map<String, Object> redisMap = new HashMap<String, Object>();
         if (null == taskId || StringUtils.isBlank(websiteName)) {
             logger.error("invalid params taskId or websitename is empty! taskId={},websiteName={}", taskId, websiteName);
             resultMap.put(AttributeKey.ERROR_CODE, "-1");
@@ -73,14 +69,14 @@ public abstract class AbstractQRCodePlugin extends AbstractRawdataPlugin impleme
             resultMap.putAll(paramMap);
             return resultMap;
         }
-        //二维码不需要刷新,暂时不需要重试
-        //最大重试次数
+        // 二维码不需要刷新,暂时不需要重试
+        // 最大重试次数
         int maxRetry = 0;
-        //当前重试次数
+        // 当前重试次数
         int retry = 0;
         monitorService.sendTaskLog(taskId, "电商-->校验二维码启动-->成功");
         getMessageService().sendTaskLog(taskId, "等待用户扫描二维码");
-        //保存交互指令到redis,让APP端轮询进入等待模式
+        // 保存交互指令到redis,让APP端轮询进入等待模式
         DirectiveResult<String> sendDirective = new DirectiveResult<>(DirectiveType.CRAWL_QR, taskId);
         sendDirective.fill(DirectiveRedisCode.WAITTING, null);
         String directiveId = null;
@@ -106,18 +102,16 @@ public abstract class AbstractQRCodePlugin extends AbstractRawdataPlugin impleme
                 }
                 logger.info("taskId={},directiveId={},websiteName={},verifyResult={}", taskId, directiveId, websiteName, verifyResult.status);
                 if (QRCodeStatus.SCANNED == verifyResult.status) {
-                    //已扫描,待确认
+                    // 已扫描,待确认
                     sendDirective.fill(DirectiveRedisCode.SCANNED, null);
                     getRedisService().saveDirectiveResult(directiveId, sendDirective);
-                    logger.info("verifyQRCodeStatus taskId={},directiveId={},websiteName={},status = {}", taskId, directiveId, websiteName,
-                            DirectiveRedisCode.SCANNED);
+                    logger.info("verifyQRCodeStatus taskId={},directiveId={},websiteName={},status = {}", taskId, directiveId, websiteName, DirectiveRedisCode.SCANNED);
                     monitorService.sendTaskLog(taskId, "电商-->用户已扫描,等待确认-->成功");
                 }
                 if (QRCodeStatus.CONFIRMED == verifyResult.status) {
                     QRCodeResult confirmResult = confirmQRCodeStatus(paramsMap);
                     if (null != confirmResult) {
-                        logger.info("confirmQRCodeStatus taskId={},directiveId={},websiteName={},confirmResult = {}", taskId, directiveId,
-                                websiteName, confirmResult.status);
+                        logger.info("confirmQRCodeStatus taskId={},directiveId={},websiteName={},confirmResult = {}", taskId, directiveId, websiteName, confirmResult.status);
                         if (QRCodeStatus.SUCCESS == confirmResult.status) {
                             resultMap.put(PluginConstants.FIELD, this.postQRCode(confirmResult.result));
                             sendDirective.fill(DirectiveRedisCode.SUCCESS, null);
@@ -138,11 +132,10 @@ public abstract class AbstractQRCodePlugin extends AbstractRawdataPlugin impleme
             getRedisService().saveDirectiveResult(directiveId, sendDirective);
         }
 
-        //redisMap.put(PluginConstants.FIELD, DirectiveRedisCode.SKIP);
-        logger.info("qrcode valid fail, taskId={},directiveId={},websiteName={},status={}", taskId, directiveId, websiteName,
-                DirectiveRedisCode.SKIP);
-        //ThreadInterruptedUtil.setInterrupt(Thread.currentThread());
-        //throw new ResultEmptyException("二维码验证失败");
+        // redisMap.put(PluginConstants.FIELD, DirectiveRedisCode.SKIP);
+        logger.info("qrcode valid fail, taskId={},directiveId={},websiteName={},status={}", taskId, directiveId, websiteName, DirectiveRedisCode.SKIP);
+        // ThreadInterruptedUtil.setInterrupt(Thread.currentThread());
+        // throw new ResultEmptyException("二维码验证失败");
         resultMap.put(PluginConstants.FIELD, DirectiveRedisCode.SKIP);
         return resultMap;
     }
@@ -160,15 +153,15 @@ public abstract class AbstractQRCodePlugin extends AbstractRawdataPlugin impleme
         return "CONFIRMED";
     }
 
+    public boolean isQRCodeNotEmpty(Map<String, String> parms) {
+        return true;
+    }
+
     protected void setSendMessageTips(Map<String, String> parms, String title, String tips) {
         if (parms != null) {
             parms.put("tips", tips);
             parms.put("title", title);
         }
-    }
-
-    public boolean isQRCodeNotEmpty(Map<String, String> parms) {
-        return true;
     }
 
     protected int getMaxInterval(String websiteName) {

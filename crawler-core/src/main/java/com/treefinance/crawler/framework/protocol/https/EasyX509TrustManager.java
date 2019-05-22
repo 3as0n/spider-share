@@ -1,58 +1,53 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.protocol.https;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
+
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * <p>
- * EasyX509TrustManager unlike default {@link X509TrustManager} accepts
- * self-signed certificates.
+ * EasyX509TrustManager unlike default {@link X509TrustManager} accepts self-signed certificates.
  * </p>
  * <p>
- * This trust manager SHOULD NOT be used for productive systems
- * due to security reasons, unless it is a concious decision and
- * you are perfectly aware of security implications of accepting
- * self-signed certificates
+ * This trust manager SHOULD NOT be used for productive systems due to security reasons, unless it is a concious
+ * decision and you are perfectly aware of security implications of accepting self-signed certificates
  * </p>
+ * 
  * @author <A HREF="">Cheng Wang</A>
  * @author <A HREF="">Cheng Wang</A>
- * <p>
- * DISCLAIMER: HttpClient developers DO NOT actively support this component.
- * The component is provided as a reference material, which may be inappropriate
- * for use without additional customization.
- * </p>
+ *         <p>
+ *         DISCLAIMER: HttpClient developers DO NOT actively support this component. The component is provided as a
+ *         reference material, which may be inappropriate for use without additional customization.
+ *         </p>
  */
 public class EasyX509TrustManager implements X509TrustManager {
 
     /** Log object for this class. */
-    private static final Logger           LOG                  = LoggerFactory.getLogger(EasyX509TrustManager.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EasyX509TrustManager.class);
 
-    private              X509TrustManager standardTrustManager = null;
+    private X509TrustManager standardTrustManager = null;
 
     /**
      * Constructor for EasyX509TrustManager.
@@ -65,7 +60,7 @@ public class EasyX509TrustManager implements X509TrustManager {
         if (trustmanagers.length == 0) {
             throw new NoSuchAlgorithmException("no trust manager found");
         }
-        this.standardTrustManager = (X509TrustManager) trustmanagers[0];
+        this.standardTrustManager = (X509TrustManager)trustmanagers[0];
     }
 
     /**
@@ -86,11 +81,11 @@ public class EasyX509TrustManager implements X509TrustManager {
             }
         }
         // no need to do server check
-        //        if ((certificates != null) && (certificates.length == 1)) {
-        //            certificates[0].checkValidity();
-        //        } else {
-        //            standardTrustManager.checkServerTrusted(certificates,authType);
-        //        }
+        // if ((certificates != null) && (certificates.length == 1)) {
+        // certificates[0].checkValidity();
+        // } else {
+        // standardTrustManager.checkServerTrusted(certificates,authType);
+        // }
     }
 
     /**

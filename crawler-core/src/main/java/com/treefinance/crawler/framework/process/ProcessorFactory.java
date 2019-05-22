@@ -1,45 +1,29 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.process;
 
-import javax.annotation.Nonnull;
-import java.lang.reflect.Constructor;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.datatrees.common.conf.Configurable;
 import com.datatrees.common.conf.Configuration;
-import com.treefinance.crawler.framework.config.xml.extractor.FieldExtractor;
-import com.treefinance.crawler.framework.config.enums.fields.ResultType;
-import com.treefinance.crawler.framework.config.xml.operation.AbstractOperation;
-import com.treefinance.crawler.framework.config.enums.operation.OperationType;
-import com.treefinance.crawler.framework.config.xml.segment.AbstractSegment;
-import com.treefinance.crawler.framework.config.enums.SegmentType;
-import com.treefinance.crawler.framework.config.xml.service.AbstractService;
-import com.treefinance.crawler.framework.config.enums.ServiceType;
-import com.treefinance.crawler.framework.process.operation.Operation;
-import com.treefinance.crawler.framework.process.operation.impl.*;
-import com.treefinance.crawler.framework.process.segment.SegmentBase;
-import com.treefinance.crawler.framework.process.segment.impl.*;
-import com.treefinance.crawler.framework.process.service.ServiceBase;
-import com.treefinance.crawler.framework.process.service.impl.DefaultService;
-import com.treefinance.crawler.framework.process.service.impl.PluginServiceImpl;
-import com.treefinance.crawler.framework.process.service.impl.TaskHttpServiceImpl;
 import com.treefinance.crawler.exception.UnexpectedException;
+import com.treefinance.crawler.framework.config.enums.SegmentType;
+import com.treefinance.crawler.framework.config.enums.ServiceType;
+import com.treefinance.crawler.framework.config.enums.fields.ResultType;
+import com.treefinance.crawler.framework.config.enums.operation.OperationType;
+import com.treefinance.crawler.framework.config.xml.extractor.FieldExtractor;
+import com.treefinance.crawler.framework.config.xml.operation.AbstractOperation;
+import com.treefinance.crawler.framework.config.xml.segment.AbstractSegment;
+import com.treefinance.crawler.framework.config.xml.service.AbstractService;
 import com.treefinance.crawler.framework.format.Formatter;
 import com.treefinance.crawler.framework.format.base.BooleanFormatter;
 import com.treefinance.crawler.framework.format.base.IntegerFormatter;
@@ -53,6 +37,47 @@ import com.treefinance.crawler.framework.format.money.RmbFormatter;
 import com.treefinance.crawler.framework.format.number.NumberFormatter;
 import com.treefinance.crawler.framework.format.special.FileFormatter;
 import com.treefinance.crawler.framework.format.special.ResourceStringFormatter;
+import com.treefinance.crawler.framework.process.operation.Operation;
+import com.treefinance.crawler.framework.process.operation.impl.AppendOperationImpl;
+import com.treefinance.crawler.framework.process.operation.impl.CalculateOperationImpl;
+import com.treefinance.crawler.framework.process.operation.impl.CodecOperationImpl;
+import com.treefinance.crawler.framework.process.operation.impl.DateTimeOperationImpl;
+import com.treefinance.crawler.framework.process.operation.impl.DecodeOperationImpl;
+import com.treefinance.crawler.framework.process.operation.impl.EscapeOperationImpl;
+import com.treefinance.crawler.framework.process.operation.impl.ExtractOperationImpl;
+import com.treefinance.crawler.framework.process.operation.impl.JsonPathOperationImpl;
+import com.treefinance.crawler.framework.process.operation.impl.MailParserOperationImpl;
+import com.treefinance.crawler.framework.process.operation.impl.MappingOperationImpl;
+import com.treefinance.crawler.framework.process.operation.impl.MatchGroupOperationImpl;
+import com.treefinance.crawler.framework.process.operation.impl.ParserOperationImpl;
+import com.treefinance.crawler.framework.process.operation.impl.ProxySetOperationImpl;
+import com.treefinance.crawler.framework.process.operation.impl.RegexOperationImpl;
+import com.treefinance.crawler.framework.process.operation.impl.ReplaceOperationImpl;
+import com.treefinance.crawler.framework.process.operation.impl.ReturnMatchOperationImpl;
+import com.treefinance.crawler.framework.process.operation.impl.ReturnOperationImpl;
+import com.treefinance.crawler.framework.process.operation.impl.SetOperationImpl;
+import com.treefinance.crawler.framework.process.operation.impl.SleepOperationImpl;
+import com.treefinance.crawler.framework.process.operation.impl.TemplateOperationImpl;
+import com.treefinance.crawler.framework.process.operation.impl.TrimOperationImpl;
+import com.treefinance.crawler.framework.process.operation.impl.TripleOperationImpl;
+import com.treefinance.crawler.framework.process.operation.impl.XpathOperationImpl;
+import com.treefinance.crawler.framework.process.segment.SegmentBase;
+import com.treefinance.crawler.framework.process.segment.impl.BaseSegmentImpl;
+import com.treefinance.crawler.framework.process.segment.impl.CalculateSegmentImpl;
+import com.treefinance.crawler.framework.process.segment.impl.JsonPathSegmentImpl;
+import com.treefinance.crawler.framework.process.segment.impl.RegexSegmentImpl;
+import com.treefinance.crawler.framework.process.segment.impl.SplitSegmentImpl;
+import com.treefinance.crawler.framework.process.segment.impl.XpathSegmentImpl;
+import com.treefinance.crawler.framework.process.service.ServiceBase;
+import com.treefinance.crawler.framework.process.service.impl.DefaultService;
+import com.treefinance.crawler.framework.process.service.impl.PluginServiceImpl;
+import com.treefinance.crawler.framework.process.service.impl.TaskHttpServiceImpl;
+
+import javax.annotation.Nonnull;
+
+import java.lang.reflect.Constructor;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author <A HREF="">Cheng Wang</A>
@@ -113,8 +138,7 @@ public final class ProcessorFactory {
         register(ResultType.LONG, LongFormatter.class);
     }
 
-    private ProcessorFactory() {
-    }
+    private ProcessorFactory() {}
 
     public static void register(Enum type, Class clazz) {
         REGISTER.put(type, clazz);
@@ -184,7 +208,7 @@ public final class ProcessorFactory {
         }
 
         if (formatter instanceof Configurable) {
-            ((Configurable) formatter).setConf(conf);
+            ((Configurable)formatter).setConf(conf);
         }
 
         return formatter;

@@ -1,84 +1,82 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.treefinance.crawler.framework.config.xml.segment;
+
+import com.datatrees.common.util.json.annotation.Description;
+import com.treefinance.crawler.framework.config.annotation.Attr;
+import com.treefinance.crawler.framework.config.annotation.ChildTag;
+import com.treefinance.crawler.framework.config.annotation.Node;
+import com.treefinance.crawler.framework.config.annotation.Tag;
+import com.treefinance.crawler.framework.config.enums.SegmentType;
+import com.treefinance.crawler.framework.config.xml.extractor.FieldExtractor;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.datatrees.common.util.json.annotation.Description;
-import com.treefinance.crawler.framework.config.enums.SegmentType;
-import com.treefinance.crawler.framework.config.xml.extractor.FieldExtractor;
-import com.treefinance.crawler.framework.config.annotation.Attr;
-import com.treefinance.crawler.framework.config.annotation.ChildTag;
-import com.treefinance.crawler.framework.config.annotation.Node;
-import com.treefinance.crawler.framework.config.annotation.Tag;
-import org.apache.commons.lang3.StringUtils;
-
 /**
  * @author <A HREF="mailto:wangcheng@datatrees.com.cn">Cheng Wang</A>
  * @version 1.0
  * @since Feb 7, 2014 4:56:49 PM
  */
-@Description(value = "type", keys = {"XPATH", "JSONPATH", "REGEX", "SPLIT", "CALCULATE", "BASE"}, types = {XpathSegment.class, JsonPathSegment.class, RegexSegment.class, SplitSegment.class, CalculateSegment.class, BaseSegment.class})
+@Description(value = "type", keys = {"XPATH", "JSONPATH", "REGEX", "SPLIT", "CALCULATE", "BASE"},
+    types = {XpathSegment.class, JsonPathSegment.class, RegexSegment.class, SplitSegment.class, CalculateSegment.class, BaseSegment.class})
 public abstract class AbstractSegment implements Serializable {
 
     /**  */
-    private static final long                  serialVersionUID = -5652099003079996052L;
+    private static final long serialVersionUID = -5652099003079996052L;
 
     private SegmentType type;
 
-    private              String                name;
+    private String name;
 
-    private              String                resultClass;
+    private String resultClass;
 
     // switch for whether return list or list.get(0)
-    private              Boolean               popReturn;
+    private Boolean popReturn;
 
-    private              List<FieldExtractor>  fieldExtractorList;
+    private List<FieldExtractor> fieldExtractorList;
 
-    private              List<AbstractSegment> segmentList;
+    private List<AbstractSegment> segmentList;
 
-    private              String                sourceId;
+    private String sourceId;
 
-    private              Boolean               notEmpty;
+    private Boolean notEmpty;
 
-    private              Integer               maxCycles;
+    private Integer maxCycles;
 
-    private              Boolean               isReverse;
+    private Boolean isReverse;
 
-    private              String                breakPattern;
+    private String breakPattern;
 
-    private              Boolean               standBy;
+    private Boolean standBy;
 
-    private              String                contains;
+    private String contains;
 
-    private              String                disContains;
+    private String disContains;
 
-    private              Boolean               merge;
+    private Boolean merge;
 
-    private              Integer               containsFlag;
+    private Integer containsFlag;
 
-    private              Integer               disContainsFlag;
+    private Integer disContainsFlag;
 
-    private              Integer               breakPatternFlag;
+    private Integer breakPatternFlag;
 
-    private              String                businessType;
+    private String businessType;
 
     public AbstractSegment() {
         super();

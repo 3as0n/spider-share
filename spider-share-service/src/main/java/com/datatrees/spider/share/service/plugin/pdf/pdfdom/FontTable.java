@@ -1,26 +1,17 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.service.plugin.pdf.pdfdom;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
@@ -32,13 +23,19 @@ import org.mabb.fontverter.pdf.PdfFontExtractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class FontTable {
 
-    private static Logger      log             = LoggerFactory.getLogger(FontTable.class);
+    private static Logger log = LoggerFactory.getLogger(FontTable.class);
 
-    private static Pattern     fontFamilyRegex = Pattern.compile("([^+^-]*)[+-]([^+]*)");
+    private static Pattern fontFamilyRegex = Pattern.compile("([^+^-]*)[+-]([^+]*)");
 
-    private        List<Entry> entries         = new ArrayList<Entry>();
+    private List<Entry> entries = new ArrayList<Entry>();
 
     public void addEntry(PDFont font) {
         Entry entry = get(font);
@@ -47,13 +44,15 @@ public class FontTable {
             String family = findFontFamily(fontName);
             String usedName = nextUsedName(family);
             Entry newEntry = new Entry(font.getName(), usedName, font);
-            if (newEntry.isEntryValid()) add(newEntry);
+            if (newEntry.isEntryValid())
+                add(newEntry);
         }
     }
 
     public Entry get(PDFont find) {
         for (Entry entryOn : entries) {
-            if (entryOn.equalToPDFont(find)) return entryOn;
+            if (entryOn.equalToPDFont(find))
+                return entryOn;
         }
         return null;
     }
@@ -64,20 +63,24 @@ public class FontTable {
 
     public String getUsedName(PDFont font) {
         Entry entry = get(font);
-        if (entry == null) return null;
-        else return entry.usedName;
+        if (entry == null)
+            return null;
+        else
+            return entry.usedName;
     }
 
     protected String nextUsedName(String fontName) {
         int i = 1;
         String usedName = fontName;
-        while (isNameUsed(usedName)) usedName = fontName + i;
+        while (isNameUsed(usedName))
+            usedName = fontName + i;
         return usedName;
     }
 
     protected boolean isNameUsed(String name) {
         for (Entry entryOn : entries) {
-            if (entryOn.usedName.equals(name)) return true;
+            if (entryOn.usedName.equals(name))
+                return true;
         }
         return false;
     }
@@ -100,19 +103,19 @@ public class FontTable {
 
     public class Entry extends HtmlResource {
 
-        public  String           fontName;
+        public String fontName;
 
-        public  String           usedName;
+        public String usedName;
 
-        public  PDFontDescriptor descriptor;
+        public PDFontDescriptor descriptor;
 
-        private PDFont           baseFont;
+        private PDFont baseFont;
 
-        private byte[]           cachedFontData;
+        private byte[] cachedFontData;
 
-        private String           mimeType = "x-font-truetype";
+        private String mimeType = "x-font-truetype";
 
-        private String           fileEnding;
+        private String fileEnding;
 
         public Entry(String fontName, String usedName, PDFont font) {
             super(fontName);
@@ -123,10 +126,14 @@ public class FontTable {
         }
 
         public byte[] getData() throws IOException {
-            if (cachedFontData != null) return cachedFontData;
-            if (descriptor.getFontFile2() != null && baseFont instanceof PDType0Font) cachedFontData = loadType0TtfDescendantFont();
-            else if (descriptor.getFontFile2() != null) cachedFontData = loadTrueTypeFont(descriptor.getFontFile2());
-            else if (descriptor.getFontFile() != null) cachedFontData = loadType1Font(descriptor.getFontFile());
+            if (cachedFontData != null)
+                return cachedFontData;
+            if (descriptor.getFontFile2() != null && baseFont instanceof PDType0Font)
+                cachedFontData = loadType0TtfDescendantFont();
+            else if (descriptor.getFontFile2() != null)
+                cachedFontData = loadTrueTypeFont(descriptor.getFontFile2());
+            else if (descriptor.getFontFile() != null)
+                cachedFontData = loadType1Font(descriptor.getFontFile());
             else if (descriptor.getFontFile3() != null)
                 // FontFile3 docs say any font type besides TTF/OTF or Type 1..
                 cachedFontData = loadOtherTypeFont(descriptor.getFontFile3());
@@ -143,6 +150,48 @@ public class FontTable {
             return fontData != null && fontData.length != 0;
         }
 
+        public boolean equalToPDFont(PDFont compare) {
+            // Appears you can have two different fonts with the same actual font name since text
+            // position font
+            // references go off a seperate dict lookup name. PDFBox doesn't include the lookup name
+            // with the
+            // PDFont, so might have to submit a change there to be really sure fonts are indeed the
+            // same.
+            return compare.getName().equals(baseFont.getName()) && compare.getType().equals(baseFont.getType()) && compare.getSubType().equals(baseFont.getSubType());
+        }
+
+        @Override
+        public int hashCode() {
+            return fontName.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            Entry other = (Entry)obj;
+            if (!getOuterType().equals(other.getOuterType()))
+                return false;
+            if (fontName == null) {
+                if (other.fontName != null)
+                    return false;
+            } else if (!fontName.equals(other.fontName))
+                return false;
+            return true;
+        }
+
+        public String getFileEnding() {
+            return fileEnding;
+        }
+
+        public String getMimeType() {
+            return mimeType;
+        }
+
         private byte[] loadTrueTypeFont(PDStream fontFile) throws IOException {
             // could convert to WOFF though for optimal html output instead.
             mimeType = "application/x-font-truetype";
@@ -150,7 +199,8 @@ public class FontTable {
             byte[] fontData = fontFile.toByteArray();
             FVFont font = FontVerter.readFont(fontData);
             byte[] fvFontData = tryNormalizeFVFont(font);
-            if (fvFontData.length != 0) fontData = fvFontData;
+            if (fvFontData.length != 0)
+                fontData = fvFontData;
             return fontData;
         }
 
@@ -158,9 +208,10 @@ public class FontTable {
             mimeType = "application/x-font-truetype";
             fileEnding = "ttf";
             try {
-                FVFont font = PdfFontExtractor.convertType0FontToOpenType((PDType0Font) baseFont);
+                FVFont font = PdfFontExtractor.convertType0FontToOpenType((PDType0Font)baseFont);
                 byte[] fontData = tryNormalizeFVFont(font);
-                if (fontData.length != 0) return fontData;
+                if (fontData.length != 0)
+                    return fontData;
             } catch (Exception ex) {
                 log.warn("Error loading type 0 with ttf descendant font " + fontName, ex);
             }
@@ -191,7 +242,8 @@ public class FontTable {
         private byte[] tryNormalizeFVFont(FVFont font) {
             try {
                 // browser validation can fail for many TTF fonts from pdfs
-                if (!font.isValid()) font.normalize();
+                if (!font.isValid())
+                    font.normalize();
                 return font.getData();
             } catch (Exception ex) {
                 log.error(ex.getMessage(), ex);
@@ -199,45 +251,8 @@ public class FontTable {
             return new byte[0];
         }
 
-        public boolean equalToPDFont(PDFont compare) {
-            // Appears you can have two different fonts with the same actual font name since text
-            // position font
-            // references go off a seperate dict lookup name. PDFBox doesn't include the lookup name
-            // with the
-            // PDFont, so might have to submit a change there to be really sure fonts are indeed the
-            // same.
-            return compare.getName().equals(baseFont.getName()) && compare.getType().equals(baseFont.getType()) &&
-                    compare.getSubType().equals(baseFont.getSubType());
-        }
-
-        @Override
-        public int hashCode() {
-            return fontName.hashCode();
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) return true;
-            if (obj == null) return false;
-            if (getClass() != obj.getClass()) return false;
-            Entry other = (Entry) obj;
-            if (!getOuterType().equals(other.getOuterType())) return false;
-            if (fontName == null) {
-                if (other.fontName != null) return false;
-            } else if (!fontName.equals(other.fontName)) return false;
-            return true;
-        }
-
-        public String getFileEnding() {
-            return fileEnding;
-        }
-
         private FontTable getOuterType() {
             return FontTable.this;
-        }
-
-        public String getMimeType() {
-            return mimeType;
         }
     }
 }

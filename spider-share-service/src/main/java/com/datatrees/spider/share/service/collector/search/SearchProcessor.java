@@ -1,20 +1,43 @@
 /*
  * Copyright © 2015 - 2018 杭州大树网络技术有限公司. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.datatrees.spider.share.service.collector.search;
+
+import akka.dispatch.Future;
+import com.alibaba.rocketmq.common.ThreadFactoryImpl;
+import com.datatrees.spider.share.domain.model.Task;
+import com.datatrees.spider.share.service.collector.actor.TaskMessage;
+import com.datatrees.spider.share.service.collector.chain.Context;
+import com.datatrees.spider.share.service.collector.chain.Filters;
+import com.datatrees.spider.share.service.collector.common.CollectorConstants;
+import com.datatrees.spider.share.service.collector.worker.ResultDataHandler;
+import com.treefinance.crawler.framework.boot.Crawler;
+import com.treefinance.crawler.framework.config.enums.SearchType;
+import com.treefinance.crawler.framework.config.xml.SearchConfig;
+import com.treefinance.crawler.framework.config.xml.properties.Properties;
+import com.treefinance.crawler.framework.config.xml.search.SearchTemplateConfig;
+import com.treefinance.crawler.framework.context.ProcessorContextUtil;
+import com.treefinance.crawler.framework.context.RequestUtil;
+import com.treefinance.crawler.framework.context.ResponseUtil;
+import com.treefinance.crawler.framework.context.SearchProcessorContext;
+import com.treefinance.crawler.framework.context.function.CrawlRequest;
+import com.treefinance.crawler.framework.context.function.CrawlResponse;
+import com.treefinance.crawler.framework.context.function.LinkNode;
+import com.treefinance.crawler.framework.exception.ResultEmptyException;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,32 +46,6 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import akka.dispatch.Future;
-import com.alibaba.rocketmq.common.ThreadFactoryImpl;
-import com.treefinance.crawler.framework.config.xml.SearchConfig;
-import com.treefinance.crawler.framework.config.xml.properties.Properties;
-import com.treefinance.crawler.framework.config.xml.search.SearchTemplateConfig;
-import com.treefinance.crawler.framework.config.enums.SearchType;
-import com.treefinance.crawler.framework.context.SearchProcessorContext;
-import com.treefinance.crawler.framework.context.function.CrawlRequest;
-import com.treefinance.crawler.framework.context.function.CrawlResponse;
-import com.treefinance.crawler.framework.context.function.LinkNode;
-import com.treefinance.crawler.framework.context.ProcessorContextUtil;
-import com.treefinance.crawler.framework.context.RequestUtil;
-import com.treefinance.crawler.framework.context.ResponseUtil;
-import com.treefinance.crawler.framework.exception.ResultEmptyException;
-import com.treefinance.crawler.framework.boot.Crawler;
-import com.datatrees.spider.share.domain.model.Task;
-import com.datatrees.spider.share.service.collector.actor.TaskMessage;
-import com.datatrees.spider.share.service.collector.chain.Context;
-import com.datatrees.spider.share.service.collector.chain.Filters;
-import com.datatrees.spider.share.service.collector.common.CollectorConstants;
-import com.datatrees.spider.share.service.collector.worker.ResultDataHandler;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * @author <A HREF="">Cheng Wang</A>
  * @version 1.0
@@ -56,40 +53,40 @@ import org.slf4j.LoggerFactory;
  */
 public class SearchProcessor {
 
-    private static final Logger               log               = LoggerFactory.getLogger(SearchProcessor.class);
+    private static final Logger log = LoggerFactory.getLogger(SearchProcessor.class);
 
-    private final        List<Future<Object>> futureList        = new ArrayList<>();
+    private final List<Future<Object>> futureList = new ArrayList<>();
 
-    private final        TaskMessage          taskMessage;
+    private final TaskMessage taskMessage;
 
-    private              String               searchTemplate;
+    private String searchTemplate;
 
-    private              SearchTemplateConfig searchTemplateConfig;
+    private SearchTemplateConfig searchTemplateConfig;
 
-    private              String               encoding;
+    private String encoding;
 
-    private              long                 waitIntervalMillis;
+    private long waitIntervalMillis;
 
-    private              boolean              duplicateRemoval;
+    private boolean duplicateRemoval;
 
-    private              ResultDataHandler    resultDataHandler;
+    private ResultDataHandler resultDataHandler;
 
-    private              String               keyword;
+    private String keyword;
 
-    private              boolean              isLastLink;
+    private boolean isLastLink;
 
-    private              boolean              needEarlyQuit;
+    private boolean needEarlyQuit;
 
-    private              ThreadPoolExecutor   crawlExecutorPool = null;
+    private ThreadPoolExecutor crawlExecutorPool = null;
 
     // 任务默认超时时间，单位：毫秒
-    private              long                 defaultTimeout    = -1;
+    private long defaultTimeout = -1;
 
     // 任务超时时间，单位：毫秒
-    private              long                 timeout           = -1;
+    private long timeout = -1;
 
     // 任务可执行的结束时间戳，单位：毫秒
-    private              long                 deadLine          = -1;
+    private long deadLine = -1;
 
     public SearchProcessor(TaskMessage taskMessage) {
         this.taskMessage = taskMessage;
@@ -129,18 +126,12 @@ public class SearchProcessor {
         this.isLastLink = false;
     }
 
-    private URLHandlerImpl initURLHandlerImpl() {
-        URLHandlerImpl handler = new URLHandlerImpl();
-        handler.setSearchProcessor(this);
-        return handler;
-    }
-
     public List<LinkNode> crawlOneURL(LinkNode url) throws ResultEmptyException {
         List<LinkNode> linkNodeList = null;
         try {
             URLHandlerImpl handler = initURLHandlerImpl();
-            CrawlRequest request = CrawlRequest.newBuilder().setUrl(url).setSearchContext(getProcessorContext()).setTemplateId(searchTemplateConfig.getId()).setSeedUrl(searchTemplate).setUrlHandler
-                    (handler).build();
+            CrawlRequest request = CrawlRequest.newBuilder().setUrl(url).setSearchContext(getProcessorContext()).setTemplateId(searchTemplateConfig.getId())
+                .setSeedUrl(searchTemplate).setUrlHandler(handler).build();
 
             RequestUtil.setKeyWord(request, keyword);
             CrawlResponse response = Crawler.crawl(request);
@@ -290,19 +281,15 @@ public class SearchProcessor {
         return crawlExecutorPool;
     }
 
-    private ThreadPoolExecutor initCrawlExecutorPool(int threadCount) {
-        return new ThreadPoolExecutor(threadCount, threadCount, 20L, java.util.concurrent.TimeUnit.SECONDS, new SynchronousQueue<Runnable>(),
-                new ThreadFactoryImpl(Thread.currentThread().getName() + "_"));
-    }
-
     public ExecutorService getCrawlExecutorPool() {
         return crawlExecutorPool;
     }
 
     /**
      * 设置默认超时. if <code>unit</code> is null,parse <code>timeout</code> as millis.
+     *
      * @param timeout 超时时间
-     * @param unit    时间单位
+     * @param unit 时间单位
      */
     public void setDefaultTimeout(long timeout, TimeUnit unit) {
         if (unit != null) {
@@ -317,8 +304,9 @@ public class SearchProcessor {
 
     /**
      * 设置超时. if <code>unit</code> is null,parse <code>timeout</code> as millis.
+     *
      * @param timeout 超时时间
-     * @param unit    时间单位
+     * @param unit 时间单位
      */
     public void setTimeout(long timeout, TimeUnit unit) {
         if (unit != null && timeout > 0) {
@@ -327,14 +315,6 @@ public class SearchProcessor {
             this.timeout = timeout;
         }
         resetDeadLine(this.timeout);
-    }
-
-    private void resetDeadLine(long timeout) {
-        if (timeout > 0) {
-            this.deadLine = getStartTime() + timeout;
-        } else {
-            this.deadLine = 0;
-        }
     }
 
     public boolean isTimeout(long timeInMillis) {
@@ -375,5 +355,24 @@ public class SearchProcessor {
 
     public Integer getWebsiteType() {
         return Integer.valueOf(getProcessorContext().getWebsiteType());
+    }
+
+    private URLHandlerImpl initURLHandlerImpl() {
+        URLHandlerImpl handler = new URLHandlerImpl();
+        handler.setSearchProcessor(this);
+        return handler;
+    }
+
+    private ThreadPoolExecutor initCrawlExecutorPool(int threadCount) {
+        return new ThreadPoolExecutor(threadCount, threadCount, 20L, java.util.concurrent.TimeUnit.SECONDS, new SynchronousQueue<Runnable>(),
+            new ThreadFactoryImpl(Thread.currentThread().getName() + "_"));
+    }
+
+    private void resetDeadLine(long timeout) {
+        if (timeout > 0) {
+            this.deadLine = getStartTime() + timeout;
+        } else {
+            this.deadLine = 0;
+        }
     }
 }
