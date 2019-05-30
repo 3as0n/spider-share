@@ -403,7 +403,7 @@ public class TaskHttpClient {
             Header[] headers = httpResponse.getAllHeaders();
             if (null != headers) {
                 for (Header header : headers) {
-                    response.getHeaders().add(new NameValue(header.getName(), header.getValue()));
+                    response.addHeader(new NameValue(header.getName(), header.getValue()));
                 }
             }
             Header header = httpResponse.getFirstHeader(HttpHeadKey.CONTENT_TYPE);

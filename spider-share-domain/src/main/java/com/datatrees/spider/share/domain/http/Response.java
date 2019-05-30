@@ -154,6 +154,13 @@ public class Response implements Serializable {
         return null;
     }
 
+    public void addHeader(NameValue header){
+        if(headers == null){
+            headers = new ArrayList<>();
+        }
+        headers.add(header);
+    }
+
     public Map<String, String> getResponseCookies() {
         return responseCookies;
     }

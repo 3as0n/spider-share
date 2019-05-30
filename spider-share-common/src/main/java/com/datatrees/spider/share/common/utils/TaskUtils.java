@@ -100,6 +100,7 @@ public final class TaskUtils {
         Header[] headers = httpResponse.getHeaders(HttpHeadKey.SET_COOKIE);
         if (null != headers && headers.length > 0) {
             for (Header header : headers) {
+                logger.info("处理response cookie >> {}", header);
                 String headerValue = header.getValue();
                 if (StringUtils.isEmpty(headerValue)) {
                     continue;
