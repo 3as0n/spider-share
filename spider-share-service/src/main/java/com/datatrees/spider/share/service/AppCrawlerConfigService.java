@@ -15,7 +15,7 @@ package com.datatrees.spider.share.service;
 
 import com.datatrees.spider.share.domain.param.AppCrawlerConfigParam;
 import com.datatrees.spider.share.domain.param.CrawlerProjectParam;
-import com.treefinance.saas.merchant.center.facade.result.console.MerchantAppLicenseResult;
+import com.treefinance.saas.merchant.facade.result.console.MerchantAppLicenseResult;
 
 import java.util.List;
 
