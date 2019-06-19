@@ -12,7 +12,7 @@ buildscript {
 
 allprojects {
     group = 'com.datatrees.spider'
-    version = '4.2.5-SNAPSHOT'
+    version = '4.2.6-SNAPSHOT'
 }
 
 ext {
