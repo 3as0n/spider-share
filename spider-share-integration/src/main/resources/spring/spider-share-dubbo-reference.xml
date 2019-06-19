@@ -7,7 +7,7 @@
 
   <dubbo:reference interface="com.treefinance.proxy.api.ProxyProvider" id="proxyProvider"/>
   <dubbo:reference interface="com.datatrees.notify.sms.newservice.SmsNewService" id="smsNewService"/>
-  <dubbo:reference interface="com.treefinance.saas.merchant.center.facade.service.MerchantBaseInfoFacade"
+  <dubbo:reference interface="com.treefinance.saas.merchant.facade.service.MerchantBaseInfoFacade"
     id="merchantBaseInfoFacade" version="1.0.0"/>
   <dubbo:reference interface="com.treefinance.saas.taskcenter.facade.service.TaskFacade" id="taskFacade"
     version="1.0.0"/>
