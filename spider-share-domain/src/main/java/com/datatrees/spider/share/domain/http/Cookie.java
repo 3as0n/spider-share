@@ -13,6 +13,7 @@
 
 package com.datatrees.spider.share.domain.http;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.annotation.JSONField;
 
 import java.io.Serializable;
@@ -126,5 +127,10 @@ public class Cookie implements Serializable {
         if (attribs != null) {
             attribs.forEach(consumer);
         }
+    }
+
+    @Override
+    public String toString() {
+        return JSON.toJSONString(this);
     }
 }

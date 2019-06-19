@@ -144,6 +144,7 @@ public final class TaskUtils {
                 }
             }
         }
+        logger.info("更新后cookies >> {}", list);
         return list;
     }
 
