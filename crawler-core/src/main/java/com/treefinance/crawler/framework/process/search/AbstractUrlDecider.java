@@ -13,34 +13,38 @@
 
 package com.treefinance.crawler.framework.process.search;
 
-import com.treefinance.crawler.framework.config.xml.filter.UrlFilter;
 import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.Collections;
+import javax.annotation.Nonnull;
+
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Jerry
- * @since 17:28 2018/7/31
+ * @date 2019-06-25 22:28
  */
-public class RegexUrlFilterHandler implements UrlFilterHandler {
+abstract class AbstractUrlDecider implements UrlDecider {
+    private final List<UrlMatcher> urlMatchers;
 
-    private final List<UrlFilterDecider> deciders;
+    public AbstractUrlDecider() {
+        this.urlMatchers = new ArrayList<>();
+    }
 
-    public RegexUrlFilterHandler(List<UrlFilter> filterList) {
-        if (CollectionUtils.isNotEmpty(filterList)) {
-            deciders = filterList.stream().map(RegexUrlFilterDecider::new).collect(Collectors.toList());
-        } else {
-            deciders = Collections.emptyList();
-        }
+    public AbstractUrlDecider(List<UrlMatcher> urlMatchers) {
+        this.urlMatchers = urlMatchers;
     }
 
     @Override
-    public boolean filter(String url) {
-        if (CollectionUtils.isNotEmpty(deciders)) {
-            for (UrlFilterDecider decider : deciders) {
-                if (decider.deny(url)) {
+    public final void addUrlRule(@Nonnull UrlMatcher urlMatcher) {
+        this.urlMatchers.add(urlMatcher);
+    }
+
+    @Override
+    public final boolean match(String url) {
+        if (CollectionUtils.isNotEmpty(urlMatchers)) {
+            for (UrlMatcher urlMatcher : urlMatchers) {
+                if (urlMatcher.match(url)) {
                     return true;
                 }
             }
