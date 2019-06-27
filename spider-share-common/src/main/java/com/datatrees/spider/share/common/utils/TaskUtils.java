@@ -246,7 +246,7 @@ public final class TaskUtils {
         }
         String redisKey = RedisKeyPrefixEnum.TASK_COOKIE.getRedisKey(taskId);
         for (Cookie cookie : cookies) {
-            String name = "[" + cookie.getName() + "][" + cookie.getDomain() + "]";
+            String name = "[" + cookie.getName() + "][" + cookie.getDomain() + "][" + cookie.getPath() + "]";
             RedisUtils.hset(redisKey, name, JSON.toJSONString(cookie, SerializerFeature.DisableCircularReferenceDetect), RedisKeyPrefixEnum.TASK_COOKIE.toSeconds());
 
         }
