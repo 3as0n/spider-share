@@ -12,7 +12,7 @@ buildscript {
 
 allprojects {
     group = 'com.datatrees.spider'
-    version = '4.2.8-SNAPSHOT'
+    version = '4.2.8'
 }
 
 ext {
@@ -36,7 +36,7 @@ subprojects {
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
-    
+
     idea {
         module {
             downloadSources = true
