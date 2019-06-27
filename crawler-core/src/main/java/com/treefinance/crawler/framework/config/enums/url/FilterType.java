@@ -22,7 +22,13 @@ import java.util.Map;
  * @since Feb 7, 2014 10:50:40 AM
  */
 public enum FilterType {
+    /**
+     * 白名单
+     */
     WHITE_LIST("+"),
+    /**
+     * 黑名单
+     */
     BLACK_LIST("-");
 
     private static Map<String, FilterType> FilterTypeMap = new HashMap<String, FilterType>();

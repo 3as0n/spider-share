@@ -254,7 +254,7 @@ public class PageImpl extends ProcessorInvokerAdapter {
             urlFilters.add(filter);
         }
 
-        return new RegexUrlFilterHandler(urlFilters);
+        return new DefaultUrlFilterHandler(urlFilters);
     }
 
     private void addRedirectUrl(LinkNode current, Map<String, LinkNode> urlLists) {

@@ -13,31 +13,15 @@
 
 package com.treefinance.crawler.framework.process.search;
 
-import com.treefinance.crawler.framework.config.enums.url.FilterType;
-import com.treefinance.crawler.framework.config.xml.filter.UrlFilter;
-import com.treefinance.toolkit.util.RegExp;
-
-import java.util.regex.Pattern;
+import javax.annotation.Nonnull;
 
 /**
  * @author Jerry
- * @since 17:33 2018/7/31
+ * @date 2019-06-25 22:22
  */
-class RegexUrlFilterDecider implements UrlFilterDecider {
+public interface UrlDecider {
 
-    private Pattern pattern;
-    private boolean deny;
+    boolean match(String url);
 
-    public RegexUrlFilterDecider(UrlFilter urlFilter) {
-        this.pattern = RegExp.compile(urlFilter.getFilter());
-        this.deny = FilterType.BLACK_LIST.equals(urlFilter.getType());
-    }
-
-    @Override
-    public boolean deny(String url) {
-        if (pattern.matcher(url).find()) {
-            return deny;
-        }
-        return false;
-    }
+    void addUrlRule(@Nonnull UrlMatcher urlMatcher);
 }

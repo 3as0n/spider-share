@@ -13,11 +13,23 @@
 
 package com.treefinance.crawler.framework.process.search;
 
+import com.treefinance.toolkit.util.RegExp;
+
+import java.util.regex.Pattern;
+
 /**
  * @author Jerry
- * @since 17:33 2018/7/31
+ * @date 2019-06-25 22:15
  */
-interface UrlFilterDecider {
+public class RegexUrlMatcher implements UrlMatcher {
+    private Pattern pattern;
 
-    boolean deny(String url);
+    public RegexUrlMatcher(String pattern) {
+        this.pattern = RegExp.compile(pattern);
+    }
+
+    @Override
+    public boolean match(String url) {
+        return pattern.matcher(url).find();
+    }
 }
